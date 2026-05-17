@@ -85,7 +85,7 @@
 
         <div class="container">
             <div class="card">
-                <h2>Form Input Rekap Kerja Karyawan</h2>
+                <h2>Form Input Rekap Kerja Personel (Karyawan/Kepala Toko)</h2>
                 <form id="formRekapKaryawan" onsubmit="submitRekap(event)">
                     
                     <div class="form-row">
@@ -102,8 +102,8 @@
 
                     <div class="form-group">
                         <div class="label-flex">
-                            <label>Nama Anggota Tim</label>
-                            <button type="button" class="btn-tambah-karyawan" onclick="bukaModalKaryawan()">+ Tambah Karyawan Baru</button>
+                            <label>Nama Personel yang Bekerja</label>
+                            <button type="button" class="btn-tambah-karyawan" onclick="bukaModalKaryawan()">+ Daftarkan Anggota/Kepala Toko Baru</button>
                         </div>
                         <select id="nama_karyawan" class="form-control" required>
                             <option value="" disabled selected>-- Pilih Personel --</option>
@@ -145,9 +145,9 @@
                     </div>
 
                     <div class="info-box">
-                        💡 <b>Ketentuan Keuangan:</b> Tarif Rp 3.000/Unit. <br>
-                        • Setiap input data otomatis dipotong <b>Rp 1.000</b> untuk kas WiFi harian.<br>
-                        • Bonus target Rp 5.000 (Grobogan &ge; 100 unit | Palis & Cayur &ge; 50 unit).
+                        💡 <b>Ketentuan Keuangan (Berlaku Sama):</b> Tarif Rp 3.000/Unit. <br>
+                        • Baik Kepala Toko maupun Karyawan yang ikut mencuci tetap mendapat hak bonus target sistem yang sama jika tembus target unit harian.<br>
+                        • Setiap baris input otomatis terpotong Rp 1.000 untuk kas harian WiFi.
                     </div>
 
                     <div class="form-group">
@@ -163,14 +163,24 @@
         </div>
     </div>
 
-    <!-- POP-UP TAMBAH KARYAWAN -->
+    <!-- POP-UP TAMBAH KARYAWAN / KEPALA TOKO -->
     <div id="modalKaryawan" class="modal">
         <div class="modal-content">
-            <h3>Pendaftaran Anggota Baru</h3>
-            <div class="form-group" style="margin-top: 10px;">
-                <label>Nama Lengkap Karyawan</label>
+            <h3>Pendaftaran Personel Baru</h3>
+            
+            <div class="form-group" style="margin-top: 15px;">
+                <label>Nama Lengkap Personel</label>
                 <input type="text" id="nama_baru_input" class="form-control" placeholder="Contoh: Ahmad Subarjo">
             </div>
+
+            <div class="form-group">
+                <label>Jabatan / Peran di Toko</label>
+                <select id="jabatan_baru_input" class="form-control">
+                    <option value="Anggota Tim" selected>Anggota Tim (Karyawan)</option>
+                    <option value="Kepala Toko">Kepala Toko</option>
+                </select>
+            </div>
+
             <div class="modal-buttons">
                 <button type="button" class="btn-modal-batal" onclick="tutupModalKaryawan()">Batal</button>
                 <button type="button" class="btn-modal-save" onclick="simpanKaryawanBaru()">Daftarkan</button>
@@ -181,11 +191,10 @@
     <div id="statusMessage"></div>
 
     <script>
-        // MENGGUNAKAN URL SUKSES TERBARU ANDA
         const WEB_APP_URL = "https://script.google.com/macros/s/AKfycby8zceNMvSfy0EQlDIODdcu8wxpcgymy5a9Lr2Pkh6qA-vbNKQUyAn153haifbNDhMm/exec";
         let DB_PIN = {};
 
-        // 1. LOAD DATA CABANG & PIN SAAT HALAMAN DIBUKA
+        // 1. LOAD DATA CABANG & PIN
         window.onload = function() {
             fetch(WEB_APP_URL + "?action=getLoginData")
             .then(res => res.json())
@@ -201,7 +210,6 @@
                     selectCabang.add(opt);
                 }
                 
-                // Aktifkan form setelah data termuat sempurna
                 selectCabang.disabled = false;
                 document.getElementById('login_pin').disabled = false;
                 document.getElementById('btn_login').disabled = false;
@@ -209,11 +217,11 @@
             })
             .catch(err => {
                 console.error(err);
-                alert("Gagal sinkronisasi data. Pastikan sheet 'Pengaturan' sudah diisi.");
+                alert("Gagal sinkronisasi data.");
             });
         };
 
-        // 2. VERIFIKASI LOGIN KEPALA TOKO
+        // 2. VERIFIKASI LOGIN
         function prosesLogin() {
             const cabangSelected = document.getElementById('login_cabang').value;
             const pinInput = document.getElementById('login_pin').value.trim();
@@ -229,14 +237,13 @@
                 
                 document.getElementById('tgl_rekap').value = new Date().toISOString().split('T')[0];
                 
-                // Muat daftar karyawan dari sheet Master Karyawan
                 loadDaftarKaryawan();
             } else {
                 alert("PIN Akses Salah!");
             }
         }
 
-        // 3. AMBIL DAFTAR KARYAWAN DARI GOOGLE SHEETS
+        // 3. AMBIL DAFTAR KARYAWAN & KEPALA TOKO
         function loadDaftarKaryawan() {
             fetch(WEB_APP_URL + "?action=getKaryawan")
             .then(res => res.json())
@@ -256,36 +263,33 @@
         function tutupModalKaryawan() {
             document.getElementById('modalKaryawan').style.display = 'none';
             document.getElementById('nama_baru_input').value = '';
+            document.getElementById('jabatan_baru_input').value = 'Anggota Tim';
         }
 
+        // 4. DAFTARKAN PERSONEL (KARYAWAN/KEPALA TOKO) BARU KE SHEETS
         function simpanKaryawanBaru() {
             const namaBaru = document.getElementById('nama_baru_input').value.trim();
+            const jabatanBaru = document.getElementById('jabatan_baru_input').value;
             if (!namaBaru) { alert("Nama tidak boleh kosong!"); return; }
 
-            showStatus("Mendaftarkan karyawan baru...", "loading");
+            showStatus("Mendaftarkan personel baru...", "loading");
             tutupModalKaryawan();
 
             let urlParams = new URLSearchParams();
             urlParams.append("action", "insertRow");
             urlParams.append("tipe", "Tambah Karyawan Baru"); 
-            urlParams.append("nama_karyawan", namaBaru);
+            urlParams.append("nama_karyawan", namaBaru + " (" + jabatanBaru + ")"); // Otomatis memberikan label status di belakang nama
 
             fetch(WEB_APP_URL, {
                 method: "POST",
                 mode: "no-cors",
-                headers: { "Content-Type": "application/x-www-form-urlencoded" },
                 body: urlParams.toString()
             })
             .then(() => {
-                showStatus(`Sukses mendaftarkan ${namaBaru}!`, "success");
-                const dropdown = document.getElementById('nama_karyawan');
-                const opsiBaru = document.createElement('option');
-                opsiBaru.value = namaBaru;
-                opsiBaru.text = namaBaru;
-                dropdown.add(opsiBaru);
-                dropdown.value = namaBaru;
+                showStatus(`Sukses mendaftarkan ${namaBaru} sebagai ${jabatanBaru}!`, "success");
+                loadDaftarKaryawan(); // Refresh list otomatis agar nama baru langsung muncul di dropdown rekap kerja
             })
-            .catch(() => showStatus("Gagal menyimpan.", "error"));
+            .catch(() => showStatus("Gagal menyimpan ke Master Karyawan.", "error"));
         }
 
         function hitungTotalPendapatan() {
