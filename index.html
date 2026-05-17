@@ -18,371 +18,156 @@
             --radius: 12px;
         }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-        body {
-            background-color: #f4f6f9;
-            color: var(--dark-color);
-            line-height: 1.6;
-            padding-bottom: 60px;
-        }
-
-        header {
-            background: var(--primary-gradient);
-            color: white;
-            padding: 24px 16px;
-            text-align: center;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            border-bottom: 4px solid var(--accent-color);
-        }
-
-        header h1 {
-            font-size: 22px;
-            font-weight: 700;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-        }
-
-        header p {
-            font-size: 13px;
-            opacity: 0.9;
-            margin-top: 4px;
-        }
-
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 16px;
-        }
-
-        .card {
-            background: white;
-            border-radius: var(--radius);
-            padding: 24px;
-            margin-bottom: 24px;
-            box-shadow: var(--shadow);
-            border: 1px solid var(--border-color);
-        }
-
-        .card h2 {
-            font-size: 18px;
-            color: #b71c1c;
-            margin-bottom: 20px;
-            border-left: 4px solid #d32f2f;
-            padding-left: 10px;
-            text-transform: uppercase;
-            font-weight: 700;
-        }
-
-        .form-row {
-            display: flex;
-            gap: 16px;
-        }
-
-        .form-row .form-group {
-            flex: 1;
-        }
-
-        .form-group {
-            margin-bottom: 18px;
-        }
-
-        .form-group label {
-            display: block;
-            font-size: 13px;
-            font-weight: 600;
-            margin-bottom: 6px;
-            color: #424242;
-        }
-
-        .label-flex {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .btn-tambah-karyawan {
-            background: none;
-            border: none;
-            color: #d32f2f;
-            font-size: 12px;
-            font-weight: bold;
-            cursor: pointer;
-            text-decoration: underline;
-        }
-
-        .form-control {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            font-size: 15px;
-            background-color: #fafafa;
-            transition: border-color 0.3s, background-color 0.3s;
-        }
-
-        .form-control:focus {
-            outline: none;
-            border-color: #d32f2f;
-            background-color: #fff;
-        }
-
-        .info-box {
-            background: #e8f5e9;
-            border-left: 4px solid #2e7d32;
-            padding: 12px;
-            border-radius: 6px;
-            margin-bottom: 15px;
-            font-size: 13px;
-            color: #1b5e20;
-            font-weight: 500;
-        }
-
-        .target-badge {
-            display: inline-block;
-            background-color: #fff3e0;
-            color: #e65100;
-            padding: 4px 10px;
-            border-radius: 12px;
-            font-size: 12px;
-            font-weight: bold;
-            margin-top: 5px;
-            border: 1px solid #ffe0b2;
-            display: none;
-        }
-
-        .btn-submit {
-            width: 100%;
-            background: var(--accent-gradient);
-            color: white;
-            border: none;
-            padding: 14px;
-            font-size: 16px;
-            font-weight: 600;
-            border-radius: 8px;
-            cursor: pointer;
-            box-shadow: 0 4px 10px rgba(211, 47, 47, 0.2);
-            transition: all 0.3s;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .btn-submit:hover {
-            opacity: 0.95;
-            transform: translateY(-1px);
-        }
-
-        .btn-submit:disabled {
-            background: #bdbdbd;
-            cursor: not-allowed;
-            box-shadow: none;
-        }
-
-        /* --- STYLING MODAL (POP-UP BOX) --- */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 20000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0,0,0,0.5);
-            align-items: center;
-            justify-content: center;
-        }
-
-        .modal-content {
-            background-color: white;
-            padding: 24px;
-            border-radius: var(--radius);
-            width: 90%;
-            max-width: 400px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-        }
-
-        .modal-content h3 {
-            font-size: 16px;
-            margin-bottom: 15px;
-            color: var(--dark-color);
-            text-transform: uppercase;
-        }
-
-        .modal-buttons {
-            display: flex;
-            gap: 10px;
-            margin-top: 15px;
-        }
-
-        .btn-modal-save {
-            flex: 1;
-            background: var(--success-color);
-            color: white;
-            border: none;
-            padding: 10px;
-            border-radius: 6px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-
-        .btn-modal-batal {
-            flex: 1;
-            background: #e0e0e0;
-            color: #424242;
-            border: none;
-            padding: 10px;
-            border-radius: 6px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-
-        #statusMessage {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            padding: 12px 24px;
-            border-radius: 30px;
-            color: white;
-            font-weight: 600;
-            font-size: 14px;
-            z-index: 30000;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-            display: none;
-            text-align: center;
-            max-width: 90%;
-        }
-
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: #f4f6f9; color: var(--dark-color); line-height: 1.6; padding-bottom: 60px; }
+        .login-container { max-width: 400px; margin: 80px auto; padding: 16px; }
+        header { background: var(--primary-gradient); color: white; padding: 24px 16px; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.15); border-bottom: 4px solid var(--accent-color); }
+        header h1 { font-size: 22px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
+        header p { font-size: 13px; opacity: 0.9; margin-top: 4px; }
+        .container { max-width: 800px; margin: 0 auto; padding: 16px; }
+        .card { background: white; border-radius: var(--radius); padding: 24px; margin-bottom: 24px; box-shadow: var(--shadow); border: 1px solid var(--border-color); }
+        .card h2 { font-size: 18px; color: #b71c1c; margin-bottom: 20px; border-left: 4px solid #d32f2f; padding-left: 10px; text-transform: uppercase; font-weight: 700; }
+        .form-row { display: flex; gap: 16px; }
+        .form-row .form-group { flex: 1; }
+        .form-group { margin-bottom: 18px; }
+        .form-group label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; color: #424242; }
+        .label-flex { display: flex; justify-content: space-between; align-items: center; }
+        .btn-tambah-karyawan { background: none; border: none; color: #d32f2f; font-size: 12px; font-weight: bold; cursor: pointer; text-decoration: underline; }
+        .form-control { width: 100%; padding: 12px; border: 1px solid var(--border-color); border-radius: 8px; font-size: 15px; background-color: #fafafa; transition: border-color 0.3s, background-color 0.3s; }
+        .form-control:focus { outline: none; border-color: #d32f2f; background-color: #fff; }
+        .info-box { background: #e8f5e9; border-left: 4px solid #2e7d32; padding: 12px; border-radius: 6px; margin-bottom: 15px; font-size: 13px; color: #1b5e20; font-weight: 500; }
+        .target-badge { display: inline-block; background-color: #fff3e0; color: #e65100; padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: bold; margin-top: 5px; border: 1px solid #ffe0b2; display: none; }
+        .btn-submit { width: 100%; background: var(--accent-gradient); color: white; border: none; padding: 14px; font-size: 16px; font-weight: 600; border-radius: 8px; cursor: pointer; box-shadow: 0 4px 10px rgba(211, 47, 47, 0.2); transition: all 0.3s; text-transform: uppercase; letter-spacing: 0.5px; }
+        .btn-submit:hover { opacity: 0.95; transform: translateY(-1px); }
+        .btn-submit:disabled { background: #bdbdbd; cursor: not-allowed; box-shadow: none; }
+        .modal { display: none; position: fixed; z-index: 20000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); align-items: center; justify-content: center; }
+        .modal-content { background-color: white; padding: 24px; border-radius: var(--radius); width: 90%; max-width: 400px; box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
+        .modal-buttons { display: flex; gap: 10px; margin-top: 15px; }
+        .btn-modal-save { flex: 1; background: var(--success-color); color: white; border: none; padding: 10px; border-radius: 6px; font-weight: bold; cursor: pointer; }
+        .btn-modal-batal { flex: 1; background: #e0e0e0; color: #424242; border: none; padding: 10px; border-radius: 6px; font-weight: bold; cursor: pointer; }
+        #statusMessage { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); padding: 12px 24px; border-radius: 30px; color: white; font-weight: 600; font-size: 14px; z-index: 30000; box-shadow: 0 4px 15px rgba(0,0,0,0.2); display: none; text-align: center; max-width: 90%; }
         .status-success { background-color: #2e7d32; }
         .status-error { background-color: #c62828; }
         .status-loading { background-color: #0288d1; }
-
-        .footer-logo {
-            text-align: center;
-            margin-top: 30px;
-            font-size: 12px;
-            color: #9e9e9e;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-        }
+        .footer-logo { text-align: center; margin-top: 30px; font-size: 12px; color: #9e9e9e; text-transform: uppercase; letter-spacing: 2px; }
     </style>
 </head>
 <body>
 
-    <header>
-        <h1>STEAM MP 7000 - PANEL KEPALA TOKO</h1>
-        <p>Input Rekap Kerja, Keuangan, & Manajemen Anggota Baru</p>
-    </header>
-
-    <div class="container">
-        <div class="card">
-            <h2>Form Input Rekap Kerja Karyawan</h2>
-            <form id="formRekapKaryawan" onsubmit="submitRekap(event)">
-                
-                <!-- Tanggal & Cabang -->
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Tanggal Transaksi</label>
-                        <input type="date" id="tgl_rekap" class="form-control" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Cabang Operasional</label>
-                        <select id="cabang_rekap" class="form-control" required onchange="hitungTotalPendapatan()">
-                            <option value="" disabled selected>-- Pilih Cabang --</option>
-                            <option value="Cabang Grobogan">Cabang Grobogan</option>
-                            <option value="Cabang Palis">Cabang Palis</option>
-                            <option value="Cabang Cayur">Cabang Cayur</option>
-                        </select>
-                    </div>
-                </div>
-
-                <!-- Pilihan Nama Karyawan + Tombol Tambah Anak Baru -->
-                <div class="form-group">
-                    <div class="label-flex">
-                        <label>Nama Anggota Tim</label>
-                        <button type="button" class="btn-tambah-karyawan" onclick="bukaModalKaryawan()">+ Tambah Karyawan Baru</button>
-                    </div>
-                    <select id="nama_karyawan" class="form-control" required>
-                        <option value="" disabled selected>-- Pilih Personel --</option>
-                        <option value="Muhammad Nur Barlian">Muhammad Nur Barlian (Karyawan)</option>
-                        <option value="Muhammad Juna Akbar">Muhammad Juna Akbar (Karyawan)</option>
-                        <option value="Muhamad Lutfi">Muhamad Lutfi (Karyawan)</option>
-                        <option value="Kepala Toko Grobogan">Kepala Toko Grobogan</option>
-                        <option value="Kepala Toko Palis">Kepala Toko Palis</option>
-                        <option value="Kepala Toko Cayur">Kepala Toko Cayur</option>
-                    </select>
-                </div>
-
-                <!-- Input Unit Kerja -->
-                <div class="form-group">
-                    <label>Jumlah Unit Selesai (Motor/Mobil)</label>
-                    <input type="number" id="unit_karyawan" class="form-control" placeholder="Masukkan total unit harian" min="0" required oninput="hitungTotalPendapatan()">
-                    <div id="badge_target" class="target-badge">🎉 Selamat! Tembus Target Target Cabang</div>
-                </div>
-
-                <!-- Row Tips & Bonus Manual -->
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Tips Dari Konsumen (Rp)</label>
-                        <input type="number" id="tips_karyawan" class="form-control" placeholder="0" min="0" value="0" oninput="hitungTotalPendapatan()">
-                    </div>
-                    <div class="form-group">
-                        <label>Bonus Tambahan Manual (Rp)</label>
-                        <input type="number" id="bonus_manual" class="form-control" placeholder="0" min="0" value="0" oninput="hitungTotalPendapatan()">
-                    </div>
-                </div>
-
-                <!-- Display Bonus Target Otomatis -->
-                <div class="form-group">
-                    <label>Bonus Tembus Target Sistem (Rp)</label>
-                    <input type="text" id="bonus_sistem_display" class="form-control" readonly style="background-color: #fff3e0; color: #e65100; font-weight: bold;" value="Rp 0">
-                    <input type="hidden" id="bonus_sistem" value="0">
-                </div>
-
-                <!-- Row Potongan: Kasbon & Iuran WiFi -->
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Potongan Kasbon (Rp)</label>
-                        <input type="number" id="kasbon_karyawan" class="form-control" placeholder="0" min="0" value="0" oninput="hitungTotalPendapatan()" style="color: var(--error-color);">
-                    </div>
-                    <div class="form-group">
-                        <label>Potongan Iuran WiFi Harian (Rp)</label>
-                        <input type="text" id="wifi_display" class="form-control" readonly value="Rp 1.000" style="color: var(--error-color); font-weight: 500; background-color: #fbe9e7;">
-                    </div>
-                </div>
-
-                <div class="info-box">
-                    💡 <b>Ketentuan Keuangan:</b> Tarif Rp 3.000/Unit. <br>
-                    • Setiap input data otomatis dipotong <b>Rp 1.000</b> untuk kas WiFi harian.<br>
-                    • Bonus target Rp 5.000 (Grobogan &ge; 100 unit | Palis & Cayur &ge; 50 unit).
-                </div>
-
-                <!-- Hasil Kalkulasi Bersih -->
-                <div class="form-group">
-                    <label>Total Pendapatan Bersih Diterima (Rp)</label>
-                    <input type="text" id="total_bersih_display" class="form-control" readonly style="font-weight: bold; color: var(--success-color); background-color: #e8f5e9;" value="Rp 0">
-                    <input type="hidden" id="total_bersih_karyawan">
-                </div>
-
-                <button type="submit" id="btn_submit_rekap" class="btn-submit">Simpan Rekap Kerja</button>
-            </form>
-        </div>
-
-        <div class="footer-logo">
-            Steam MP 7000 • Profesional & Terstruktur
+    <!-- ================= HALAMAN LOGIN ================= -->
+    <div id="halamanLogin" class="login-container">
+        <div class="card" style="text-align: center;">
+            <h2 style="border: none; padding: 0; color: #000;">LOGIN KEPALA TOKO</h2>
+            <p style="font-size: 13px; color: #666; margin-bottom: 20px;">Memuat data konfigurasi cabang...</p>
+            
+            <div class="form-group" style="text-align: left;">
+                <label>Pilih Cabang Anda</label>
+                <select id="login_cabang" class="form-control" required disabled>
+                    <option value="" disabled selected>Menghubungkan ke Sheets...</option>
+                </select>
+            </div>
+            
+            <div class="form-group" style="text-align: left;">
+                <label>PIN Akses Kepala Toko</label>
+                <input type="password" id="login_pin" class="form-control" placeholder="Masukkan PIN" maxlength="6" disabled>
+            </div>
+            
+            <button type="button" id="btn_login" class="btn-submit" onclick="prosesLogin()" style="margin-top: 10px;" disabled>Masuk</button>
         </div>
     </div>
 
-    <!-- --- FORM POP-UP (MODAL) TAMBAH KARYAWAN --- -->
+    <!-- ================= HALAMAN PANEL UTAMA ================= -->
+    <div id="halamanUtama" style="display: none;">
+        <header>
+            <h1>STEAM MP 7000 - PANEL KEPALA TOKO</h1>
+            <p id="subHeaderCabang">Input Rekap Kerja & Manajemen Anggota</p>
+        </header>
+
+        <div class="container">
+            <div class="card">
+                <h2>Form Input Rekap Kerja Karyawan</h2>
+                <form id="formRekapKaryawan" onsubmit="submitRekap(event)">
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Tanggal Transaksi</label>
+                            <input type="date" id="tgl_rekap" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Cabang Operasional</label>
+                            <input type="text" id="cabang_rekap_display" class="form-control" readonly style="background-color: #e0e0e0; font-weight: bold;">
+                            <input type="hidden" id="cabang_rekap">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="label-flex">
+                            <label>Nama Anggota Tim</label>
+                            <button type="button" class="btn-tambah-karyawan" onclick="bukaModalKaryawan()">+ Tambah Karyawan Baru</button>
+                        </div>
+                        <select id="nama_karyawan" class="form-control" required>
+                            <option value="" disabled selected>-- Pilih Personel --</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Jumlah Unit Selesai (Motor/Mobil)</label>
+                        <input type="number" id="unit_karyawan" class="form-control" placeholder="Masukkan total unit harian" min="0" required oninput="hitungTotalPendapatan()">
+                        <div id="badge_target" class="target-badge">🎉 Selamat! Tembus Target Cabang</div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Tips Dari Konsumen (Rp)</label>
+                            <input type="number" id="tips_karyawan" class="form-control" value="0" min="0" oninput="hitungTotalPendapatan()">
+                        </div>
+                        <div class="form-group">
+                            <label>Bonus Tambahan Manual (Rp)</label>
+                            <input type="number" id="bonus_manual" class="form-control" value="0" min="0" oninput="hitungTotalPendapatan()">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Bonus Tembus Target Sistem (Rp)</label>
+                        <input type="text" id="bonus_sistem_display" class="form-control" readonly style="background-color: #fff3e0; color: #e65100; font-weight: bold;" value="Rp 0">
+                        <input type="hidden" id="bonus_sistem" value="0">
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Potongan Kasbon (Rp)</label>
+                            <input type="number" id="kasbon_karyawan" class="form-control" value="0" min="0" oninput="hitungTotalPendapatan()" style="color: var(--error-color);">
+                        </div>
+                        <div class="form-group">
+                            <label>Potongan Iuran WiFi Harian (Rp)</label>
+                            <input type="text" id="wifi_display" class="form-control" readonly value="Rp 1.000" style="color: var(--error-color); font-weight: 500; background-color: #fbe9e7;">
+                        </div>
+                    </div>
+
+                    <div class="info-box">
+                        💡 <b>Ketentuan Keuangan:</b> Tarif Rp 3.000/Unit. <br>
+                        • Setiap input data otomatis dipotong <b>Rp 1.000</b> untuk kas WiFi harian.<br>
+                        • Bonus target Rp 5.000 (Grobogan &ge; 100 unit | Palis & Cayur &ge; 50 unit).
+                    </div>
+
+                    <div class="form-group">
+                        <label>Total Pendapatan Bersih Diterima (Rp)</label>
+                        <input type="text" id="total_bersih_display" class="form-control" readonly style="font-weight: bold; color: var(--success-color); background-color: #e8f5e9;" value="Rp 0">
+                        <input type="hidden" id="total_bersih_karyawan">
+                    </div>
+
+                    <button type="submit" id="btn_submit_rekap" class="btn-submit">Simpan Rekap Kerja</button>
+                </form>
+            </div>
+            <div class="footer-logo">Steam MP 7000 • Profesional & Terstruktur</div>
+        </div>
+    </div>
+
+    <!-- POP-UP TAMBAH KARYAWAN -->
     <div id="modalKaryawan" class="modal">
         <div class="modal-content">
             <h3>Pendaftaran Anggota Baru</h3>
-            <div class="form-group">
+            <div class="form-group" style="margin-top: 10px;">
                 <label>Nama Lengkap Karyawan</label>
                 <input type="text" id="nama_baru_input" class="form-control" placeholder="Contoh: Ahmad Subarjo">
             </div>
@@ -396,17 +181,80 @@
     <div id="statusMessage"></div>
 
     <script>
-        // URL SINKRONISASI AKTIF GSHEET ALDI
-        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyFP_O6JSCXUl7cYLzvZbLvu8OcpRycRd5Z5gqiunJcKljq_9BAvuozyht1kxLiGL88/exec";
+        // MENGGUNAKAN URL WEB APP TERBARU ANDA
+        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyYsIHlIIZTBa5HMTpBzrlbKs0f-2_sbaKKivDni5Fsmy9DjfnqS5ZFCOVwbioi6k6Q/exec";
+        let DB_PIN = {};
 
+        // 1. LOAD DATA DARI GOOGLE SHEETS SAAT HALAMAN DIBUKA
         window.onload = function() {
-            const today = new Date().toISOString().split('T')[0];
-            document.getElementById('tgl_rekap').value = today;
+            fetch(WEB_APP_URL + "?action=getLoginData")
+            .then(res => res.json())
+            .then(data => {
+                DB_PIN = data;
+                const selectCabang = document.getElementById('login_cabang');
+                selectCabang.innerHTML = '<option value="" disabled selected>-- Pilih Cabang --</option>';
+                
+                // Isi dropdown cabang langsung dari tab Pengaturan di Sheets
+                for (let cabang in data) {
+                    let opt = document.createElement('option');
+                    opt.value = cabang;
+                    opt.text = cabang;
+                    selectCabang.add(opt);
+                }
+                
+                // Aktifkan form login setelah data berhasil di-fetch
+                selectCabang.disabled = false;
+                document.getElementById('login_pin').disabled = false;
+                document.getElementById('btn_login').disabled = false;
+                document.querySelector('#halamanLogin p').innerText = "Steam MP 7000 - Terhubung dengan Database";
+            })
+            .catch(err => {
+                console.error(err);
+                alert("Gagal memuat konfigurasi. Pastikan Google Sheets Anda memiliki tab 'Pengaturan' dan Apps Script sudah di-deploy dengan benar sebagai 'Anyone'.");
+            });
         };
 
-        function bukaModalKaryawan() {
-            document.getElementById('modalKaryawan').style.display = 'flex';
+        // 2. PROSES VERIFIKASI LOGIN
+        function prosesLogin() {
+            const cabangSelected = document.getElementById('login_cabang').value;
+            const pinInput = document.getElementById('login_pin').value.trim();
+
+            if (!cabangSelected) { alert("Silakan pilih cabang!"); return; }
+
+            // Validasi PIN berdasarkan database di Sheets
+            if (DB_PIN[cabangSelected] === pinInput) {
+                document.getElementById('halamanLogin').style.display = 'none';
+                document.getElementById('halamanUtama').style.display = 'block';
+                document.getElementById('cabang_rekap').value = cabangSelected;
+                document.getElementById('cabang_rekap_display').value = cabangSelected;
+                document.getElementById('subHeaderCabang').innerText = `Panel Operasional Harian - ${cabangSelected}`;
+                
+                document.getElementById('tgl_rekap').value = new Date().toISOString().split('T')[0];
+                
+                // Ambil daftar karyawan dari tab Master Karyawan di Sheets
+                loadDaftarKaryawan();
+            } else {
+                alert("PIN Akses Salah! Silakan cek kembali isi tab Pengaturan di Sheets Anda.");
+            }
         }
+
+        // 3. LOAD DROPDOWN KARYAWAN DARI TAB MASTER KARYAWAN
+        function loadDaftarKaryawan() {
+            fetch(WEB_APP_URL + "?action=getKaryawan")
+            .then(res => res.json())
+            .then(listKaryawan => {
+                const dropdown = document.getElementById('nama_karyawan');
+                dropdown.innerHTML = '<option value="" disabled selected>-- Pilih Personel --</option>';
+                listKaryawan.forEach(nama => {
+                    let opt = document.createElement('option');
+                    opt.value = nama;
+                    opt.text = nama;
+                    dropdown.add(opt);
+                });
+            });
+        }
+
+        function bukaModalKaryawan() { document.getElementById('modalKaryawan').style.display = 'flex'; }
         function tutupModalKaryawan() {
             document.getElementById('modalKaryawan').style.display = 'none';
             document.getElementById('nama_baru_input').value = '';
@@ -414,12 +262,9 @@
 
         function simpanKaryawanBaru() {
             const namaBaru = document.getElementById('nama_baru_input').value.trim();
-            if (!namaBaru) {
-                alert("Nama karyawan tidak boleh kosong!");
-                return;
-            }
+            if (!namaBaru) { alert("Nama tidak boleh kosong!"); return; }
 
-            showStatus("Sedang mendaftarkan nama karyawan baru...", "loading");
+            showStatus("Mendaftarkan karyawan baru...", "loading");
             tutupModalKaryawan();
 
             let urlParams = new URLSearchParams();
@@ -434,20 +279,15 @@
                 body: urlParams.toString()
             })
             .then(() => {
-                showStatus(`Sukses! ${namaBaru} berhasil didaftarkan.`, "success");
-                
+                showStatus(`Sukses mendaftarkan ${namaBaru}!`, "success");
                 const dropdown = document.getElementById('nama_karyawan');
                 const opsiBaru = document.createElement('option');
                 opsiBaru.value = namaBaru;
-                opsiBaru.text = namaBaru + " (Karyawan Baru)";
+                opsiBaru.text = namaBaru;
                 dropdown.add(opsiBaru);
-                
                 dropdown.value = namaBaru;
             })
-            .catch(error => {
-                console.error("Error:", error);
-                showStatus("Gagal mendaftarkan nama baru. Cek internet.", "error");
-            });
+            .catch(() => showStatus("Gagal menyimpan ke Master Karyawan.", "error"));
         }
 
         function hitungTotalPendapatan() {
@@ -457,89 +297,59 @@
             const bonusManual = parseInt(document.getElementById('bonus_manual').value) || 0;
             const kasbon = parseInt(document.getElementById('kasbon_karyawan').value) || 0;
             
-            const potonganWifi = 1000;
+            const iuranWifi = 1000;
             let bonusSistem = 0;
             let statusTembus = false;
 
-            if (cabang === "Cabang Grobogan" && unit >= 100) {
-                bonusSistem = 5000;
-                statusTembus = true;
-            } else if ((cabang === "Cabang Palis" || cabang === "Cabang Cayur") && unit >= 50) {
-                bonusSistem = 5000;
-                statusTembus = true;
-            }
+            if (cabang === "Cabang Grobogan" && unit >= 100) { bonusSistem = 5000; statusTembus = true; } 
+            else if ((cabang === "Cabang Palis" || cabang === "Cabang Cayur") && unit >= 50) { bonusSistem = 5000; statusTembus = true; }
 
-            const badge = document.getElementById('badge_target');
-            badge.style.display = statusTembus ? 'inline-block' : 'none';
-
+            document.getElementById('badge_target').style.display = statusTembus ? 'inline-block' : 'none';
             document.getElementById('bonus_sistem').value = bonusSistem;
             document.getElementById('bonus_sistem_display').value = "Rp " + bonusSistem.toLocaleString('id-ID');
 
-            const totalBonusSemua = bonusManual + bonusSistem;
-            const tarifPerUnit = 3000;
-            const pendapatanUnit = unit * tarifPerUnit;
-            
-            const totalBersih = (pendapatanUnit + tips + totalBonusSemua) - kasbon - potonganWifi;
-            
+            const totalBersih = ((unit * 3000) + tips + bonusManual + bonusSistem) - kasbon - iuranWifi;
             document.getElementById('total_bersih_karyawan').value = totalBersih;
             document.getElementById('total_bersih_display').value = "Rp " + totalBersih.toLocaleString('id-ID');
         }
 
         function showStatus(text, type) {
             const msgBox = document.getElementById('statusMessage');
-            msgBox.innerText = text;
-            msgBox.className = ''; 
+            msgBox.innerText = text; msgBox.className = ''; 
             if(type === 'success') msgBox.classList.add('status-success');
             else if(type === 'error') msgBox.classList.add('status-error');
             else if(type === 'loading') msgBox.classList.add('status-loading');
             msgBox.style.display = 'block';
-            if(type !== 'loading') {
-                setTimeout(() => { msgBox.style.display = 'none'; }, 4000);
-            }
+            if(type !== 'loading') { setTimeout(() => { msgBox.style.display = 'none'; }, 4000); }
         }
 
         function submitRekap(event) {
             event.preventDefault();
             const btnSubmit = document.getElementById('btn_submit_rekap');
             let urlParams = new URLSearchParams();
-            
-            const formatTglLokal = (tglStr) => {
-                if(!tglStr) return "";
-                const d = new Date(tglStr);
-                return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth()+1).padStart(2, '0')}/${d.getFullYear()}`;
-            };
-
-            showStatus("Sedang mengunggah data rekap ke Google Sheets...", "loading");
             btnSubmit.disabled = true;
+            showStatus("Mengunggah rekap harian ke Sheets...", "loading");
 
             const rawDate = document.getElementById('tgl_rekap').value;
-            const bManual = parseInt(document.getElementById('bonus_manual').value) || 0;
-            const bSistem = parseInt(document.getElementById('bonus_sistem').value) || 0;
-            const totalBonusDiterima = bManual + bSistem;
+            const d = new Date(rawDate);
+            const tglFormat = `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth()+1).padStart(2, '0')}/${d.getFullYear()}`;
 
             urlParams.append("action", "insertRow");
             urlParams.append("tipe", "Rekap Karyawan"); 
-            urlParams.append("tanggal", formatTglLokal(rawDate));
+            urlParams.append("tanggal", tglFormat);
             urlParams.append("cabang", document.getElementById('cabang_rekap').value);
             urlParams.append("karyawan", document.getElementById('nama_karyawan').value);
             urlParams.append("unit", document.getElementById('unit_karyawan').value || "0");
             urlParams.append("tips", document.getElementById('tips_karyawan').value || "0");
-            urlParams.append("bonus", totalBonusDiterima.toString());
+            urlParams.append("bonus", (parseInt(document.getElementById('bonus_manual').value || 0) + parseInt(document.getElementById('bonus_sistem').value || 0)).toString());
             urlParams.append("kasbon", document.getElementById('kasbon_karyawan').value || "0");
             urlParams.append("potongan_wifi", "1000");
             urlParams.append("nominal_bersih", document.getElementById('total_bersih_karyawan').value || "0");
-            urlParams.append("tanggal_asli", rawDate);
 
-            fetch(WEB_APP_URL, {
-                method: "POST",
-                mode: "no-cors",
-                headers: { "Content-Type": "application/x-www-form-urlencoded" },
-                body: urlParams.toString()
-            })
+            fetch(WEB_APP_URL, { method: "POST", mode: "no-cors", body: urlParams.toString() })
             .then(() => {
-                showStatus("Data Rekap Kerja Berhasil Disimpan!", "success");
-                document.getElementById('formRekapKaryawan').reset();
-                
+                showStatus("Rekap Kerja Berhasil Disimpan!", "success");
+                document.getElementById('unit_karyawan').value = '';
                 document.getElementById('tips_karyawan').value = "0";
                 document.getElementById('bonus_manual').value = "0";
                 document.getElementById('bonus_sistem').value = "0";
@@ -547,16 +357,9 @@
                 document.getElementById('kasbon_karyawan').value = "0";
                 document.getElementById('total_bersih_display').value = "Rp 0";
                 document.getElementById('badge_target').style.display = 'none';
-                
-                const today = new Date().toISOString().split('T')[0];
-                document.getElementById('tgl_rekap').value = today;
                 btnSubmit.disabled = false;
             })
-            .catch(error => {
-                console.error("Error:", error);
-                showStatus("Gagal mengirim data. Cek koneksi internet.", "error");
-                btnSubmit.disabled = false;
-            });
+            .catch(() => { showStatus("Gagal mengirim data. Cek koneksi.", "error"); btnSubmit.disabled = false; });
         }
     </script>
 </body>
