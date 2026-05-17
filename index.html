@@ -181,11 +181,11 @@
     <div id="statusMessage"></div>
 
     <script>
-        // MENGGUNAKAN URL WEB APP TERBARU ANDA
-        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyYsIHlIIZTBa5HMTpBzrlbKs0f-2_sbaKKivDni5Fsmy9DjfnqS5ZFCOVwbioi6k6Q/exec";
+        // MENGGUNAKAN URL SUKSES TERBARU ANDA
+        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycby8zceNMvSfy0EQlDIODdcu8wxpcgymy5a9Lr2Pkh6qA-vbNKQUyAn153haifbNDhMm/exec";
         let DB_PIN = {};
 
-        // 1. LOAD DATA DARI GOOGLE SHEETS SAAT HALAMAN DIBUKA
+        // 1. LOAD DATA CABANG & PIN SAAT HALAMAN DIBUKA
         window.onload = function() {
             fetch(WEB_APP_URL + "?action=getLoginData")
             .then(res => res.json())
@@ -194,7 +194,6 @@
                 const selectCabang = document.getElementById('login_cabang');
                 selectCabang.innerHTML = '<option value="" disabled selected>-- Pilih Cabang --</option>';
                 
-                // Isi dropdown cabang langsung dari tab Pengaturan di Sheets
                 for (let cabang in data) {
                     let opt = document.createElement('option');
                     opt.value = cabang;
@@ -202,7 +201,7 @@
                     selectCabang.add(opt);
                 }
                 
-                // Aktifkan form login setelah data berhasil di-fetch
+                // Aktifkan form setelah data termuat sempurna
                 selectCabang.disabled = false;
                 document.getElementById('login_pin').disabled = false;
                 document.getElementById('btn_login').disabled = false;
@@ -210,18 +209,17 @@
             })
             .catch(err => {
                 console.error(err);
-                alert("Gagal memuat konfigurasi. Pastikan Google Sheets Anda memiliki tab 'Pengaturan' dan Apps Script sudah di-deploy dengan benar sebagai 'Anyone'.");
+                alert("Gagal sinkronisasi data. Pastikan sheet 'Pengaturan' sudah diisi.");
             });
         };
 
-        // 2. PROSES VERIFIKASI LOGIN
+        // 2. VERIFIKASI LOGIN KEPALA TOKO
         function prosesLogin() {
             const cabangSelected = document.getElementById('login_cabang').value;
             const pinInput = document.getElementById('login_pin').value.trim();
 
             if (!cabangSelected) { alert("Silakan pilih cabang!"); return; }
 
-            // Validasi PIN berdasarkan database di Sheets
             if (DB_PIN[cabangSelected] === pinInput) {
                 document.getElementById('halamanLogin').style.display = 'none';
                 document.getElementById('halamanUtama').style.display = 'block';
@@ -231,14 +229,14 @@
                 
                 document.getElementById('tgl_rekap').value = new Date().toISOString().split('T')[0];
                 
-                // Ambil daftar karyawan dari tab Master Karyawan di Sheets
+                // Muat daftar karyawan dari sheet Master Karyawan
                 loadDaftarKaryawan();
             } else {
-                alert("PIN Akses Salah! Silakan cek kembali isi tab Pengaturan di Sheets Anda.");
+                alert("PIN Akses Salah!");
             }
         }
 
-        // 3. LOAD DROPDOWN KARYAWAN DARI TAB MASTER KARYAWAN
+        // 3. AMBIL DAFTAR KARYAWAN DARI GOOGLE SHEETS
         function loadDaftarKaryawan() {
             fetch(WEB_APP_URL + "?action=getKaryawan")
             .then(res => res.json())
@@ -287,7 +285,7 @@
                 dropdown.add(opsiBaru);
                 dropdown.value = namaBaru;
             })
-            .catch(() => showStatus("Gagal menyimpan ke Master Karyawan.", "error"));
+            .catch(() => showStatus("Gagal menyimpan.", "error"));
         }
 
         function hitungTotalPendapatan() {
@@ -328,7 +326,7 @@
             const btnSubmit = document.getElementById('btn_submit_rekap');
             let urlParams = new URLSearchParams();
             btnSubmit.disabled = true;
-            showStatus("Mengunggah rekap harian ke Sheets...", "loading");
+            showStatus("Mengunggah rekap harian...", "loading");
 
             const rawDate = document.getElementById('tgl_rekap').value;
             const d = new Date(rawDate);
@@ -359,7 +357,7 @@
                 document.getElementById('badge_target').style.display = 'none';
                 btnSubmit.disabled = false;
             })
-            .catch(() => { showStatus("Gagal mengirim data. Cek koneksi.", "error"); btnSubmit.disabled = false; });
+            .catch(() => { showStatus("Gagal mengirim.", "error"); btnSubmit.disabled = false; });
         }
     </script>
 </body>
