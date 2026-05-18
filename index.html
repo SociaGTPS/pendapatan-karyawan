@@ -1,503 +1,549 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sistem Manajemen Cabang & Rekap Harian</title>
-  <!-- Menggunakan Tailwind CSS CDN untuk desain modern & responsif -->
-  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-  <!-- Menggunakan Font Awesome untuk ikon -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <style>
-    .border-gold { border-color: #D4AF37 !important; }
-    .text-gold { color: #D4AF37 !important; }
-    .bg-gold { background-color: #D4AF37 !important; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Manajemen Toko</title>
+    <style>
+        :root {
+            --bg-color: #0d0d0d;
+            --card-bg: #141414;
+            --accent-color: #ff3333;
+            --text-color: #ffffff;
+            --text-muted: #888888;
+            --success-color: #00ff66;
+            --warning-color: #ffcc00;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 500px;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+            border: 1px solid #222;
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            font-size: 20px;
+            margin-bottom: 20px;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-color);
+            border-left: 4px solid var(--accent-color);
+            padding-left: 8px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        label {
+            display: block;
+            font-size: 12px;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+            letter-spacing: 0.5px;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            background-color: #080808;
+            border: 1px solid #333;
+            border-radius: 6px;
+            color: white;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 8px rgba(255, 51, 51, 0.2);
+        }
+
+        input[disabled] {
+            background-color: #1a1a1a;
+            color: var(--text-muted);
+            cursor: not-allowed;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            background-color: var(--accent-color);
+            border: none;
+            border-radius: 6px;
+            color: white;
+            font-weight: bold;
+            font-size: 14px;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .btn:hover {
+            background-color: #e02e2e;
+            box-shadow: 0 4px 12px rgba(255, 51, 51, 0.3);
+        }
+
+        .btn:disabled {
+            background-color: #555;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        .nav-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 12px;
+            background-color: #141414;
+            border: 1px solid #222;
+            color: var(--text-muted);
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 12px;
+            text-transform: uppercase;
+            transition: all 0.3s ease;
+        }
+
+        .tab-btn.active {
+            background-color: var(--accent-color);
+            color: white;
+            border-color: var(--accent-color);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        #statusMessage {
+            padding: 12px;
+            border-radius: 6px;
+            text-align: center;
+            font-size: 13px;
+            margin-bottom: 16px;
+            display: none;
+            font-weight: 500;
+        }
+
+        .status-success { background-color: rgba(0, 255, 102, 0.1); color: var(--success-color); border: 1px solid var(--success-color); }
+        .status-error { background-color: rgba(255, 51, 51, 0.1); color: var(--accent-color); border: 1px solid var(--accent-color); }
+        .status-loading { background-color: rgba(255, 204, 0, 0.1); color: var(--warning-color); border: 1px solid var(--warning-color); }
+
+        .auth-footer {
+            text-align: center;
+            margin-top: 16px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .auth-footer a {
+            color: var(--accent-color);
+            text-decoration: none;
+            font-weight: bold;
+        }
+    </style>
 </head>
-<body class="bg-gradient-to-br from-red-600 via-red-500 to-white font-sans min-h-screen flex flex-col justify-between">
+<body>
 
-  <!-- URL Web App Apps Script & Link Google Sheets -->
-  <script>
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxWBYtbeBe3-xH3R80axowIeVbI8n6fc-x3qwTbZammMY3dpsAOYR2y9DcD6R5AURaI/exec";
-    // Link Google Sheets resmi milik Steam MP 7000:
-    const GSHEET_VIEW_URL = "https://docs.google.com/spreadsheets/d/1Slh_aLbYhN7C5QCPWXhF6sJfTSapfbscwze1RRCgZFQ/edit?usp=sharing"; 
-    
-    let CURRENT_CABANG = "";
-    let LOGIN_DATA = {};
+    <div class="container">
+        <div id="statusMessage"></div>
 
-    // Ketentuan Target Unit Per Cabang
-    const TARGET_CABANG = {
-      "Grobogan": 100,
-      "Palis": 50,
-      "Cayur": 50
-    };
-  </script>
+        <div id="gerbangAuth">
+            <div id="boxLogin" class="card">
+                <h2>MASUK SISTEM</h2>
+                <form id="formLogin" onsubmit="handleAuth(event, 'loginUser')">
+                    <div class="form-group">
+                        <label>ID KARYAWAN</label>
+                        <input type="text" id="login_user" placeholder="Contoh: EMP-001" required>
+                    </div>
+                    <div class="form-group">
+                        <label>KATA SANDI</label>
+                        <input type="password" id="login_sandi" placeholder="Masukkan Sandi Anda" required>
+                    </div>
+                    <button type="submit" id="btn_login" class="btn">MASUK</button>
+                </form>
+                <div class="auth-footer">
+                    Karyawan Baru? <a href="#" onclick="tukarAuth('daftar')">Daftar Di Sini</a>
+                </div>
+            </div>
 
-  <!-- ================= LOADING SCREEN ================= -->
-  <div id="loadingScreen" class="fixed inset-0 bg-gray-900/70 backdrop-blur-sm flex flex-col justify-center items-center z-50">
-    <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-red-600"></div>
-    <p class="text-white mt-4 font-semibold text-lg" id="loadingText">Memuat sistem, mohon tunggu...</p>
-  </div>
+            <div id="boxDaftar" class="card" style="display: none;">
+                <h2>DAFTAR KARYAWAN</h2>
+                <form id="formDaftar" onsubmit="handleAuth(event, 'registerUser')">
+                    <div class="form-group">
+                        <label>NAMA LENGKAP KARYAWAN</label>
+                        <input type="text" id="reg_nama" placeholder="Masukkan Nama Sesuai KTP" required>
+                    </div>
+                    <button type="submit" id="btn_daftar" class="btn">DAFTARKAN</button>
+                </form>
+                <div class="auth-footer">
+                    Sudah Punya ID? <a href="#" onclick="tukarAuth('login')">Masuk Di Sini</a>
+                </div>
+            </div>
+        </div>
 
-  <!-- ================= NOTIFIKASI TOAST ================= -->
-  <div id="toast" class="fixed top-5 right-5 max-w-sm w-full bg-white rounded-xl shadow-2xl border-l-4 p-4 hidden z-50 transition-all duration-300 transform translate-y-[-20px]">
-    <div class="flex items-center">
-      <div id="toastIcon" class="text-xl mr-3"></div>
-      <div id="toastMessage" class="text-gray-700 font-bold text-sm"></div>
+        <div id="halamanUtama" style="display: none;">
+            <div class="nav-tabs">
+                <button class="tab-btn active" onclick="switchTab('input-pemasukan')">Pemasukan</button>
+                <button class="tab-btn" onclick="switchTab('input-pengeluaran')">Pengeluaran</button>
+            </div>
+
+            <div id="input-pemasukan" class="tab-content active">
+                <div class="card">
+                    <h2>INPUT PEMASUKAN UNIT</h2>
+                    <form id="formPemasukan" onsubmit="submitData(event, 'Pemasukan')">
+                        <div class="form-group">
+                            <label>Tanggal</label>
+                            <input type="date" id="tgl_pemasukan" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Cabang</label>
+                            <select id="cabang_pemasukan" required>
+                                <option value="Sukamulya 2">Sukamulya 2</option>
+                                <option value="Sukamulya 4">Sukamulya 4</option>
+                                <option value="Kresek 1">Kresek 1</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Jumlah Unit (Motor)</label>
+                            <input type="number" id="unit_pemasukan" placeholder="0" oninput="hitungKotor()" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Total Nominal Terhitung</label>
+                            <input type="hidden" id="nominal_pemasukan">
+                            <input type="text" id="nominal_pemasukan_display" value="Rp 0" disabled>
+                        </div>
+                        <div class="form-group">
+                            <label>Keterangan Tambahan</label>
+                            <textarea id="ket_pemasukan" rows="2" placeholder="Catatan operasional..."></textarea>
+                        </div>
+                        <button type="submit" id="btn_submit_pemasukan" class="btn">SIMPAN DATA</button>
+                    </form>
+                </div>
+            </div>
+
+            <div id="input-pengeluaran" class="tab-content">
+                <div class="card">
+                    <h2>INPUT PENGELUARAN TOKO</h2>
+                    <form id="formPengeluaran" onsubmit="submitData(event, 'Pengeluaran')">
+                        <div class="form-group">
+                            <label>Tanggal</label>
+                            <input type="date" id="tgl_pengeluaran" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Cabang</label>
+                            <select id="cabang_pengeluaran" required>
+                                <option value="Sukamulya 2">Sukamulya 2</option>
+                                <option value="Sukamulya 4">Sukamulya 4</option>
+                                <option value="Kresek 1">Kresek 1</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Kategori Pengeluaran</label>
+                            <select id="kategori_pengeluaran" required>
+                                <option value="Beli Sabun / Semir">Beli Sabun / Semir</option>
+                                <option value="Listrik / Air">Listrik / Air</option>
+                                <option value="Maintenance Alat">Maintenance Alat</option>
+                                <option value="Lain-lain">Lain-lain</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Nominal Pengeluaran (Rp)</label>
+                            <input type="number" id="nominal_pengeluaran" placeholder="Contoh: 50000" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Keterangan Pengeluaran</label>
+                            <textarea id="ket_pengeluaran" rows="2" placeholder="Detail barang yang dibeli..." required></textarea>
+                        </div>
+                        <button type="submit" id="btn_submit_pengeluaran" class="btn">SIMPAN PENGELUARAN</button>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
-  </div>
 
-  <!-- ================= 1. HALAMAN LOGIN ================= -->
-  <div id="pageLogin" class="flex-grow flex items-center justify-center p-4">
-    <div class="bg-white/95 backdrop-blur p-8 rounded-2xl shadow-2xl w-full max-w-md border-2 border-gold relative overflow-hidden">
-      <div class="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-red-700 via-red-500 to-red-700"></div>
-      
-      <div class="text-center mb-8 mt-2">
-        <div class="bg-gradient-to-br from-red-600 to-red-700 text-white w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4 text-2xl shadow-md border border-gold">
-          <i class="fa-solid fa-store text-amber-300"></i>
-        </div>
-        <h2 class="text-2xl font-black text-gray-800 uppercase tracking-tight">Login Cabang</h2>
-        <p class="text-gray-500 text-xs font-semibold mt-1">Silakan masukkan akses kredensial Anda</p>
-      </div>
+    <script>
+        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxWBYtbeBe3-xH3R80axowIeVbI8n6fc-x3qwTbZammMY3dpsAOYR2y9DcD6R5AURaI/exec";
 
-      <form id="formLogin" onsubmit="handleLogin(event)">
-        <div class="mb-5">
-          <label class="block text-gray-700 text-xs font-bold uppercase tracking-wider mb-2"><i class="fa-solid fa-map-location-dot mr-2 text-red-600"></i>Pilih Cabang</label>
-          <select id="loginCabang" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none transition bg-gray-50 font-bold text-gray-700" required>
-            <option value="" disabled selected>-- Pilih Cabang --</option>
-          </select>
-        </div>
+        window.onload = function() {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('tgl_pemasukan').value = today;
+            document.getElementById('tgl_pengeluaran').value = today;
+        };
 
-        <div class="mb-6">
-          <label class="block text-gray-700 text-xs font-bold uppercase tracking-wider mb-2"><i class="fa-solid fa-key mr-2 text-red-600"></i>PIN Akses</label>
-          <input type="password" id="loginPin" inputmode="numeric" pattern="[0-9]*" placeholder="Masukkan PIN" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none transition bg-gray-50 tracking-widest text-center text-lg font-black text-gray-800" required>
-        </div>
-
-        <button type="submit" class="w-full bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white font-black py-3.5 px-4 rounded-xl transition duration-200 transform active:scale-95 shadow-md border-b-4 border-red-900 flex justify-center items-center gap-2">
-          <i class="fa-solid fa-right-to-bracket text-amber-300"></i> MASUK APLIKASI
-        </button>
-      </form>
-    </div>
-  </div>
-
-  <!-- ================= 2. HALAMAN UTAMA (DASHBOARD) ================= -->
-  <div id="pageDashboard" class="hidden flex-grow flex flex-col bg-gray-50">
-    <nav class="bg-gradient-to-r from-red-700 via-red-600 to-red-800 shadow-md px-6 py-4 flex justify-between items-center border-b-4 border-gold">
-      <div class="flex items-center gap-3">
-        <div class="bg-white text-red-600 p-2 rounded-xl text-lg font-bold shadow-inner border border-gold"><i class="fa-solid fa-chart-line"></i></div>
-        <div>
-          <h1 class="font-black text-white text-lg tracking-wide leading-tight">PANEL REKAP HARIAN</h1>
-          <p id="displayCabang" class="text-xs text-amber-300 font-bold uppercase tracking-widest"></p>
-        </div>
-      </div>
-      <button onclick="handleLogout()" class="text-white hover:text-amber-300 p-2.5 rounded-xl bg-red-800/50 hover:bg-red-900 border border-red-500/30 transition shadow-sm" title="Keluar">
-        <i class="fa-solid fa-power-off text-md"></i>
-      </button>
-    </nav>
-
-    <div class="p-4 max-w-4xl w-full mx-auto flex-grow">
-      <div class="grid grid-cols-2 gap-3 mb-6 bg-white p-2 rounded-2xl shadow-md border border-gray-200">
-        <button id="btnTabRekap" onclick="switchTab('rekap')" class="py-3 px-4 rounded-xl font-black text-xs uppercase tracking-wider transition-all duration-200 flex justify-center items-center gap-2 bg-gradient-to-r from-red-600 to-red-700 text-white shadow-md border-b-2 border-red-900">
-          <i class="fa-solid fa-file-invoice-dollar text-amber-300"></i> Rekap Harian
-        </button>
-        <button id="btnTabKaryawan" onclick="switchTab('karyawan')" class="py-3 px-4 rounded-xl font-black text-xs uppercase tracking-wider transition-all duration-200 flex justify-center items-center gap-2 text-gray-600 hover:bg-gray-100">
-          <i class="fa-solid fa-user-plus text-red-600"></i> Karyawan Baru
-        </button>
-      </div>
-
-      <!-- FORM A: INPUT REKAP KARYAWAN -->
-      <div id="tabRekap" class="bg-white p-6 rounded-2xl shadow-xl border-2 border-gold transition-all relative">
-        <h3 class="text-md font-black text-gray-800 uppercase tracking-wider mb-5 flex items-center gap-2 border-b pb-3 border-gray-100">
-          <i class="fa-solid fa-file-pen text-red-600"></i> Input Rekap Kerja Harian
-        </h3>
-        
-        <form id="formRekap" onsubmit="submitRekap(event)">
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-            <div>
-              <label class="block text-gray-700 text-xs font-bold uppercase tracking-wider mb-2">Tanggal Rekap</label>
-              <input type="date" id="rekapTanggal" class="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-red-500 outline-none font-semibold text-gray-700" required>
-            </div>
-            <div>
-              <label class="block text-gray-700 text-xs font-bold uppercase tracking-wider mb-2">Pilih Personel</label>
-              <select id="rekapKaryawan" onchange="hitungBersih()" class="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-red-500 outline-none bg-gray-50 font-bold text-gray-700" required>
-                <option value="" disabled selected>-- Pilih Karyawan --</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-4">
-            <div>
-              <label class="block text-gray-700 text-xs font-bold uppercase tracking-wider mb-2">Jumlah Unit</label>
-              <input type="number" id="rekapUnit" oninput="hitungBersih()" min="0" placeholder="0" class="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-red-500 outline-none font-bold text-gray-800" required>
-            </div>
-            <div>
-              <label class="block text-gray-700 text-xs font-bold uppercase tracking-wider mb-2">Tips Pelanggan</label>
-              <input type="number" id="rekapTips" oninput="hitungBersih()" min="0" placeholder="0" class="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-red-500 outline-none font-bold text-gray-800">
-            </div>
-            <div>
-              <label class="block text-gray-700 text-xs font-bold uppercase tracking-wider mb-2">Kasbon</label>
-              <input type="number" id="rekapKasbon" oninput="hitungBersih()" min="0" placeholder="0" class="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-red-500 outline-none font-bold text-gray-800">
-            </div>
-            <div>
-              <label class="block text-gray-700 text-xs font-bold uppercase tracking-wider mb-2">Potongan Wifi</label>
-              <input type="number" id="rekapWifi" value="1000" disabled class="w-full px-4 py-2.5 border border-gray-200 rounded-xl bg-gray-100 font-bold text-gray-400 cursor-not-allowed outline-none">
-            </div>
-          </div>
-
-          <!-- STATUS DETEKSI TARGET OTOMATIS BERDASARKAN CABANG -->
-          <div id="statusTargetBox" class="mb-5 bg-gray-100 border border-gray-300 p-3 rounded-xl flex items-center justify-between transition-all duration-200">
-            <span class="text-xs font-black text-gray-600 uppercase tracking-wider">
-              <i class="fa-solid fa-flag-checkered mr-1"></i> Status Target Cabang:
-            </span>
-            <span id="txtStatusTarget" class="text-xs font-black uppercase tracking-wider text-gray-500">Belum Terpenuhi</span>
-          </div>
-
-          <!-- KOTAK ESTIMASI TOTAL BERSIH PREMIUM EMAS -->
-          <div class="bg-gradient-to-br from-amber-50 to-orange-50 border-2 border-gold rounded-2xl p-4 mb-4 flex justify-between items-center shadow-md">
-            <div>
-              <span class="text-xs font-black text-amber-900 uppercase tracking-wider block">Estimasi Nominal Bersih</span>
-              <span class="text-gray-500 text-[10px] font-bold uppercase tracking-wide">Sistem Otomatis</span>
-            </div>
-            <div class="text-red-700 font-black text-2xl tracking-wide" id="txtNominalBersih">Rp 0</div>
-          </div>
-
-          <!-- TOMBOL AKSES GOOGLE SHEETS UNTUK SEMUA KARYAWAN -->
-          <div class="mb-6">
-            <a id="btnLinkGSheet" href="https://docs.google.com/spreadsheets/d/1Slh_aLbYhN7C5QCPWXhF6sJfTSapfbscwze1RRCgZFQ/edit?usp=sharing" target="_blank" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-black py-3 px-4 rounded-xl transition duration-200 flex justify-center items-center gap-2 text-xs uppercase tracking-widest shadow-md border-b-4 border-emerald-900">
-              <i class="fa-solid fa-table text-amber-300 text-sm"></i> Lihat Hasil Rekap & Gaji Pusat
-            </a>
-          </div>
-
-          <button type="submit" class="w-full bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white font-black py-3.5 px-4 rounded-xl transition duration-200 shadow-lg border-b-4 border-red-900 flex justify-center items-center gap-2 tracking-wider text-sm">
-            <i class="fa-solid fa-cloud-arrow-up text-amber-300"></i> SIMPAN REKAP KERJA
-          </button>
-        </form>
-      </div>
-
-      <!-- FORM B: TAMBAH KARYAWAN BARU -->
-      <div id="tabKaryawan" class="bg-white p-6 rounded-2xl shadow-xl border-2 border-gold hidden transition-all">
-        <h3 class="text-md font-black text-gray-800 uppercase tracking-wider mb-5 flex items-center gap-2 border-b pb-3 border-gray-100">
-          <i class="fa-solid fa-user-plus text-red-600"></i> Daftarkan Karyawan Baru
-        </h3>
-
-        <form id="formKaryawan" onsubmit="submitKaryawan(event)">
-          <div class="mb-4">
-            <label class="block text-gray-700 text-xs font-bold uppercase tracking-wider mb-2">Nama Lengkap Personel</label>
-            <input type="text" id="masterNama" placeholder="Contoh: Andi Pratama" class="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-red-500 outline-none font-semibold text-gray-800" required>
-          </div>
-
-          <div class="mb-6">
-            <label class="block text-gray-700 text-xs font-bold uppercase tracking-wider mb-2">Jabatan / Posisi</label>
-            <select id="masterJabatan" class="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-red-500 outline-none bg-gray-50 text-gray-800 font-bold">
-              <option value="">Karyawan Biasa</option>
-              <option value="Kepala Toko">Kepala Toko</option>
-            </select>
-          </div>
-
-          <button type="submit" class="w-full bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white font-black py-3.5 px-4 rounded-xl transition duration-200 shadow-lg border-b-4 border-red-900 flex justify-center items-center gap-2 tracking-wider text-sm">
-            <i class="fa-solid fa-user-check text-amber-300"></i> DAFTARKAN KE MASTER DATA
-          </button>
-        </form>
-      </div>
-    </div>
-  </div>
-
-  <footer class="bg-white border-t-2 border-gold text-center py-3.5 text-[10px] text-gray-500 font-bold uppercase tracking-widest">
-    &copy; 2026 Steam MP 7000. All Rights Reserved.
-  </footer>
-
-  <!-- ================= LOGIKA JAVASCRIPT ================= -->
-  <script>
-    document.getElementById('rekapTanggal').valueAsDate = new Date();
-
-    window.addEventListener('DOMContentLoaded', () => { initApp(); });
-
-    function showToast(message, type = "success") {
-      const toast = document.getElementById('toast');
-      const icon = document.getElementById('toastIcon');
-      const msg = document.getElementById('toastMessage');
-
-      msg.innerText = message;
-      toast.classList.remove('hidden', 'border-emerald-500', 'border-red-600');
-
-      if (type === "success") {
-        toast.classList.add('border-emerald-500');
-        icon.innerHTML = '<i class="fa-solid fa-circle-check text-emerald-500"></i>';
-      } else {
-        toast.classList.add('border-red-600');
-        icon.innerHTML = '<i class="fa-solid fa-circle-xmark text-red-600"></i>';
-      }
-
-      toast.style.transform = "translateY(0)";
-      setTimeout(() => {
-        toast.style.transform = "translateY(-20px)";
-        toast.classList.add('hidden');
-      }, 4000);
-    }
-
-    function initApp() {
-      toggleLoading(true, "Menghubungkan ke database pusat...");
-      fetch(`${WEB_APP_URL}?action=getLoginData`)
-        .then(response => response.json())
-        .then(data => {
-          LOGIN_DATA = data;
-          const selectCabang = document.getElementById('loginCabang');
-          selectCabang.innerHTML = '<option value="" disabled selected>-- Pilih Cabang --</option>';
-          
-          Object.keys(data).forEach(cabang => {
-            let opt = document.createElement('option');
-            opt.value = cabang;
-            opt.innerText = cabang;
-            selectCabang.appendChild(opt);
-          });
-          // Kunci link asli langsung di sini agar tidak hilang
-          document.getElementById('btnLinkGSheet').href = GSHEET_VIEW_URL;
-          toggleLoading(false);
-        })
-        .catch(err => {
-          console.error(err);
-          // Tetap pasang link darurat jika fetch error
-          document.getElementById('btnLinkGSheet').href = GSHEET_VIEW_URL;
-          toggleLoading(false);
-          showToast("Gagal memuat konfigurasi cabang. Periksa koneksi internet!", "error");
-        });
-    }
-
-    function loadKaryawanDropdown() {
-      const selectKaryawan = document.getElementById('rekapKaryawan');
-      selectKaryawan.innerHTML = '<option value="" disabled selected>Memuat nama personel...</option>';
-
-      fetch(`${WEB_APP_URL}?action=getKaryawan`)
-        .then(response => response.json())
-        .then(list => {
-          selectKaryawan.innerHTML = '<option value="" disabled selected>-- Pilih Karyawan --</option>';
-          list.forEach(karyawan => {
-            let opt = document.createElement('option');
-            opt.value = karyawan;
-            opt.innerText = karyawan;
-            selectKaryawan.appendChild(opt);
-          });
-        })
-        .catch(err => {
-          console.error(err);
-          showToast("Gagal memuat daftar master karyawan.", "error");
-        });
-    }
-
-    function toggleLoading(show, text = "") {
-      const loader = document.getElementById('loadingScreen');
-      if (text) document.getElementById('loadingText').innerText = text;
-      if (show) loader.classList.remove('hidden'); else loader.classList.add('hidden');
-    }
-
-    function handleLogin(event) {
-      event.preventDefault();
-      const cabang = document.getElementById('loginCabang').value;
-      const pinInput = document.getElementById('loginPin').value;
-
-      if (!cabang || !pinInput) {
-        showToast("Pilih Cabang dan masukkan PIN dengan lengkap!", "error");
-        return;
-      }
-
-      if (LOGIN_DATA[cabang] && LOGIN_DATA[cabang] === pinInput) {
-        CURRENT_CABANG = cabang;
-        document.getElementById('displayCabang').innerText = `Cabang: ${cabang}`;
-        
-        document.getElementById('pageLogin').classList.add('hidden');
-        document.getElementById('pageDashboard').classList.remove('hidden');
-        document.body.className = "bg-gray-100 font-sans min-h-screen flex flex-col justify-between";
-        
-        showToast(`Selamat datang di panel sistem ${cabang}!`, "success");
-        loadKaryawanDropdown();
-      } else {
-        showToast("PIN Akses yang Anda masukkan salah!", "error");
-      }
-    }
-
-    function handleLogout() {
-      CURRENT_CABANG = "";
-      document.getElementById('loginPin').value = "";
-      document.getElementById('pageDashboard').classList.add('hidden');
-      document.getElementById('pageLogin').classList.remove('hidden');
-      document.body.className = "bg-gradient-to-br from-red-600 via-red-500 to-white font-sans min-h-screen flex flex-col justify-between";
-      showToast("Berhasil keluar dari sistem.", "success");
-    }
-
-    function getKeywordCabang() {
-      if(!CURRENT_CABANG) return "";
-      for (let key in TARGET_CABANG) {
-        if (CURRENT_CABANG.toLowerCase().includes(key.toLowerCase())) {
-          return key;
+        function tukarAuth(pilihan) {
+            if (pilihan === 'daftar') {
+                document.getElementById('boxLogin').style.display = 'none';
+                document.getElementById('boxDaftar').style.display = 'block';
+            } else {
+                document.getElementById('boxDaftar').style.display = 'none';
+                document.getElementById('boxLogin').style.display = 'block';
+            }
         }
-      }
-      return "";
-    }
 
-    function hitungBersih() {
-      const unit = parseInt(document.getElementById('rekapUnit').value) || 0;
-      const tips = parseInt(document.getElementById('rekapTips').value) || 0;
-      const kasbon = parseInt(document.getElementById('rekapKasbon').value) || 0;
-      const wifi = 1000;
+        // HANDLING LOGIN & PENDAFTARAN KARYAWAN (ID OTOMATIS)
+        function handleAuth(event, tipeAksi) {
+            event.preventDefault();
+            let prm = new URLSearchParams();
+            prm.append("action", tipeAksi);
 
-      const komisiUnit = unit * 3000; 
+            if (tipeAksi === 'loginUser') {
+                document.getElementById('btn_login').disabled = true;
+                showStatus("Memeriksa ID & Akses...", "loading");
+                prm.append("username", document.getElementById('login_user').value); // ID Karyawan (EMP-XXX)
+                prm.append("sandi", document.getElementById('login_sandi').value);
+            } else {
+                document.getElementById('btn_daftar').disabled = true;
+                showStatus("Mendaftarkan karyawan baru...", "loading");
+                prm.append("nama", document.getElementById('reg_nama').value);
+                prm.append("username", "AUTO_GENERATE");
+                prm.append("sandi", "PENDING_OWNER");
+            }
 
-      let isTembusTarget = false;
-      let targetUnitDibutuhkan = 0;
-      const keyCabang = getKeywordCabang();
-
-      if (keyCabang && TARGET_CABANG[keyCabang]) {
-        targetUnitDibutuhkan = TARGET_CABANG[keyCabang];
-        if (unit >= targetUnitDibutuhkan) {
-          isTembusTarget = true;
+            fetch(WEB_APP_URL, {
+                method: "POST",
+                mode: "no-cors",
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body: prm.toString()
+            })
+            .then(() => {
+                setTimeout(() => {
+                    if (tipeAksi === 'loginUser') {
+                        var cekUrl = WEB_APP_URL + "?action=loginUser&username=" + encodeURIComponent(document.getElementById('login_user').value) + "&sandi=" + encodeURIComponent(document.getElementById('login_sandi').value);
+                        fetch(cekUrl).then(res => res.json()).then(resData => {
+                            document.getElementById('btn_login').disabled = false;
+                            if (resData.status === "success") {
+                                showStatus("Akses Diterima! Memuat Lembar Gaji...", "success");
+                                document.getElementById('gerbangAuth').style.display = 'none';
+                                document.getElementById('halamanUtama').style.display = 'block';
+                                
+                                // RENDER BENTUK KOTAK REKAP GAJI KARYAWAN SECARA PRIVAT
+                                tampilkanKotakGajiKaryawan(resData.gaji, resData.tarifUnit, resData.potonganWifi);
+                            } else {
+                                showStatus(resData.message, "error");
+                            }
+                        }).catch(() => {
+                            document.getElementById('btn_login').disabled = false;
+                            showStatus("ID belum AKTIF atau kombinasi Sandi salah.", "error");
+                        });
+                    } else {
+                        document.getElementById('btn_daftar').disabled = false;
+                        showStatus("Pendaftaran Berhasil! ID dibuat otomatis. Menunggu Persetujuan & Set Sandi oleh Owner.", "success");
+                        tukarAuth('login');
+                        document.getElementById('formDaftar').reset();
+                    }
+                }, 1500);
+            })
+            .catch(err => {
+                showStatus("Gagal terhubung ke server.", "error");
+                document.getElementById('btn_login').disabled = false;
+                document.getElementById('btn_daftar').disabled = false;
+            });
         }
-      }
 
-      let bonusTargetOtomatis = 0;
-      const karyawanSelected = document.getElementById('rekapKaryawan').value;
-      const targetBox = document.getElementById('statusTargetBox');
-      const txtStatus = document.getElementById('txtStatusTarget');
+        // GENERATE KOTAK REKAP GAJI PRIVAT PERSIS FORMAT YANG ANDA INGINKAN
+        function tampilkanKotakGajiKaryawan(dataGaji, tarifUnit, potonganWifi) {
+            let totalUnit = 0, totalTips = 0, totalBonus = 0, totalKasbon = 0;
+            let jumlahHariKerja = dataGaji.length; // Menghitung total hari kerja aktif di sheet
+            
+            dataGaji.forEach(item => {
+                totalUnit += parseInt(item.unit);
+                totalTips += parseInt(item.tips);
+                totalBonus += parseInt(item.bonus);
+                totalKasbon += parseInt(item.kasbon);
+            });
 
-      if (karyawanSelected) {
-        if (isTembusTarget) {
-          targetBox.className = "mb-5 bg-emerald-50 border border-emerald-300 p-3 rounded-xl flex items-center justify-between transition-all duration-200";
-          txtStatus.className = "text-xs font-black uppercase tracking-wider text-emerald-700";
-          txtStatus.innerHTML = `<i class="fa-solid fa-circle-check"></i> TEMBUS TARGET (${unit}/${targetUnitDibutuhkan} Unit)`;
-
-          if (karyawanSelected.includes("Kepala Toko")) {
-            bonusTargetOtomatis = 10000;
-          } else {
-            bonusTargetOtomatis = 5000;
-          }
-        } else {
-          targetBox.className = "mb-5 bg-gray-50 border border-gray-200 p-3 rounded-xl flex items-center justify-between transition-all duration-200";
-          txtStatus.className = "text-xs font-black uppercase tracking-wider text-gray-500";
-          txtStatus.innerHTML = targetUnitDibutuhkan > 0 ? `Belum Target (${unit}/${targetUnitDibutuhkan} Unit)` : "Belum Target";
-          bonusTargetOtomatis = 0;
+            // Hitungan Gaji Kotor ditarik otomatis dari parameter Pengaturan (3000)
+            let gajiKotorUnit = totalUnit * parseInt(tarifUnit); 
+            // Potongan WiFi wajib dikali jumlah hari kerja aktif dari database (1000/hari)
+            let totalPotonganWifi = jumlahHariKerja * parseInt(potonganWifi); 
+            let totalGajiBersih = (gajiKotorUnit + totalTips + totalBonus) - totalKasbon - totalPotonganWifi;
+            
+            // Layout Kotak Rekap Hitam Cantik Sesuai Request Gambar Tanpa Merubah CSS Utama
+            let htmlKotak = `
+                <div class="card" style="background: #111; color: #fff; border: 2px solid var(--accent-color); margin-bottom: 25px; padding: 20px; border-radius: 8px;">
+                    <h3 style="color: #fff; border-left: 4px solid var(--accent-color); padding-left: 10px; margin-bottom: 15px; font-size: 16px;">KOTAK REKAP REKENING GAJI PRIVAT</h3>
+                    <div style="overflow-x: auto;">
+                        <table style="width: 100%; border-collapse: collapse; min-width: 280px; color: #fff; font-size: 13px;">
+                            <thead>
+                                <tr style="border-bottom: 2px solid #333; text-align: left; background: #1a1a1a;">
+                                    <th style="padding: 10px 5px;">UNIT</th>
+                                    <th style="padding: 10px 5px;">TIPS</th>
+                                    <th style="padding: 10px 5px;">BONUS</th>
+                                    <th style="padding: 10px 5px;">KASBON</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr style="background: #222; border-bottom: 1px solid #333;">
+                                    <td style="padding: 12px 5px;">${totalUnit}</td>
+                                    <td style="padding: 12px 5px;">Rp ${totalTips.toLocaleString('id-ID')}</td>
+                                    <td style="padding: 12px 5px;">Rp ${totalBonus.toLocaleString('id-ID')}</td>
+                                    <td style="padding: 12px 5px; color: #ff5252;">Rp ${totalKasbon.toLocaleString('id-ID')}</td>
+                                </tr>
+                                <tr style="background: #fffb15; color: #000; font-weight: bold; border-bottom: 1px solid #333;">
+                                    <td style="padding: 10px 5px;">JUMLAH</td>
+                                    <td style="padding: 10px 5px;">${totalUnit}</td>
+                                    <td style="padding: 10px 5px;">${totalTips > 0 ? 'Ada' : '0'}</td>
+                                    <td style="padding: 10px 5px; color: #c62828;">- Rp ${totalKasbon.toLocaleString('id-ID')}</td>
+                                </tr>
+                                <tr style="background: #00e676; color: #000; font-weight: bold;">
+                                    <td style="padding: 12px 5px;">TOTAL</td>
+                                    <td style="padding: 12px 5px;">Rp ${totalGajiBersih.toLocaleString('id-ID')}</td>
+                                    <td colspan="2" style="padding: 12px 5px; font-size: 10px; background: #1a1a1a; color: #aaa; text-align: center; font-weight: normal; border: 1px solid #333;">
+                                        WIFI Rp ${parseInt(potonganWifi).toLocaleString('id-ID')} / Hari (${jumlahHariKerja} Hari Kerja = -Rp ${totalPotonganWifi.toLocaleString('id-ID')})
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            `;
+            
+            // Tempel di atas halaman agar karyawan langsung disambut kotak gajinya
+            let kontainerUtama = document.querySelector('.container');
+            if (kontainerUtama) {
+                kontainerUtama.insertAdjacentHTML('afterbegin', htmlKotak);
+            }
+            
+            // Karyawan biasa dikunci aksesnya agar tidak bisa input/melihat data operasional utama toko
+            let navTabs = document.querySelector('.nav-tabs');
+            let formInput = document.getElementById('input-pemasukan');
+            if (navTabs) navTabs.style.display = 'none';
+            if (formInput) formInput.style.display = 'none';
         }
-      }
 
-      const bersih = (komisiUnit + tips + bonusTargetOtomatis) - kasbon - wifi;
-
-      document.getElementById('txtNominalBersih').innerText = new Intl.NumberFormat('id-ID', {
-        style: 'currency',
-        currency: 'IDR',
-        maximumFractionDigits: 0
-      }).format(bersih);
-
-      return { bersih, bonusTargetOtomatis };
-    }
-
-    function switchTab(tab) {
-      const tabRekap = document.getElementById('tabRekap');
-      const tabKaryawan = document.getElementById('tabKaryawan');
-      const btnRekap = document.getElementById('btnTabRekap');
-      const btnKaryawan = document.getElementById('btnTabKaryawan');
-
-      if (tab === 'rekap') {
-        tabRekap.classList.remove('hidden');
-        tabKaryawan.classList.add('hidden');
-        btnRekap.className = "py-3 px-4 rounded-xl font-black text-xs uppercase tracking-wider transition-all duration-200 flex justify-center items-center gap-2 bg-gradient-to-r from-red-600 to-red-700 text-white shadow-md border-b-2 border-red-900";
-        btnKaryawan.className = "py-3 px-4 rounded-xl font-black text-xs uppercase tracking-wider transition-all duration-200 flex justify-center items-center gap-2 text-gray-600 hover:bg-gray-100";
-      } else {
-        tabRekap.classList.add('hidden');
-        tabKaryawan.classList.remove('hidden');
-        btnRekap.className = "py-3 px-4 rounded-xl font-black text-xs uppercase tracking-wider transition-all duration-200 flex justify-center items-center gap-2 text-gray-600 hover:bg-gray-100";
-        btnKaryawan.className = "py-3 px-4 rounded-xl font-black text-xs uppercase tracking-wider transition-all duration-200 flex justify-center items-center gap-2 bg-gradient-to-r from-red-600 to-red-700 text-white shadow-md border-b-2 border-red-900";
-      }
-    }
-
-    function submitRekap(event) {
-      event.preventDefault();
-      toggleLoading(true, "Sedang mengirim dan mengunci data rekap...");
-
-      const tglRaw = document.getElementById('rekapTanggal').value; 
-      const dateParts = tglRaw.split('-');
-      const tanggalFormatted = `${dateParts[2]}/${dateParts[1]}/${dateParts[0]}`;
-
-      const karyawan = document.getElementById('rekapKaryawan').value;
-      const unit = document.getElementById('rekapUnit').value;
-      const tips = document.getElementById('rekapTips').value || 0;
-      const kasbon = document.getElementById('rekapKasbon').value || 0;
-      const wifi = 1000;
-      
-      const kalkulasi = hitungBersih();
-
-      const formData = new URLSearchParams();
-      formData.append("action", "insertRow");
-      formData.append("tipe", "Rekap Karyawan");
-      formData.append("tanggal", tanggalFormatted);
-      formData.append("cabang", CURRENT_CABANG);
-      formData.append("karyawan", karyawan);
-      formData.append("unit", unit);
-      formData.append("tips", tips);
-      formData.append("bonus", kalkulasi.bonusTargetOtomatis);
-      formData.append("kasbon", kasbon);
-      formData.append("potongan_wifi", wifi);
-      formData.append("nominal_clean", kalkulasi.bersih);
-
-      fetch(WEB_APP_URL, {
-        method: "POST",
-        body: formData,
-        headers: { "Content-Type": "application/x-www-form-urlencoded" }
-      })
-      .then(res => res.json())
-      .then(response => {
-        toggleLoading(false);
-        if (response.status === "Success") {
-          showToast("Data rekap harian berhasil dikunci ke Google Sheet!", "success");
-          document.getElementById('rekapUnit').value = "";
-          document.getElementById('rekapTips').value = "";
-          document.getElementById('rekapKasbon').value = "";
-          hitungBersih();
-        } else {
-          showToast(`Gagal menyimpan: ${response.message}`, "error");
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            event.currentTarget.classList.add('active');
         }
-      })
-      .catch(err => {
-        console.error(err);
-        toggleLoading(false);
-        showToast("Terjadi gangguan jaringan saat mengirim data.", "error");
-      });
-    }
 
-    function submitKaryawan(event) {
-      event.preventDefault();
-      toggleLoading(true, "Mendaftarkan personel baru...");
-
-      const nama = document.getElementById('masterNama').value;
-      const jabatan = document.getElementById('masterJabatan').value;
-
-      const formData = new URLSearchParams();
-      formData.append("action", "insertRow");
-      formData.append("tipe", "Tambah Karyawan Baru");
-      formData.append("nama_karyawan", nama);
-      formData.append("jabatan", jabatan);
-
-      fetch(WEB_APP_URL, {
-        method: "POST",
-        body: formData,
-        headers: { "Content-Type": "application/x-www-form-urlencoded" }
-      })
-      .then(res => res.json())
-      .then(response => {
-        toggleLoading(false);
-        if (response.status === "Success") {
-          showToast(`Berhasil mendaftarkan ${nama} ke sistem!`, "success");
-          document.getElementById('masterNama').value = "";
-          document.getElementById('masterJabatan').value = "";
-          loadKaryawanDropdown();
-          switchTab('rekap');
-        } else {
-          showToast(`Gagal mendaftarkan: ${response.message}`, "error");
+        function hitungKotor() {
+            const unitInput = document.getElementById('unit_pemasukan').value;
+            const tarifPerUnit = 3000; // Log input kotor harian toko disesuaikan ke parameter 3000
+            const totalNominal = unitInput ? parseInt(unitInput) * tarifPerUnit : 0;
+            document.getElementById('nominal_pemasukan').value = totalNominal;
+            document.getElementById('nominal_pemasukan_display').value = "Rp " + totalNominal.toLocaleString('id-ID');
         }
-      })
-      .catch(err => {
-        console.error(err);
-        toggleLoading(false);
-        showToast("Terjadi gangguan jaringan saat mendaftarkan karyawan.", "error");
-      });
-    }
-  </script>
+
+        function showStatus(text, type) {
+            const msgBox = document.getElementById('statusMessage');
+            msgBox.innerText = text;
+            msgBox.className = ''; 
+            if(type === 'success') msgBox.classList.add('status-success');
+            else if(type === 'error') msgBox.classList.add('status-error');
+            else if(type === 'loading') msgBox.classList.add('status-loading');
+            msgBox.style.display = 'block';
+            if(type !== 'loading') {
+                setTimeout(() => { msgBox.style.display = 'none'; }, 4000);
+            }
+        }
+
+        function submitData(event, tipeForm) {
+            event.preventDefault();
+            let btnSubmit, urlParams = new URLSearchParams();
+            
+            const formatTglLokal = (tglStr) => {
+                if(!tglStr) return "";
+                const d = new Date(tglStr);
+                return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth()+1).padStart(2, '0')}/${d.getFullYear()}`;
+            };
+
+            showStatus("Sedang menyimpan data ke Google Sheets...", "loading");
+            urlParams.append("action", "insertRow");
+            urlParams.append("tipe", tipeForm);
+
+            if (tipeForm === 'Pemasukan') {
+                btnSubmit = document.getElementById('btn_submit_pemasukan');
+                btnSubmit.disabled = true;
+                const rawDate = document.getElementById('tgl_pemasukan').value;
+                
+                urlParams.append("tanggal", formatTglLokal(rawDate));
+                urlParams.append("cabang", document.getElementById('cabang_pemasukan').value);
+                urlParams.append("kategori", "Pemasukan Unit");
+                urlParams.append("unit", document.getElementById('unit_pemasukan').value);
+                urlParams.append("nominal", document.getElementById('nominal_pemasukan').value);
+                urlParams.append("keterangan", document.getElementById('ket_pemasukan').value || "Pemasukan rutin");
+                urlParams.append("tanggal_asli", rawDate);
+            } else {
+                btnSubmit = document.getElementById('btn_submit_pengeluaran');
+                btnSubmit.disabled = true;
+                const rawDate = document.getElementById('tgl_pengeluaran').value;
+                
+                urlParams.append("tanggal", formatTglLokal(rawDate));
+                urlParams.append("cabang", document.getElementById('cabang_pengeluaran').value);
+                urlParams.append("kategori", document.getElementById('kategori_pengeluaran').value);
+                urlParams.append("unit", "0");
+                urlParams.append("nominal", document.getElementById('nominal_pengeluaran').value);
+                urlParams.append("keterangan", document.getElementById('ket_pengeluaran').value);
+                urlParams.append("tanggal_asli", rawDate);
+            }
+
+            fetch(WEB_APP_URL, {
+                method: "POST",
+                mode: "no-cors",
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body: urlParams.toString()
+            })
+            .then(() => {
+                showStatus("Data " + tipeForm + " Berhasil Disimpan!", "success");
+                if (tipeForm === 'Pemasukan') {
+                    document.getElementById('formPemasukan').reset();
+                    document.getElementById('nominal_pemasukan_display').value = "Rp 0";
+                } else {
+                    document.getElementById('formPengeluaran').reset();
+                }
+                const today = new Date().toISOString().split('T')[0];
+                document.getElementById('tgl_pemasukan').value = today;
+                document.getElementById('tgl_pengeluaran').value = today;
+                btnSubmit.disabled = false;
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                showStatus("Gagal mengirim data.", "error");
+                btnSubmit.disabled = false;
+            });
+        }
+    </script>
 </body>
 </html>
