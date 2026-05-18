@@ -401,7 +401,7 @@
                     if(data.jabatan === "Karyawan") {
                         document.getElementById('halamanUtama').style.display = 'none';
                         document.getElementById('areaGaji').style.display = 'block';
-                        tampilkanRincianGajiKaryawan(data.gaji, data.nama);
+                        tampilkanRincianGajiKaryawan(data.gaji, data.nama, data.jabatan);
                     } 
                     else if(data.jabatan === "Kepala Toko") {
                         document.getElementById('halamanUtama').style.display = 'block';
@@ -495,7 +495,7 @@
                     showStatus("Seluruh riwayat data pribadi dimuat.", "success");
                     let targetBox = document.getElementById('areaGaji');
                     targetBox.style.display = 'block';
-                    tampilkanRincianGajiKaryawan(data.gaji, data.nama);
+                    tampilkanRincianGajiKaryawan(data.gaji, data.nama, data.jabatan);
                     targetBox.scrollIntoView({ behavior: 'smooth' });
                 } else {
                     showStatus("Gagal memperbarui data.", "error");
@@ -505,7 +505,7 @@
             });
         }
 
-        function tampilkanRincianGajiKaryawan(dataGaji, nama) {
+        function tampilkanRincianGajiKaryawan(dataGaji, nama, jabatan) {
             let targetBox = document.getElementById('areaGaji');
             if(!dataGaji || dataGaji.length === 0) {
                 targetBox.innerHTML = `<div class="card" style="text-align:center; padding:30px;"><p style="color:var(--steam-red); font-weight:bold; font-size:16px;">Halo ${nama},</p><p style="font-size:13px; margin-top:5px; color:#666;">Anda belum memiliki riwayat pendapatan di sistem.</p></div>`;
@@ -550,12 +550,12 @@
             targetBox.innerHTML = `
                 <div class="card" style="margin-bottom: 20px; padding: 20px;">
                     <h3 style="color:var(--steam-red); font-size:14px; border-left:4px solid var(--steam-gold); padding-left:10px; margin-bottom:4px; text-transform:uppercase;">TOTAL AKUMULASI PENDAPATAN ANGGOTA</h3>
-                    <p style="font-size:13px; color:#555; margin-bottom:15px;">Nama Anggota: <span style="color:var(--text-dark); font-weight:bold;">${nama}</span></p>
+                    <p style="font-size:13px; color:#555; margin-bottom:15px;">Nama Anggota: <span style="color:var(--text-dark); font-weight:bold;">${nama} [${jabatan}]</span></p>
                     <table style="width:100%; font-size:14px; text-align:left; border-collapse:collapse;">
                         <tr style="border-bottom:1px solid #eee;"><td style="padding:8px 0; color:#666;">Total Motor Dicuci</td><td style="padding:8px 0; font-weight:bold; text-align:right;">${totalUnit} Unit</td></tr>
                         <tr style="border-bottom:1px solid #eee;"><td style="padding:8px 0; color:#666;">Total Upah Cuci (x3.000)</td><td style="padding:8px 0; text-align:right; font-weight:600;">Rp ${akumulasiGajiKotorUnit.toLocaleString('id-ID')}</td></tr>
                         <tr style="border-bottom:1px solid #eee;"><td style="padding:8px 0; color:#2e7d32;">Total Tips Masuk</td><td style="padding:8px 0; color:#2e7d32; text-align:right; font-weight:600;">+ Rp ${totalTips.toLocaleString('id-ID')}</td></tr>
-                        <tr style="border-bottom:1px solid #eee;"><td style="padding:8px 0; color:#aa7c11;">Total Bonus Target</td><td style="padding:8px 0; color:#aa7c11; font-weight:bold; text-align:right;">+ Rp ${totalBonus.toLocaleString('id-ID')}</td></tr>
+                        <tr style="border-bottom:1px solid #eee;"><td style="padding:8px 0; color:#aa7c11;">Total Bonus Target (${jabatan === 'Kepala Toko' ? 'Rp10k' : 'Rp5k'}/Tembus)</td><td style="padding:8px 0; color:#aa7c11; font-weight:bold; text-align:right;">+ Rp ${totalBonus.toLocaleString('id-ID')}</td></tr>
                         <tr style="border-bottom:1px solid #eee;"><td style="padding:8px 0; color:var(--steam-red);">Total Potongan Kasbon</td><td style="padding:8px 0; color:var(--steam-red); text-align:right; font-weight:600;">- Rp ${totalKasbon.toLocaleString('id-ID')}</td></tr>
                         <tr style="border-bottom:1px solid #ddd;"><td style="padding:8px 0; color:#666;">Total Iuran Wifi (${totalHariKerja} Hari)</td><td style="padding:8px 0; color:var(--steam-red); text-align:right;">- Rp ${akumulasiPotonganWifi.toLocaleString('id-ID')}</td></tr>
                         <tr style="background:#f1f8e9; font-weight:bold; font-size:16px;"><td style="padding:12px; border-radius:4px 0 0 4px; color:var(--text-dark);">TOTAL PENDAPATAN BERSIH</td><td style="padding:12px; text-align:right; border-radius:0 4px 4px 0; color:var(--success-color);">Rp ${akumulasiTerimaBersihFinal.toLocaleString('id-ID')}</td></tr>
@@ -640,7 +640,6 @@
             };
 
             if(tipeForm === 'Pemasukan') {
-                let rDate = document.getElementById('tgl_pemasukan').value;
                 let idK = document.getElementById('karyawan_pemasukan').value;
                 let objK = ARRAY_KARYAWAN.find(x => String(x.id) === String(idK));
 
