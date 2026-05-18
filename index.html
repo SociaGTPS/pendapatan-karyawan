@@ -19,7 +19,7 @@
   <!-- URL Web App Apps Script & Link Google Sheets -->
   <script>
     const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxWBYtbeBe3-xH3R80axowIeVbI8n6fc-x3qwTbZammMY3dpsAOYR2y9DcD6R5AURaI/exec";
-    // Link Google Sheets resmi milik Steam MP 7000 sudah terpasang:
+    // Link Google Sheets resmi milik Steam MP 7000:
     const GSHEET_VIEW_URL = "https://docs.google.com/spreadsheets/d/1Slh_aLbYhN7C5QCPWXhF6sJfTSapfbscwze1RRCgZFQ/edit?usp=sharing"; 
     
     let CURRENT_CABANG = "";
@@ -161,10 +161,12 @@
             <div class="text-red-700 font-black text-2xl tracking-wide" id="txtNominalBersih">Rp 0</div>
           </div>
 
-          <!-- TOMBOL LIHAT HASIL GSHEETS UNTUK KARYAWAN -->
-          <a id="btnLinkGSheet" href="#" target="_blank" class="w-full mb-6 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 font-bold py-2.5 px-4 rounded-xl border border-emerald-300 transition duration-200 flex justify-center items-center gap-2 text-xs uppercase tracking-wider shadow-sm">
-            <i class="fa-solid fa-table text-emerald-600 text-sm"></i> Lihat Hasil Rekap & Gaji Pusat
-          </a>
+          <!-- TOMBOL AKSES GOOGLE SHEETS UNTUK SEMUA KARYAWAN -->
+          <div class="mb-6">
+            <a id="btnLinkGSheet" href="https://docs.google.com/spreadsheets/d/1Slh_aLbYhN7C5QCPWXhF6sJfTSapfbscwze1RRCgZFQ/edit?usp=sharing" target="_blank" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-black py-3 px-4 rounded-xl transition duration-200 flex justify-center items-center gap-2 text-xs uppercase tracking-widest shadow-md border-b-4 border-emerald-900">
+              <i class="fa-solid fa-table text-amber-300 text-sm"></i> Lihat Hasil Rekap & Gaji Pusat
+            </a>
+          </div>
 
           <button type="submit" class="w-full bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white font-black py-3.5 px-4 rounded-xl transition duration-200 shadow-lg border-b-4 border-red-900 flex justify-center items-center gap-2 tracking-wider text-sm">
             <i class="fa-solid fa-cloud-arrow-up text-amber-300"></i> SIMPAN REKAP KERJA
@@ -208,9 +210,6 @@
   <script>
     document.getElementById('rekapTanggal').valueAsDate = new Date();
 
-    // Otomatis menaruh link asli spreadsheet milikmu ke tombol hasil rekap
-    document.getElementById('btnLinkGSheet').href = GSHEET_VIEW_URL;
-
     window.addEventListener('DOMContentLoaded', () => { initApp(); });
 
     function showToast(message, type = "success") {
@@ -251,10 +250,14 @@
             opt.innerText = cabang;
             selectCabang.appendChild(opt);
           });
+          // Kunci link asli langsung di sini agar tidak hilang
+          document.getElementById('btnLinkGSheet').href = GSHEET_VIEW_URL;
           toggleLoading(false);
         })
         .catch(err => {
           console.error(err);
+          // Tetap pasang link darurat jika fetch error
+          document.getElementById('btnLinkGSheet').href = GSHEET_VIEW_URL;
           toggleLoading(false);
           showToast("Gagal memuat konfigurasi cabang. Periksa koneksi internet!", "error");
         });
@@ -404,7 +407,6 @@
       }
     }
 
-    // PENGIRIMAN DATA FORM REKAP
     function submitRekap(event) {
       event.preventDefault();
       toggleLoading(true, "Sedang mengirim dan mengunci data rekap...");
@@ -459,7 +461,6 @@
       });
     }
 
-    // PENDAFTARAN KARYAWAN BARU
     function submitKaryawan(event) {
       event.preventDefault();
       toggleLoading(true, "Mendaftarkan personel baru...");
