@@ -283,7 +283,7 @@
         </div>
 
         <div id="halamanUtama" style="display: none;">
-            <div class="nav-tabs" id="menuNavigasi">
+            <div class="nav-tabs" id="menuNavigasi" style="display: none;">
                 <button id="nav_pemasukan" class="tab-btn active" onclick="switchTab('input-pemasukan')">Pemasukan</button>
                 <button id="nav_pengeluaran" class="tab-btn" onclick="switchTab('input-pengeluaran')">Pengeluaran</button>
                 <button id="nav_gaji_kt" class="tab-btn" style="display: none;" onclick="switchTab('gaji-kepala-toko')">Gaji Saya</button>
@@ -404,13 +404,10 @@
                     if (resData.status === "success") {
                         showStatus("Akses Diterima! Jabatan: " + resData.jabatan, "success");
                         
-                        // Sembunyikan gerbang login utama
+                        // 1. Sembunyikan gerbang login utama
                         document.getElementById('gerbangAuth').style.display = 'none';
                         
-                        // Render Kotak Gaji Karyawan di Atas
-                        tampilkanKotakGajiKaryawan(resData.gaji, resData.tarifUnit, resData.potonganWifi, resData.nama);
-
-                        // ATUR HAK AKSES BERDASARKAN JABATAN (DIBAIKI SUPAYA ANTI KOSONG)
+                        // 2. TENTUKAN TAMPILAN OPERASIONAL DULUAN (AGAR TIDAK CRASH)
                         if (resData.jabatan === "Karyawan") {
                             document.getElementById('halamanUtama').style.display = 'none';
                             document.getElementById('areaGaji').style.display = 'block';
@@ -422,8 +419,6 @@
                             document.getElementById('nav_pengeluaran').style.display = 'block';
                             document.getElementById('nav_gaji_kt').style.display = 'block'; 
                             document.getElementById('areaGaji').style.display = 'none'; 
-                            
-                            // Reset tab default ke pemasukan
                             switchTab('input-pemasukan');
                         } 
                         else if (resData.jabatan === "Admin" || resData.jabatan === "Owner") {
@@ -434,17 +429,19 @@
                             document.getElementById('nav_gaji_kt').style.display = 'none';
                             document.getElementById('areaGaji').style.display = 'block'; 
                             document.getElementById('footerPendaftaran').style.display = 'block';
-                            
-                            // Reset tab default ke pemasukan
                             switchTab('input-pemasukan');
                         }
+
+                        // 3. TERAKHIR AMBIL DATA KOTAK GAJI
+                        tampilkanKotakGajiKaryawan(resData.gaji, resData.tarifUnit, resData.potonganWifi, resData.nama, resData.jabatan);
+
                     } else {
                         showStatus(resData.message, "error");
                     }
                 }).catch((err) => {
-                    console.error(err);
+                    console.error("Login Error: ", err);
                     document.getElementById('btn_login').disabled = false;
-                    showStatus("ID PENDING atau Kombinasi Sandi salah.", "error");
+                    showStatus("Terjadi kegagalan komunikasi sistem.", "error");
                 });
             } 
             else if (tipeAksi === 'registerUser') {
@@ -462,7 +459,7 @@
                     document.getElementById('btn_daftar').disabled = false;
                     var hasil = textData.split(",");
                     if(hasil[0] === "SUCCESS") {
-                        alert("PENDAFTARAN BERHASIL!\n\nID Karyawan Baru: " + hasil[1] + "\nSandi Acak Sistem: " + hasil[2] + "\n\nHarap CATAT ID dan Sandi di atas! Status akun saat ini masih PENDING menunggu persetujuan aktif dari Owner di sheet.");
+                        alert("PENDAFTARAN BERHASIL!\n\nID Karyawan Baru: " + hasil[1] + "\nSandi Acak Sistem: " + hasil[2] + "\n\nHarap CATAT ID dan Sandi di atas!");
                         showStatus("Karyawan Berhasil Didaftar! ID: " + hasil[1], "success");
                         tukarAuth('login');
                         document.getElementById('formDaftar').reset();
@@ -477,12 +474,26 @@
             }
         }
 
-        function tampilkanKotakGajiKaryawan(dataGaji, tarifUnit, potonganWifi, nama) {
-            // Jika tidak ada data gaji (kosong/untuk owner), pasang tampilan default tanpa merusak sistem
+        function tampilkanKotakGajiKaryawan(dataGaji, tarifUnit, potonganWifi, nama, jabatan) {
+            var targetBox = document.getElementById('areaGaji');
+            if(!targetBox) return;
+
+            // JIKA OWNER ATAU ADMIN DAN DATA GAJI KOSONG
+            if (jabatan === "Owner" || jabatan === "Admin") {
+                if (!dataGaji || dataGaji.length === 0) {
+                    targetBox.innerHTML = `
+                        <div class="card" style="background: #111113; color: #fff; border: 2px solid var(--accent-gold); margin-bottom: 25px; padding: 15px; border-radius: 12px; text-align:center;">
+                            <p style="font-size: 13px; color: var(--accent-gold); font-weight:600;">Log Akun: ${nama} (${jabatan} - Akses Terbuka)</p>
+                        </div>`;
+                    return;
+                }
+            }
+
+            // JIKA DATA GAJI BENAR-BENAR BELUM ADA (KARYAWAN/KT BARU)
             if (!dataGaji || dataGaji.length === 0) {
-                document.getElementById('areaGaji').innerHTML = `
+                targetBox.innerHTML = `
                     <div class="card" style="background: #111113; color: #fff; border: 2px solid var(--accent-gold); margin-bottom: 25px; padding: 15px; border-radius: 12px; text-align:center;">
-                        <p style="font-size: 13px; color: var(--accent-gold); font-weight:600;">Log Akun: ${nama} (Akses Penuh Terbuka)</p>
+                        <p style="font-size: 13px; color: #ffffff;">Halo ${nama}, data rekap kerja Anda periode ini belum diinput oleh Admin.</p>
                     </div>`;
                 return;
             }
@@ -540,7 +551,7 @@
                     </div>
                 </div>
             `;
-            document.getElementById('areaGaji').innerHTML = htmlKotak;
+            targetBox.innerHTML = htmlKotak;
         }
 
         function switchTab(tabId) {
@@ -550,18 +561,21 @@
             var targetTab = document.getElementById(tabId);
             if(targetTab) targetTab.classList.add('active');
             
-            // Atur tombol nav aktif secara manual lewat event atau pencarian ID tombol
             if(event && event.currentTarget && event.currentTarget.classList.contains('tab-btn')) {
                 event.currentTarget.classList.add('active');
             } else {
-                if(tabId === 'input-pemasukan') document.getElementById('nav_pemasukan').classList.add('active');
+                if(tabId === 'input-pemasukan') {
+                    var btnPem = document.getElementById('nav_pemasukan');
+                    if(btnPem) btnPem.classList.add('active');
+                }
             }
 
-            // Logika spesifik Kepala Toko
-            if (tabId === 'gaji-kepala-toko') {
-                document.getElementById('areaGaji').style.display = 'block';
-            } else {
-                if (document.getElementById('nav_gaji_kt').style.display === 'block') {
+            // Logika Visibilitas Kotak Gaji Kepala Toko
+            var navGajiKt = document.getElementById('nav_gaji_kt');
+            if (navGajiKt && navGajiKt.style.display === 'block') {
+                if (tabId === 'gaji-kepala-toko') {
+                    document.getElementById('areaGaji').style.display = 'block';
+                } else {
                     document.getElementById('areaGaji').style.display = 'none';
                 }
             }
