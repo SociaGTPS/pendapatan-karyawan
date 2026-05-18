@@ -123,8 +123,10 @@
         }
         input:disabled, select:disabled {
             background-color: #eeeeee;
-            color: #757575;
+            color: #455a64;
+            font-weight: bold;
             cursor: not-allowed;
+            border-color: var(--steam-gold);
         }
         
         /* TOMBOL UTAMA */
@@ -257,7 +259,7 @@
 
             <div id="input-pemasukan" class="tab-content">
                 <div class="card">
-                    <h2>INPUT UNIT CUCIAN CABANG</h2>
+                    <h2>INPUT UNIT CUCIAN <span id="labelCabangKT" style="color:var(--steam-red); display:block; font-size:12px; margin-top:5px; font-weight: bold;"></span></h2>
                     <form id="formPemasukan" onsubmit="submitData(event, 'Pemasukan')">
                         <div class="form-group">
                             <label>Tanggal Operasional</label>
@@ -265,14 +267,14 @@
                         </div>
                         <div class="form-group">
                             <label>Lokasi Cabang</label>
-                            <select id="cabang_pemasukan" required>
+                            <select id="cabang_pemasukan" required onchange="filterKaryawanBerdasarkanCabang()">
                                 <option value="Cabang Grobogan">Cabang Grobogan (Target: 100)</option>
                                 <option value="Cabang Palis">Cabang Palis (Target: 50)</option>
                                 <option value="Cabang Cayur">Cabang Cayur (Target: 50)</option>
                             </select>
                         </div>
                         <div class="form-group">
-                            <label>Anggota Yang Mencuci</label>
+                            <label>Anggota Yang Mencuci (Hanya Cabang Terkait)</label>
                             <select id="karyawan_pemasukan" required>
                                 <option value="">-- Memuat Data Anggota --</option>
                             </select>
@@ -352,6 +354,7 @@
     </div>
 
     <script>
+        // URL WEB APP TERBARU SINKRONISASI AKTIF
         const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxWBYtbeBe3-xH3R80axowIeVbI8n6fc-x3qwTbZammMY3dpsAOYR2y9DcD6R5AURaI/exec";
         let SESSION_USER = null;
         let ARRAY_KARYAWAN = [];
@@ -362,19 +365,44 @@
             document.getElementById('tgl_pengeluaran').value = today;
         };
 
+        // MEMUAT SEMUA DATA ANGGOTA DARI DATABASE CLOUD
         function loadKaryawanDropdown() {
             fetch(WEB_APP_URL + "?action=getKaryawanList")
             .then(res => res.json())
             .then(res => {
                 if(res.status === "success") {
+                    // Hanya mengambil staff operasional lapangan
                     ARRAY_KARYAWAN = res.data.filter(k => k.jabatan !== "Owner" && k.jabatan !== "Admin");
-                    
-                    let dropdown = document.getElementById('karyawan_pemasukan');
-                    dropdown.innerHTML = '<option value="">-- Pilih Karyawan --</option>';
-                    ARRAY_KARYAWAN.forEach(k => {
-                        dropdown.innerHTML += `<option value="${k.id}">${k.nama} [${k.jabatan}]</option>`;
-                    });
+                    // Jalankan fungsi filter penyaringan cabang
+                    filterKaryawanBerdasarkanCabang();
                 }
+            });
+        }
+
+        // PENYARINGAN ANGGOTA SECARA KETAT BERDASARKAN CABANG INDUK
+        function filterKaryawanBerdasarkanCabang() {
+            let cabangTerpilih = document.getElementById('cabang_pemasukan').value;
+            let dropdownKaryawan = document.getElementById('karyawan_pemasukan');
+            
+            dropdownKaryawan.innerHTML = '<option value="">-- Pilih Karyawan --</option>';
+            
+            // Saring karyawan agar yang tampil hanya yang satu cabang dengan user/dropdown terpilih
+            let karyawanCabangIni = ARRAY_KARYAWAN.filter(k => {
+                if (SESSION_USER && (SESSION_USER.jabatan === "Admin" || SESSION_USER.jabatan === "Owner")) {
+                    return String(k.cabang).trim().toLowerCase() === String(cabangTerpilih).trim().toLowerCase();
+                } else {
+                    return String(k.cabang).trim().toLowerCase() === String(SESSION_USER.cabang).trim().toLowerCase();
+                }
+            });
+
+            if(karyawanCabangIni.length === 0) {
+                dropdownKaryawan.innerHTML = '<option value="">❌ Tidak ada karyawan di cabang ini</option>';
+                return;
+            }
+
+            // Tampilkan nama-nama karyawan yang lolos filter
+            karyawanCabangIni.forEach(k => {
+                dropdownKaryawan.innerHTML += `<option value="${k.id}">${k.nama} [${k.jabatan}]</option>`;
             });
         }
 
@@ -398,6 +426,7 @@
 
                     document.getElementById('cabang_pemasukan').disabled = false;
                     document.getElementById('cabang_pengeluaran').disabled = false;
+                    document.getElementById('labelCabangKT').innerText = "";
 
                     if(data.jabatan === "Karyawan") {
                         document.getElementById('halamanUtama').style.display = 'none';
@@ -410,9 +439,13 @@
                         document.getElementById('boxFiturOwner').style.display = 'none';
                         document.getElementById('nav_pengeluaran').style.display = 'none'; 
                         
+                        // KUNCI CABANG KEPALA TOKO SECARA MUTLAK
                         if(data.cabang) {
                             document.getElementById('cabang_pemasukan').value = data.cabang;
-                            document.getElementById('cabang_pemasukan').disabled = true;
+                            document.getElementById('cabang_pemasukan').disabled = true; 
+                            document.getElementById('labelCabangKT').innerText = "📌 TERKUNCI KHUSUS: " + data.cabang.toUpperCase();
+                        } else {
+                            document.getElementById('labelCabangKT').innerText = "⚠️ PERINGATAN: CABANG BELUM DISET DI SHEET";
                         }
 
                         loadKaryawanDropdown();
@@ -556,6 +589,9 @@
             btnSubmit.disabled = true;
             showStatus("Menyimpan data aman ke cloud...", "loading");
 
+            // Buka disable cabang sebentar agar datanya ikut terbaca saat submit form
+            document.getElementById('cabang_pemasukan').disabled = false;
+
             let urlParams = new URLSearchParams();
             urlParams.append("action", "insertRow");
             urlParams.append("tipe", tipeForm);
@@ -592,8 +628,6 @@
                 urlParams.append("tanggal_asli", rDate);
             }
 
-            document.getElementById('cabang_pemasukan').disabled = false;
-
             fetch(WEB_APP_URL, {
                 method: "POST",
                 headers: { "Content-Type": "application/x-www-form-urlencoded" },
@@ -603,6 +637,7 @@
             .then(resText => {
                 btnSubmit.disabled = false;
                 
+                // Kunci kembali dropdown cabang jika user adalah Kepala Toko
                 if(SESSION_USER && SESSION_USER.jabatan === "Kepala Toko") {
                     document.getElementById('cabang_pemasukan').disabled = true;
                 }
@@ -610,16 +645,21 @@
                 if(resText === "SUCCESS" || resText === "SUCCESS_TARGET") {
                     showStatus("Data Berhasil Disimpan!", "success");
                     
-                    // JAMINAN MEMUNCULKAN NOTIFIKASI BARU YANG HEBOH JOSS
                     if(resText === "SUCCESS_TARGET") {
                         document.getElementById('notifTarget').style.display = 'block';
-                        window.scrollTo({ top: 0, behavior: 'smooth' }); // Scroll otomatis ke atas agar notif langsung terlihat
-                        setTimeout(() => { document.getElementById('notifTarget').style.display = 'none'; }, 8000); // Tampil 8 detik biar puas dibaca
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                        setTimeout(() => { document.getElementById('notifTarget').style.display = 'none'; }, 8000);
                     }
 
                     if(tipeForm === 'Pemasukan') {
                         document.getElementById('formPemasukan').reset();
                         document.getElementById('nominal_pemasukan_display').value = "Rp 0";
+                        
+                        if(SESSION_USER && SESSION_USER.jabatan === "Kepala Toko") {
+                            document.getElementById('cabang_pemasukan').value = SESSION_USER.cabang;
+                        }
+                        // Set ulang penyaringan karyawan setelah form dibersihkan
+                        filterKaryawanBerdasarkanCabang();
                     } else {
                         document.getElementById('formPengeluaran').reset();
                     }
