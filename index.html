@@ -67,7 +67,7 @@
             letter-spacing: 2px;
         }
         
-        /* CARD UTAMA - LIST EMAS */
+        /* CARD UTAMA */
         .card {
             background-color: var(--white-card); 
             border-radius: 16px; 
@@ -379,7 +379,7 @@
         function handleAuth(event) {
             event.preventDefault();
             document.getElementById('btn_login').disabled = true;
-            showStatus("Melakukan enkripsi & verifikasi data...", "loading");
+            showStatus("Melakukan verifikasi data...", "loading");
 
             let user = document.getElementById('login_user').value;
             let sandi = document.getElementById('login_sandi').value;
@@ -437,12 +437,12 @@
         }
 
         function bukaRekapOwner() {
-            showStatus("Menghitung seluruh kas utama owner (Semua tanggal)...", "loading");
+            showStatus("Menghitung seluruh kas utama owner dari Sheet1...", "loading");
             
             fetch(WEB_APP_URL + "?action=getLaporanOwner")
             .then(res => res.json())
             .then(res => {
-                showStatus("Seluruh database kas disinkronkan.", "success");
+                showStatus("Database kas berhasil disinkronkan.", "success");
                 let targetBox = document.getElementById('areaGaji');
                 targetBox.style.display = "block";
 
@@ -461,7 +461,7 @@
                     </tr>`;
                 }
                 
-                if(listGajiHtml === "") listGajiHtml = "<tr><td colspan='2' style='text-align:center; padding:10px; color:#999;'>Belum ada data pendapatan hari ini</td></tr>";
+                if(listGajiHtml === "") listGajiHtml = "<tr><td colspan='2' style='text-align:center; padding:10px; color:#999;'>Belum ada data pendapatan berjalan</td></tr>";
 
                 let kotorOwnerTerbaru = hitungTotalSeluruhUnit * 4000;
                 let bersihOwnerTerbaru = kotorOwnerTerbaru - (res.pengeluaran || 0);
@@ -476,7 +476,7 @@
                             <tr style="background:#fff5f5; font-weight:bold;"><td style="padding:12px; border-radius:6px 0 0 6px; color:var(--text-dark);">PROFIT BERSIH SAYA SEKARANG</td><td style="padding:12px; text-align:right; border-radius:0 6px 6px 0; color:var(--success-color); font-size:16px;">Rp ${bersihOwnerTerbaru.toLocaleString('id-ID')}</td></tr>
                         </table>
                         
-                        <h3 style="color:var(--text-dark); font-size:13px; border-left:4px solid var(--steam-red); padding-left:10px; margin-bottom:10px; text-transform:uppercase;">👥 REKAP GAJI BERJALAN KARYAWAN (HARI INI)</h3>
+                        <h3 style="color:var(--text-dark); font-size:13px; border-left:4px solid var(--steam-red); padding-left:10px; margin-bottom:10px; text-transform:uppercase;">👥 REKAP GAJI BERJALAN KARYAWAN</h3>
                         <table class="table-laporan">
                             ${listGajiHtml}
                         </table>
@@ -487,7 +487,7 @@
         }
 
         function cekPendapatanKTPribadi() {
-            showStatus("Menarik seluruh data pendapatan pribadi Anda...", "loading");
+            showStatus("Menarik data pendapatan pribadi Anda...", "loading");
             fetch(`${WEB_APP_URL}?action=loginUser&username=${encodeURIComponent(document.getElementById('login_user').value)}&sandi=${encodeURIComponent(document.getElementById('login_sandi').value)}`)
             .then(res => res.json())
             .then(data => {
@@ -626,7 +626,7 @@
             event.preventDefault();
             let btnSubmit = (tipeForm === 'Pemasukan') ? document.getElementById('btn_submit_pemasukan') : document.getElementById('btn_submit_pengeluaran');
             btnSubmit.disabled = true;
-            showStatus("Menyimpan data aman ke cloud...", "loading");
+            showStatus("Menyimpan data aman ke Sheet1 cloud...", "loading");
 
             document.getElementById('cabang_pemasukan').disabled = false;
 
@@ -649,7 +649,6 @@
                 urlParams.append("kategori", "Pemasukan Unit");
                 urlParams.append("unit", document.getElementById('unit_pemasukan').value);
                 urlParams.append("keterangan", document.getElementById('ket_pemasukan').value);
-                urlParams.append("tanggal_asli", rDate);
                 urlParams.append("karyawan_id", idK);
                 urlParams.append("karyawan_nama", objK.nama);
                 urlParams.append("karyawan_jabatan", objK.jabatan);
@@ -657,13 +656,11 @@
                 urlParams.append("kasbon", document.getElementById('kasbon_pemasukan').value);
                 urlParams.append("operator_id", SESSION_USER.idUser);
             } else {
-                let rDate = document.getElementById('tgl_pengeluaran').value;
                 urlParams.append("tanggal", formatTanggalSistem('tgl_pengeluaran'));
                 urlParams.append("cabang", document.getElementById('cabang_pengeluaran').value);
                 urlParams.append("kategori", document.getElementById('kategori_pengeluaran').value);
                 urlParams.append("nominal", document.getElementById('nominal_pengeluaran').value);
                 urlParams.append("keterangan", document.getElementById('ket_pengeluaran').value);
-                urlParams.append("tanggal_asli", rDate);
             }
 
             fetch(WEB_APP_URL, {
@@ -680,7 +677,7 @@
                 }
 
                 if(resText === "SUCCESS" || resText === "SUCCESS_TARGET") {
-                    showStatus("Data Berhasil Disimpan!", "success");
+                    showStatus("Data Berhasil Disimpan ke Sheet1!", "success");
                     
                     document.getElementById('notifTargetBawahUnit').style.display = "none";
 
@@ -704,7 +701,7 @@
                         bukaRekapOwner();
                     }
                 } else {
-                    showStatus("Gagal memproses ke cloud.", "error");
+                    showStatus("Gagal memproses ke database cloud.", "error");
                 }
             }).catch(() => {
                 btnSubmit.disabled = false;
