@@ -6,7 +6,7 @@
     <title>STEAM MP 7000 - CONTROL PANEL</title>
     <style>
         :root {
-            /* Palette Merah Putih Elegan & Profesional (Nyaman di Mata) */
+            /* Palette Merah Putih Elegan & Profesional */
             --bg-color: #f4f7f6; 
             --white-card: #ffffff;
             --steam-red: #c62828; 
@@ -121,6 +121,11 @@
             background-color: #fff; 
             box-shadow: 0 0 10px rgba(198, 40, 40, 0.08);
         }
+        input:disabled, select:disabled {
+            background-color: #eeeeee;
+            color: #757575;
+            cursor: not-allowed;
+        }
         
         /* TOMBOL UTAMA */
         .btn {
@@ -219,8 +224,9 @@
         </div>
 
         <div id="halamanUtama" style="display: none;">
+            
             <div id="boxFiturKT" style="display:none; margin-bottom:20px;">
-                <button type="button" class="btn" style="background: linear-gradient(135deg, #2e7d32 0%, #1b5e20 100%); border-color:#a5d6a7;" onclick="cekPendapatanKT()">💰 CEK TOTAL DATA UNIT SAYA HARI INI</button>
+                <button type="button" class="btn" style="background: linear-gradient(135deg, #2e7d32 0%, #1b5e20 100%); border-color:#a5d6a7;" onclick="cekPendapatanKTPribadi()">💰 CEK LAPORAN PENDAPATAN PRIBADI SAYA</button>
             </div>
 
             <div id="boxFiturOwner" style="display:none; margin-bottom:20px;">
@@ -259,7 +265,7 @@
                             <input type="number" id="unit_pemasukan" placeholder="Masukkan total motor" oninput="hitungKotorEstimasi()" required>
                         </div>
                         <div class="form-group">
-                            <label>Estimasi Upah Kotor Karyawan (Porsi Rp3.000)</label>
+                            <label>Estimasi Pendapatan Anggota (Rp3.000 / Unit)</label>
                             <input type="text" id="nominal_pemasukan_display" value="Rp 0" disabled style="font-weight:bold; color: var(--success-color); background: #f1f8e9; border-color:#c5e1a5;">
                         </div>
                         <div class="form-group">
@@ -344,10 +350,12 @@
             .then(res => res.json())
             .then(res => {
                 if(res.status === "success") {
-                    ARRAY_KARYAWAN = res.data;
+                    // FILTER HANYA JABATAN KARYAWAN & KEPALA TOKO (OWNER & ADMIN SEMBUNYI TOTAL)
+                    ARRAY_KARYAWAN = res.data.filter(k => k.jabatan !== "Owner" && k.jabatan !== "Admin");
+                    
                     let dropdown = document.getElementById('karyawan_pemasukan');
                     dropdown.innerHTML = '<option value="">-- Pilih Karyawan --</option>';
-                    res.data.forEach(k => {
+                    ARRAY_KARYAWAN.forEach(k => {
                         dropdown.innerHTML += `<option value="${k.id}">${k.nama} [${k.jabatan}]</option>`;
                     });
                 }
@@ -372,6 +380,9 @@
                     showStatus("Akses dibuka. Selamat bekerja " + data.nama, "success");
                     document.getElementById('gerbangAuth').style.display = 'none';
 
+                    document.getElementById('cabang_pemasukan').disabled = false;
+                    document.getElementById('cabang_pengeluaran').disabled = false;
+
                     if(data.jabatan === "Karyawan") {
                         document.getElementById('halamanUtama').style.display = 'none';
                         document.getElementById('areaGaji').style.display = 'block';
@@ -379,9 +390,16 @@
                     } 
                     else if(data.jabatan === "Kepala Toko") {
                         document.getElementById('halamanUtama').style.display = 'block';
-                        document.getElementById('boxFiturKT').style.display = 'block';
+                        document.getElementById('boxFiturKT').style.display = 'block'; // Tombol Cek Pendapatan Pribadi KT Aktif
                         document.getElementById('boxFiturOwner').style.display = 'none';
                         document.getElementById('nav_pengeluaran').style.display = 'none'; 
+                        
+                        // KUNCI CABANG KEPALA TOKO AGAR TIDAK BISA DIUBAH-UBAH
+                        if(data.cabang) {
+                            document.getElementById('cabang_pemasukan').value = data.cabang;
+                            document.getElementById('cabang_pemasukan').disabled = true;
+                        }
+
                         loadKaryawanDropdown();
                         switchTab('input-pemasukan');
                     } 
@@ -437,15 +455,26 @@
             });
         }
 
-        function cekPendapatanKT() {
-            showStatus("Menarik data inputan...", "loading");
-            fetch(`${WEB_APP_URL}?action=getPendapatanCabang&idKT=${SESSION_USER.idUser}`)
+        // FUNGSI BARU KHUSUS KEPALA TOKO UNTUK CEK GAJI DIRINYA SENDIRI (MURNI UNIT x 3.000)
+        function cekPendapatanKTPribadi() {
+            showStatus("Menarik data pendapatan pribadi Anda...", "loading");
+            // Memanggil data gaji milik akun login Kepala Toko sendiri
+            fetch(`${WEB_APP_URL}?action=loginUser&username=${encodeURIComponent(document.getElementById('login_user').value)}&sandi=${encodeURIComponent(document.getElementById('login_sandi').value)}`)
             .then(res => res.json())
-            .then(res => {
-                if(res.status === "success") {
-                    alert(`Yth. Kepala Toko ${SESSION_USER.nama},\n\nTotal Kas Kotor (Porsi Owner Rp4.000) dari unit yang Anda input hari ini berjumlah:\nRp ${res.total.toLocaleString('id-ID')}`);
-                    showStatus("Perhitungan selesai.", "success");
+            .then(data => {
+                if(data.status === "success") {
+                    showStatus("Data pribadi dimuat.", "success");
+                    let targetBox = document.getElementById('areaGaji');
+                    targetBox.style.display = 'block';
+                    tampilkanRincianGajiKaryawan(data.gaji, data.nama);
+                    
+                    // Otomatis geser/scroll layar ke box slip gaji di bawah agar langsung terlihat
+                    targetBox.scrollIntoView({ behavior: 'smooth' });
+                } else {
+                    showStatus("Gagal memperbarui data.", "error");
                 }
+            }).catch(() => {
+                showStatus("Masalah jaringan.", "error");
             });
         }
 
@@ -478,8 +507,8 @@
                         <tr style="border-bottom:1px solid #eee;"><td style="padding:10px; color:#666;">Total Unit Di-steam</td><td style="padding:10px; font-weight:bold; text-align:right;">${totalUnit} Motor</td></tr>
                         <tr style="border-bottom:1px solid #eee;"><td style="padding:10px; color:#666;">Upah Hasil Cuci (x3.000)</td><td style="padding:10px; text-align:right; font-weight:600;">Rp ${gajiKotorUnit.toLocaleString('id-ID')}</td></tr>
                         <tr style="border-bottom:1px solid #eee;"><td style="padding:10px; color:#2e7d32; text-align:right;">+ Rp ${totalTips.toLocaleString('id-ID')}</td></tr>
-                        <tr style="border-bottom:1px solid #eee;"><td style="padding:10px; color:#666;">Bonus Capaian Target</td><td style="padding:10px; color:var(--steam-gold); font-weight:bold; text-align:right;">+ Rp ${totalBonus.toLocaleString('id-ID')}</td></tr>
-                        <tr style="border-bottom:1px solid #eee;"><td style="padding:10px; color:#666;">Potongan Kasbon</td><td style="padding:10px; color:var(--steam-red); text-align:right;">- Rp ${totalKasbon.toLocaleString('id-ID')}</td></tr>
+                        <tr style="border-bottom:1px solid #eee;"><td style="padding:10px; color:var(--steam-gold); font-weight:bold; text-align:right;">+ Rp ${totalBonus.toLocaleString('id-ID')}</td></tr>
+                        <tr style="border-bottom:1px solid #eee;"><td style="padding:10px; color:var(--steam-red); text-align:right;">- Rp ${totalKasbon.toLocaleString('id-ID')}</td></tr>
                         <tr style="border-bottom:1px solid #ddd;"><td style="padding:10px; color:#666;">Kebersihan Wifi Alat Harian</td><td style="padding:10px; color:var(--steam-red); text-align:right;">- Rp ${totalPotonganWifi.toLocaleString('id-ID')}</td></tr>
                         <tr style="background:#f1f8e9; font-weight:bold; font-size:16px;"><td style="padding:12px; border-radius:4px 0 0 4px; color:var(--text-dark);">TOTAL TERIMA BERSIH</td><td style="padding:12px; text-align:right; border-radius:0 4px 4px 0; color:var(--success-color);">Rp ${gajiBersihFinal.toLocaleString('id-ID')}</td></tr>
                     </table>
@@ -552,6 +581,8 @@
                 urlParams.append("tanggal_asli", rDate);
             }
 
+            document.getElementById('cabang_pemasukan').disabled = false;
+
             fetch(WEB_APP_URL, {
                 method: "POST",
                 headers: { "Content-Type": "application/x-www-form-urlencoded" },
@@ -560,6 +591,11 @@
             .then(res => res.text())
             .then(resText => {
                 btnSubmit.disabled = false;
+                
+                if(SESSION_USER && SESSION_USER.jabatan === "Kepala Toko") {
+                    document.getElementById('cabang_pemasukan').disabled = true;
+                }
+
                 if(resText === "SUCCESS" || resText === "SUCCESS_TARGET") {
                     showStatus("Data Berhasil Disimpan!", "success");
                     
@@ -587,6 +623,9 @@
                 }
             }).catch(() => {
                 btnSubmit.disabled = false;
+                if(SESSION_USER && SESSION_USER.jabatan === "Kepala Toko") {
+                    document.getElementById('cabang_pemasukan').disabled = true;
+                }
                 showStatus("Gagal menghubungi server.", "error");
             });
         }
