@@ -170,10 +170,12 @@
             display: flex;
             gap: 10px;
             margin-bottom: 20px;
+            flex-wrap: wrap;
         }
 
         .tab-btn {
             flex: 1;
+            min-width: 100px;
             padding: 12px;
             background-color: #222;
             border: 1px solid var(--accent-gold);
@@ -181,7 +183,7 @@
             border-radius: 8px;
             cursor: pointer;
             font-weight: bold;
-            font-size: 12px;
+            font-size: 11px;
             text-transform: uppercase;
             transition: all 0.3s ease;
         }
@@ -228,6 +230,10 @@
             text-decoration: none;
             font-weight: 700;
         }
+
+        #areaGaji {
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -239,6 +245,8 @@
         </div>
 
         <div id="statusMessage"></div>
+
+        <div id="areaGaji"></div>
 
         <div id="gerbangAuth">
             <div id="boxLogin" class="card">
@@ -254,13 +262,13 @@
                     </div>
                     <button type="submit" id="btn_login" class="btn">MASUK SISTEM</button>
                 </form>
-                <div class="auth-footer">
-                    Karyawan Baru? <a href="#" onclick="tukarAuth('daftar')">Daftar Di Sini</a>
+                <div class="auth-footer" id="footerPendaftaran" style="display: none;">
+                    Daftarkan Rekan Baru? <a href="#" onclick="tukarAuth('daftar')">Klik Di Sini</a>
                 </div>
             </div>
 
             <div id="boxDaftar" class="card" style="display: none;">
-                <h2>REGISTRASI KARYAWAN</h2>
+                <h2>REGISTRASI KARYAWAN BARU</h2>
                 <form id="formDaftar" onsubmit="handleAuth(event, 'registerUser')">
                     <div class="form-group">
                         <label>NAMA LENGKAP KARYAWAN</label>
@@ -269,18 +277,19 @@
                     <button type="submit" id="btn_daftar" class="btn">DAFTARKAN SEKARANG</button>
                 </form>
                 <div class="auth-footer">
-                    Sudah Punya ID? <a href="#" onclick="tukarAuth('login')">Masuk Di Sini</a>
+                    Kembali ke Login? <a href="#" onclick="tukarAuth('login')">Masuk Di Sini</a>
                 </div>
             </div>
         </div>
 
         <div id="halamanUtama" style="display: none;">
-            <div class="nav-tabs" id="menuNavigasi" style="display: none;">
-                <button class="tab-btn active" onclick="switchTab('input-pemasukan')">Pemasukan</button>
-                <button class="tab-btn" onclick="switchTab('input-pengeluaran')">Pengeluaran</button>
+            <div class="nav-tabs" id="menuNavigasi">
+                <button id="nav_pemasukan" class="tab-btn active" onclick="switchTab('input-pemasukan')">Pemasukan</button>
+                <button id="nav_pengeluaran" class="tab-btn" onclick="switchTab('input-pengeluaran')">Pengeluaran</button>
+                <button id="nav_gaji_kt" class="tab-btn" style="display: none;" onclick="switchTab('gaji-kepala-toko')">Gaji Saya</button>
             </div>
 
-            <div id="input-pemasukan" class="tab-content">
+            <div id="input-pemasukan" class="tab-content active">
                 <div class="card">
                     <h2>INPUT PEMASUKAN UNIT</h2>
                     <form id="formPemasukan" onsubmit="submitData(event, 'Pemasukan')">
@@ -351,11 +360,14 @@
                     </form>
                 </div>
             </div>
+
+            <div id="gaji-kepala-toko" class="tab-content">
+                <p style="text-align: center; color: #fff; font-size: 13px; font-weight: 600;">Rekap Gaji Pribadi Anda Tampil di Bagian Atas Layar.</p>
+            </div>
         </div>
     </div>
 
     <script>
-        // URL WEB APP ANDA OTOMATIS SUDAH DITANAM DI SINI
         const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxWBYtbeBe3-xH3R80axowIeVbI8n6fc-x3qwTbZammMY3dpsAOYR2y9DcD6R5AURaI/exec";
 
         window.onload = function() {
@@ -390,15 +402,40 @@
                 .then(resData => {
                     document.getElementById('btn_login').disabled = false;
                     if (resData.status === "success") {
-                        showStatus("Akses Diterima! Selamat Datang " + resData.nama, "success");
+                        showStatus("Akses Diterima! Jabatan: " + resData.jabatan, "success");
+                        
+                        // Sembunyikan gerbang login utama
                         document.getElementById('gerbangAuth').style.display = 'none';
-                        document.getElementById('halamanUtama').style.display = 'block';
                         
+                        // Render Kotak Gaji Karyawan di Atas
                         tampilkanKotakGajiKaryawan(resData.gaji, resData.tarifUnit, resData.potonganWifi, resData.nama);
-                        
-                        if (resData.jabatan === "Kepala Toko" || resData.jabatan === "Admin" || resData.jabatan === "Owner") {
+
+                        // ATUR HAK AKSES BERDASARKAN JABATAN
+                        if (resData.jabatan === "Karyawan") {
+                            // Karyawan HANYA bisa lihat gaji, sembunyikan semua menu input
+                            document.getElementById('halamanUtama').style.display = 'none';
+                            document.getElementById('areaGaji').style.display = 'block';
+                        } 
+                        else if (resData.jabatan === "Kepala Toko") {
+                            // Kepala toko bisa input data + bisa pindah lihat gaji miliknya sendiri
+                            document.getElementById('halamanUtama').style.display = 'block';
                             document.getElementById('menuNavigasi').style.display = 'flex';
-                            document.getElementById('input-pemasukan').classList.add('active');
+                            document.getElementById('nav_pemasukan').style.display = 'block';
+                            document.getElementById('nav_pengeluaran').style.display = 'block';
+                            document.getElementById('nav_gaji_kt').style.display = 'block'; // Munculkan tombol lihat gaji sendiri
+                            document.getElementById('areaGaji').style.display = 'none'; // Awalnya sembunyikan rekap gaji
+                        } 
+                        else if (resData.jabatan === "Admin" || resData.jabatan === "Owner") {
+                            // Admin & Owner dapat akses penuh keseluruhan + buka akses link pendaftaran rekan baru
+                            document.getElementById('halamanUtama').style.display = 'block';
+                            document.getElementById('menuNavigasi').style.display = 'flex';
+                            document.getElementById('nav_pemasukan').style.display = 'block';
+                            document.getElementById('nav_pengeluaran').style.display = 'block';
+                            document.getElementById('nav_gaji_kt').style.display = 'none';
+                            document.getElementById('areaGaji').style.display = 'block'; // Owner/Admin bisa pantau langsung kotak rekap gaji yang di-login
+                            
+                            // Munculkan opsi pendaftaran jika owner/admin mau daftarin orang pas logout/kembali
+                            document.getElementById('footerPendaftaran').style.display = 'block';
                         }
                     } else {
                         showStatus(resData.message, "error");
@@ -492,18 +529,25 @@
                     </div>
                 </div>
             `;
-            
-            let kontainerUtama = document.querySelector('.container');
-            if (kontainerUtama) {
-                kontainerUtama.insertAdjacentHTML('afterbegin', htmlKotak);
-            }
+            document.getElementById('areaGaji').innerHTML = htmlKotak;
         }
 
         function switchTab(tabId) {
             document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
             document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            
             document.getElementById(tabId).classList.add('active');
             event.currentTarget.classList.add('active');
+
+            // Logika spesifik Kepala Toko: jika pindah ke tab gaji, buka kotak gaji di atas. Jika pindah ke input, tutup kotak gajinya.
+            if (tabId === 'gaji-kepala-toko') {
+                document.getElementById('areaGaji').style.display = 'block';
+            } else {
+                // Jika sedang login sebagai kepala toko dan pindah ke tab input, rekap gaji disembunyikan agar fokus input data
+                if (document.getElementById('nav_gaji_kt').style.display === 'block') {
+                    document.getElementById('areaGaji').style.display = 'none';
+                }
+            }
         }
 
         function hitungKotor() {
@@ -514,6 +558,7 @@
             document.getElementById('nominal_pemasukan_display').value = "Rp " + totalNominal.toLocaleString('id-ID');
         }
 
+        // Tampilkan notifikasi status di layar
         function showStatus(text, type) {
             const msgBox = document.getElementById('statusMessage');
             msgBox.innerText = text;
