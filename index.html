@@ -8,104 +8,115 @@
   <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
   <!-- Menggunakan Font Awesome untuk ikon -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    .border-gold { border-color: #D4AF37 !important; }
+    .text-gold { color: #D4AF37 !important; }
+    .bg-gold { background-color: #D4AF37 !important; }
+  </style>
 </head>
-<body class="bg-gray-100 font-sans min-h-screen flex flex-col justify-between">
+<body class="bg-gradient-to-br from-red-600 via-red-500 to-white font-sans min-h-screen flex flex-col justify-between">
 
   <!-- URL Web App Apps Script -->
   <script>
     const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxWBYtbeBe3-xH3R80axowIeVbI8n6fc-x3qwTbZammMY3dpsAOYR2y9DcD6R5AURaI/exec";
     let CURRENT_CABANG = "";
     let LOGIN_DATA = {};
+
+    // Ketentuan Target Unit Per Cabang
+    const TARGET_CABANG = {
+      "Grobogan": 100,
+      "Palis": 50,
+      "Cayur": 50
+    };
   </script>
 
   <!-- ================= LOADING SCREEN ================= -->
-  <div id="loadingScreen" class="fixed inset-0 bg-gray-900/50 backdrop-blur-sm flex flex-col justify-center items-center z-50">
-    <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-600"></div>
+  <div id="loadingScreen" class="fixed inset-0 bg-gray-900/70 backdrop-blur-sm flex flex-col justify-center items-center z-50">
+    <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-red-600"></div>
     <p class="text-white mt-4 font-semibold text-lg" id="loadingText">Memuat sistem, mohon tunggu...</p>
   </div>
 
   <!-- ================= NOTIFIKASI TOAST ================= -->
-  <div id="toast" class="fixed top-5 right-5 max-w-sm w-full bg-white rounded-lg shadow-lg border-l-4 p-4 hidden z-50 transition-all duration-300 transform translate-y-[-20px]">
+  <div id="toast" class="fixed top-5 right-5 max-w-sm w-full bg-white rounded-xl shadow-2xl border-l-4 p-4 hidden z-50 transition-all duration-300 transform translate-y-[-20px]">
     <div class="flex items-center">
       <div id="toastIcon" class="text-xl mr-3"></div>
-      <div id="toastMessage" class="text-gray-700 font-medium text-sm"></div>
+      <div id="toastMessage" class="text-gray-700 font-bold text-sm"></div>
     </div>
   </div>
 
   <!-- ================= 1. HALAMAN LOGIN ================= -->
   <div id="pageLogin" class="flex-grow flex items-center justify-center p-4">
-    <div class="bg-white p-8 rounded-2xl shadow-xl w-full max-w-md border border-gray-100">
-      <div class="text-center mb-8">
-        <div class="bg-blue-100 text-blue-600 w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4 text-2xl shadow-inner">
-          <i class="fa-solid fa-store"></i>
+    <div class="bg-white/95 backdrop-blur p-8 rounded-2xl shadow-2xl w-full max-w-md border-2 border-gold relative overflow-hidden">
+      <div class="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-red-700 via-red-500 to-red-700"></div>
+      
+      <div class="text-center mb-8 mt-2">
+        <div class="bg-gradient-to-br from-red-600 to-red-700 text-white w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4 text-2xl shadow-md border border-gold">
+          <i class="fa-solid fa-store text-amber-300"></i>
         </div>
-        <h2 class="text-2xl font-bold text-gray-800">Login Cabang</h2>
-        <p class="text-gray-500 text-sm mt-1">Silakan pilih cabang dan masukkan PIN Anda</p>
+        <h2 class="text-2xl font-black text-gray-800 uppercase tracking-tight">Login Cabang</h2>
+        <p class="text-gray-500 text-xs font-semibold mt-1">Silakan masukkan akses kredensial Anda</p>
       </div>
 
       <form id="formLogin" onsubmit="handleLogin(event)">
         <div class="mb-5">
-          <label class="block text-gray-700 text-sm font-semibold mb-2"><i class="fa-solid fa-map-location-dot mr-2 text-blue-500"></i>Pilih Cabang</label>
-          <select id="loginCabang" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition bg-gray-50 font-medium text-gray-700" required>
+          <label class="block text-gray-700 text-xs font-bold uppercase tracking-wider mb-2"><i class="fa-solid fa-map-location-dot mr-2 text-red-600"></i>Pilih Cabang</label>
+          <select id="loginCabang" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none transition bg-gray-50 font-bold text-gray-700" required>
             <option value="" disabled selected>-- Pilih Cabang --</option>
           </select>
         </div>
 
         <div class="mb-6">
-          <label class="block text-gray-700 text-sm font-semibold mb-2"><i class="fa-solid fa-key mr-2 text-blue-500"></i>PIN Akses</label>
-          <input type="password" id="loginPin" inputmode="numeric" pattern="[0-9]*" placeholder="Masukkan PIN" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition bg-gray-50 tracking-widest text-center text-lg font-bold" required>
+          <label class="block text-gray-700 text-xs font-bold uppercase tracking-wider mb-2"><i class="fa-solid fa-key mr-2 text-red-600"></i>PIN Akses</label>
+          <input type="password" id="loginPin" inputmode="numeric" pattern="[0-9]*" placeholder="Masukkan PIN" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none transition bg-gray-50 tracking-widest text-center text-lg font-black text-gray-800" required>
         </div>
 
-        <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-xl transition duration-200 transform active:scale-95 shadow-md flex justify-center items-center gap-2">
-          <i class="fa-solid fa-right-to-bracket"></i> Masuk Aplikasi
+        <button type="submit" class="w-full bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white font-black py-3.5 px-4 rounded-xl transition duration-200 transform active:scale-95 shadow-md border-b-4 border-red-900 flex justify-center items-center gap-2">
+          <i class="fa-solid fa-right-to-bracket text-amber-300"></i> MASUK APLIKASI
         </button>
       </form>
     </div>
   </div>
 
   <!-- ================= 2. HALAMAN UTAMA (DASHBOARD) ================= -->
-  <div id="pageDashboard" class="hidden flex-grow flex flex-col">
-    <!-- Navbar -->
-    <nav class="bg-white shadow-sm border-b border-gray-200 px-6 py-4 flex justify-between items-center">
+  <div id="pageDashboard" class="hidden flex-grow flex flex-col bg-gray-50">
+    <nav class="bg-gradient-to-r from-red-700 via-red-600 to-red-800 shadow-md px-6 py-4 flex justify-between items-center border-b-4 border-gold">
       <div class="flex items-center gap-3">
-        <div class="bg-blue-600 text-white p-2 rounded-lg text-lg"><i class="fa-solid fa-chart-line"></i></div>
+        <div class="bg-white text-red-600 p-2 rounded-xl text-lg font-bold shadow-inner border border-gold"><i class="fa-solid fa-chart-line"></i></div>
         <div>
-          <h1 class="font-bold text-gray-800 leading-tight">Dashboard Rekap</h1>
-          <p id="displayCabang" class="text-xs text-blue-600 font-semibold uppercase tracking-wider"></p>
+          <h1 class="font-black text-white text-lg tracking-wide leading-tight">PANEL REKAP HARIAN</h1>
+          <p id="displayCabang" class="text-xs text-amber-300 font-bold uppercase tracking-widest"></p>
         </div>
       </div>
-      <button onclick="handleLogout()" class="text-gray-500 hover:text-red-600 p-2 rounded-lg hover:bg-red-50 transition" title="Keluar">
-        <i class="fa-solid fa-power-off text-lg"></i>
+      <button onclick="handleLogout()" class="text-white hover:text-amber-300 p-2.5 rounded-xl bg-red-800/50 hover:bg-red-900 border border-red-500/30 transition shadow-sm" title="Keluar">
+        <i class="fa-solid fa-power-off text-md"></i>
       </button>
     </nav>
 
-    <!-- Konten Menu Utama -->
     <div class="p-4 max-w-4xl w-full mx-auto flex-grow">
-      <!-- Pilihan Menu Navigasi Internal -->
-      <div class="grid grid-cols-2 gap-3 mb-6 bg-white p-2 rounded-xl shadow-sm border border-gray-200">
-        <button id="btnTabRekap" onclick="switchTab('rekap')" class="py-3 px-4 rounded-lg font-bold text-sm transition-all duration-200 flex justify-center items-center gap-2 bg-blue-600 text-white shadow-sm">
-          <i class="fa-solid fa-file-invoice-dollar"></i> Rekap Harian
+      <div class="grid grid-cols-2 gap-3 mb-6 bg-white p-2 rounded-2xl shadow-md border border-gray-200">
+        <button id="btnTabRekap" onclick="switchTab('rekap')" class="py-3 px-4 rounded-xl font-black text-xs uppercase tracking-wider transition-all duration-200 flex justify-center items-center gap-2 bg-gradient-to-r from-red-600 to-red-700 text-white shadow-md border-b-2 border-red-900">
+          <i class="fa-solid fa-file-invoice-dollar text-amber-300"></i> Rekap Harian
         </button>
-        <button id="btnTabKaryawan" onclick="switchTab('karyawan')" class="py-3 px-4 rounded-lg font-bold text-sm transition-all duration-200 flex justify-center items-center gap-2 text-gray-600 hover:bg-gray-100">
-          <i class="fa-solid fa-user-plus"></i> Karyawan Baru
+        <button id="btnTabKaryawan" onclick="switchTab('karyawan')" class="py-3 px-4 rounded-xl font-black text-xs uppercase tracking-wider transition-all duration-200 flex justify-center items-center gap-2 text-gray-600 hover:bg-gray-100">
+          <i class="fa-solid fa-user-plus text-red-600"></i> Karyawan Baru
         </button>
       </div>
 
       <!-- FORM A: INPUT REKAP KARYAWAN -->
-      <div id="tabRekap" class="bg-white p-6 rounded-2xl shadow-md border border-gray-100 transition-all">
-        <h3 class="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2 border-b pb-3 border-gray-100">
-          <i class="fa-solid fa-file-pen text-blue-600"></i> Input Rekap Kerja Harian
+      <div id="tabRekap" class="bg-white p-6 rounded-2xl shadow-xl border-2 border-gold transition-all relative">
+        <h3 class="text-md font-black text-gray-800 uppercase tracking-wider mb-5 flex items-center gap-2 border-b pb-3 border-gray-100">
+          <i class="fa-solid fa-file-pen text-red-600"></i> Input Rekap Kerja Harian
         </h3>
         
         <form id="formRekap" onsubmit="submitRekap(event)">
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
             <div>
               <label class="block text-gray-700 text-xs font-bold uppercase tracking-wider mb-2">Tanggal Rekap</label>
-              <input type="date" id="rekapTanggal" class="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none" required>
+              <input type="date" id="rekapTanggal" class="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-red-500 outline-none font-semibold text-gray-700" required>
             </div>
             <div>
               <label class="block text-gray-700 text-xs font-bold uppercase tracking-wider mb-2">Pilih Personel</label>
-              <select id="rekapKaryawan" onchange="hitungBersih()" class="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none bg-gray-50 font-medium text-gray-700" required>
+              <select id="rekapKaryawan" onchange="hitungBersih()" class="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-red-500 outline-none bg-gray-50 font-bold text-gray-700" required>
                 <option value="" disabled selected>-- Pilih Karyawan --</option>
               </select>
             </div>
@@ -114,110 +125,102 @@
           <div class="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-4">
             <div>
               <label class="block text-gray-700 text-xs font-bold uppercase tracking-wider mb-2">Jumlah Unit</label>
-              <input type="number" id="rekapUnit" oninput="hitungBersih()" min="0" placeholder="0" class="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none" required>
+              <input type="number" id="rekapUnit" oninput="hitungBersih()" min="0" placeholder="0" class="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-red-500 outline-none font-bold text-gray-800" required>
             </div>
             <div>
               <label class="block text-gray-700 text-xs font-bold uppercase tracking-wider mb-2">Tips Mandiri</label>
-              <input type="number" id="rekapTips" oninput="hitungBersih()" min="0" placeholder="0" class="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none">
+              <input type="number" id="rekapTips" oninput="hitungBersih()" min="0" placeholder="0" class="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-red-500 outline-none font-bold text-gray-800">
             </div>
             <div>
               <label class="block text-gray-700 text-xs font-bold uppercase tracking-wider mb-2">Bonus Tambahan</label>
-              <input type="number" id="rekapBonus" oninput="hitungBersih()" min="0" placeholder="0" class="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none">
+              <input type="number" id="rekapBonus" oninput="hitungBersih()" min="0" placeholder="0" class="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-red-500 outline-none font-bold text-gray-800">
             </div>
             <div>
               <label class="block text-gray-700 text-xs font-bold uppercase tracking-wider mb-2">Kasbon</label>
-              <input type="number" id="rekapKasbon" oninput="hitungBersih()" min="0" placeholder="0" class="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none">
+              <input type="number" id="rekapKasbon" oninput="hitungBersih()" min="0" placeholder="0" class="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-red-500 outline-none font-bold text-gray-800">
             </div>
             <div>
               <label class="block text-gray-700 text-xs font-bold uppercase tracking-wider mb-2">Potongan Wifi</label>
-              <input type="number" id="rekapWifi" oninput="hitungBersih()" min="0" value="1000" placeholder="1000" class="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none">
+              <!-- Terkunci mati 1000 tidak bisa diubah -->
+              <input type="number" id="rekapWifi" value="1000" disabled class="w-full px-4 py-2.5 border border-gray-200 rounded-xl bg-gray-100 font-bold text-gray-400 cursor-not-allowed outline-none">
             </div>
           </div>
 
-          <!-- INPUT CHECKBOX TARGET OTOMATIS -->
-          <div class="mb-4 bg-blue-50 border border-blue-200 p-3 rounded-xl flex items-center">
-            <input type="checkbox" id="chkTarget" onchange="hitungBersih()" class="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500 cursor-pointer">
-            <label for="chkTarget" class="ml-3 text-sm font-semibold text-blue-900 cursor-pointer select-none">
-              <i class="fa-solid fa-bullseye mr-1 text-blue-600"></i> Tembus Target Harian Cabang
-            </label>
+          <!-- STATUS DETEKSI TARGET OTOMATIS BERDASARKAN CABANG -->
+          <div id="statusTargetBox" class="mb-5 bg-gray-100 border border-gray-300 p-3 rounded-xl flex items-center justify-between transition-all duration-200">
+            <span class="text-xs font-black text-gray-600 uppercase tracking-wider">
+              <i class="fa-solid fa-flag-checkered mr-1"></i> Status Target Cabang:
+            </span>
+            <span id="txtStatusTarget" class="text-xs font-black uppercase tracking-wider text-gray-500">Belum Terpenuhi</span>
           </div>
 
-          <!-- KOTAK ESTIMASI TOTAL BERSIH -->
-          <div class="bg-emerald-50 border border-emerald-200 rounded-2xl p-4 mb-6 flex justify-between items-center shadow-inner">
+          <!-- KOTAK ESTIMASI TOTAL BERSIH PREMIUM EMAS -->
+          <div class="bg-gradient-to-br from-amber-50 to-orange-50 border-2 border-gold rounded-2xl p-4 mb-6 flex justify-between items-center shadow-md">
             <div>
-              <span class="text-xs font-bold text-emerald-800 uppercase tracking-wider block">Estimasi Nominal Bersih</span>
-              <span class="text-gray-500 text-xs">Otomatis Terkalkulasi</span>
+              <span class="text-xs font-black text-amber-900 uppercase tracking-wider block">Estimasi Nominal Bersih</span>
+              <span class="text-gray-500 text-[10px] font-bold uppercase tracking-wide">Sistem Otomatis</span>
             </div>
-            <div class="text-emerald-700 font-extrabold text-2xl tracking-wide" id="txtNominalBersih">
-              Rp 0
-            </div>
+            <div class="text-red-700 font-black text-2xl tracking-wide" id="txtNominalBersih">Rp 0</div>
           </div>
 
-          <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-4 rounded-xl transition duration-200 shadow-md flex justify-center items-center gap-2">
-            <i class="fa-solid fa-cloud-arrow-up"></i> Simpan Rekap Kerja
+          <button type="submit" class="w-full bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white font-black py-3.5 px-4 rounded-xl transition duration-200 shadow-lg border-b-4 border-red-900 flex justify-center items-center gap-2 tracking-wider text-sm">
+            <i class="fa-solid fa-cloud-arrow-up text-amber-300"></i> SIMPAN REKAP KERJA
           </button>
         </form>
       </div>
 
       <!-- FORM B: TAMBAH KARYAWAN BARU -->
-      <div id="tabKaryawan" class="bg-white p-6 rounded-2xl shadow-md border border-gray-100 hidden transition-all">
-        <h3 class="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2 border-b pb-3 border-gray-100">
-          <i class="fa-solid fa-user-plus text-blue-600"></i> Daftarkan Karyawan/Personel Baru
+      <div id="tabKaryawan" class="bg-white p-6 rounded-2xl shadow-xl border-2 border-gold hidden transition-all">
+        <h3 class="text-md font-black text-gray-800 uppercase tracking-wider mb-5 flex items-center gap-2 border-b pb-3 border-gray-100">
+          <i class="fa-solid fa-user-plus text-red-600"></i> Daftarkan Karyawan Baru
         </h3>
 
         <form id="formKaryawan" onsubmit="submitKaryawan(event)">
           <div class="mb-4">
             <label class="block text-gray-700 text-xs font-bold uppercase tracking-wider mb-2">Nama Lengkap Personel</label>
-            <input type="text" id="masterNama" placeholder="Contoh: Muhammad Nur Barlian" class="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none" required>
+            <input type="text" id="masterNama" placeholder="Contoh: Budi Santoso" class="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-red-500 outline-none font-semibold text-gray-800" required>
           </div>
 
           <div class="mb-6">
             <label class="block text-gray-700 text-xs font-bold uppercase tracking-wider mb-2">Jabatan / Posisi</label>
-            <select id="masterJabatan" class="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none bg-gray-50 text-gray-700 font-medium">
+            <select id="masterJabatan" class="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-red-500 outline-none bg-gray-50 text-gray-800 font-bold">
               <option value="">Karyawan Biasa</option>
               <option value="Kepala Toko">Kepala Toko</option>
-              <option value="Wakil Kepala Toko">Wakil Kepala Toko</option>
             </select>
           </div>
 
-          <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-xl transition duration-200 shadow-md flex justify-center items-center gap-2">
-            <i class="fa-solid fa-user-check"></i> Daftarkan ke Master Data
+          <button type="submit" class="w-full bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white font-black py-3.5 px-4 rounded-xl transition duration-200 shadow-lg border-b-4 border-red-900 flex justify-center items-center gap-2 tracking-wider text-sm">
+            <i class="fa-solid fa-user-check text-amber-300"></i> DAFTARKAN KE MASTER DATA
           </button>
         </form>
       </div>
     </div>
   </div>
 
-  <!-- Footer -->
-  <footer class="bg-white border-t border-gray-200 text-center py-3 text-xs text-gray-400 font-medium">
+  <footer class="bg-white border-t-2 border-gold text-center py-3.5 text-[10px] text-gray-500 font-bold uppercase tracking-widest">
     &copy; 2026 Steam MP 7000. All Rights Reserved.
   </footer>
 
   <!-- ================= LOGIKA JAVASCRIPT JALUR LOGIS ================= -->
   <script>
-    // Set Tanggal Input Harian default ke hari ini saat halaman dimuat
     document.getElementById('rekapTanggal').valueAsDate = new Date();
 
-    // Jalankan pengambilan data konfigurasi awal saat dokumen siap
-    window.addEventListener('DOMContentLoaded', () => {
-      initApp();
-    });
+    window.addEventListener('DOMContentLoaded', () => { initApp(); });
 
-    // 1. TAMPILKAN TOAST NOTIFIKASI
     function showToast(message, type = "success") {
       const toast = document.getElementById('toast');
       const icon = document.getElementById('toastIcon');
       const msg = document.getElementById('toastMessage');
 
       msg.innerText = message;
-      toast.classList.remove('hidden', 'border-emerald-500', 'border-red-500');
+      toast.classList.remove('hidden', 'border-emerald-500', 'border-red-600');
 
       if (type === "success") {
         toast.classList.add('border-emerald-500');
         icon.innerHTML = '<i class="fa-solid fa-circle-check text-emerald-500"></i>';
       } else {
-        toast.classList.add('border-red-500');
-        icon.innerHTML = '<i class="fa-solid fa-circle-xmark text-red-500"></i>';
+        toast.classList.add('border-red-600');
+        icon.innerHTML = '<i class="fa-solid fa-circle-xmark text-red-600"></i>';
       }
 
       toast.style.transform = "translateY(0)";
@@ -227,10 +230,8 @@
       }, 4000);
     }
 
-    // 2. INITIALISASI DATA AWAL (GET LOGIN DATA)
     function initApp() {
       toggleLoading(true, "Menghubungkan ke database pusat...");
-      
       fetch(`${WEB_APP_URL}?action=getLoginData`)
         .then(response => response.json())
         .then(data => {
@@ -244,7 +245,6 @@
             opt.innerText = cabang;
             selectCabang.appendChild(opt);
           });
-          
           toggleLoading(false);
         })
         .catch(err => {
@@ -254,7 +254,6 @@
         });
     }
 
-    // 3. AMBIL DATA KARYAWAN UNTUK DROPDOWN
     function loadKaryawanDropdown() {
       const selectKaryawan = document.getElementById('rekapKaryawan');
       selectKaryawan.innerHTML = '<option value="" disabled selected>Memuat nama personel...</option>';
@@ -276,19 +275,12 @@
         });
     }
 
-    // 4. KONTROL LOADING LAYAR
     function toggleLoading(show, text = "") {
       const loader = document.getElementById('loadingScreen');
       if (text) document.getElementById('loadingText').innerText = text;
-      
-      if (show) {
-        loader.classList.remove('hidden');
-      } else {
-        loader.classList.add('hidden');
-      }
+      if (show) loader.classList.remove('hidden'); else loader.classList.add('hidden');
     }
 
-    // 5. PROSES HANDLER LOGIN
     function handleLogin(event) {
       event.preventDefault();
       const cabang = document.getElementById('loginCabang').value;
@@ -305,6 +297,7 @@
         
         document.getElementById('pageLogin').classList.add('hidden');
         document.getElementById('pageDashboard').classList.remove('hidden');
+        document.body.className = "bg-gray-100 font-sans min-h-screen flex flex-col justify-between";
         
         showToast(`Selamat datang di panel sistem ${cabang}!`, "success");
         loadKaryawanDropdown();
@@ -313,16 +306,92 @@
       }
     }
 
-    // 6. PROSES HANDLER LOGOUT
     function handleLogout() {
       CURRENT_CABANG = "";
       document.getElementById('loginPin').value = "";
       document.getElementById('pageDashboard').classList.add('hidden');
       document.getElementById('pageLogin').classList.remove('hidden');
+      document.body.className = "bg-gradient-to-br from-red-600 via-red-500 to-white font-sans min-h-screen flex flex-col justify-between";
       showToast("Berhasil keluar dari sistem.", "success");
     }
 
-    // 7. NAVIGASI TAB MENU INTERNAL
+    // Ambil keyword nama cabang murni untuk memotong teks panjang (misal: "Sukamulya 2" / "Grobogan")
+    function getKeywordCabang() {
+      if(!CURRENT_CABANG) return "";
+      for (let key in TARGET_CABANG) {
+        if (CURRENT_CABANG.toLowerCase().includes(key.toLowerCase())) {
+          return key;
+        }
+      }
+      return "";
+    }
+
+    // 8. LOGIKA INTEGRAL HITUNG BERSH & TARGET OTOMATIS
+    function hitungBersih() {
+      const unit = parseInt(document.getElementById('rekapUnit').value) || 0;
+      const tips = parseInt(document.getElementById('rekapTips').value) || 0;
+      const bonusManual = parseInt(document.getElementById('rekapBonus').value) || 0;
+      const kasbon = parseInt(document.getElementById('rekapKasbon').value) || 0;
+      const wifi = 1000; // Dikunci mati otomatis 1.000 per hari
+
+      // 1. Komisi Dasar Rp 3.000 / Unit
+      const komisiUnit = unit * 3000; 
+
+      // 2. Cek Aturan Target Cabang
+      let isTembusTarget = false;
+      let targetUnitDibutuhkan = 0;
+      const keyCabang = getKeywordCabang();
+
+      if (keyCabang && TARGET_CABANG[keyCabang]) {
+        targetUnitDibutuhkan = TARGET_CABANG[keyCabang];
+        if (unit >= targetUnitDibutuhkan) {
+          isTembusTarget = true;
+        }
+      }
+
+      // 3. Hitung Bonus Otomatis Sesuai Jabatan
+      let bonusTargetOtomatis = 0;
+      const karyawanSelected = document.getElementById('rekapKaryawan').value;
+      const targetBox = document.getElementById('statusTargetBox');
+      const txtStatus = document.getElementById('txtStatusTarget');
+
+      if (karyawanSelected) {
+        if (isTembusTarget) {
+          // Update Box UI ke Hijau (Tembus)
+          targetBox.className = "mb-5 bg-emerald-50 border border-emerald-300 p-3 rounded-xl flex items-center justify-between transition-all duration-200";
+          txtStatus.className = "text-xs font-black uppercase tracking-wider text-emerald-700";
+          txtStatus.innerHTML = `<i class="fa-solid fa-circle-check"></i> TEMBUS TARGET (${unit}/${targetUnitDibutuhkan} Unit)`;
+
+          // Tentukan besaran bonus otomatis
+          if (karyawanSelected.includes("Kepala Toko")) {
+            bonusTargetOtomatis = 10000;
+          } else {
+            bonusTargetOtomatis = 5000;
+          }
+        } else {
+          // Update Box UI ke Abu-abu/Merah pudar (Gagal/Belum Tembus)
+          targetBox.className = "mb-5 bg-gray-50 border border-gray-200 p-3 rounded-xl flex items-center justify-between transition-all duration-200";
+          txtStatus.className = "text-xs font-black uppercase tracking-wider text-gray-500";
+          txtStatus.innerHTML = targetUnitDibutuhkan > 0 ? `Belum Target (${unit}/${targetUnitDibutuhkan} Unit)` : "Belum Target";
+          bonusTargetOtomatis = 0;
+        }
+      }
+
+      // Total Penggabungan Bonus
+      const totalBonus = bonusManual + bonusTargetOtomatis;
+
+      // Rumus Bersih Akhir
+      const bersih = (komisiUnit + tips + totalBonus) - kasbon - wifi;
+
+      document.getElementById('txtNominalBersih').innerText = new Intl.NumberFormat('id-ID', {
+        style: 'currency',
+        currency: 'IDR',
+        maximumFractionDigits: 0
+      }).format(bersih);
+
+      return { bersih, totalBonus };
+    }
+
     function switchTab(tab) {
       const tabRekap = document.getElementById('tabRekap');
       const tabKaryawan = document.getElementById('tabKaryawan');
@@ -332,56 +401,16 @@
       if (tab === 'rekap') {
         tabRekap.classList.remove('hidden');
         tabKaryawan.classList.add('hidden');
-        btnRekap.className = "py-3 px-4 rounded-lg font-bold text-sm transition-all duration-200 flex justify-center items-center gap-2 bg-blue-600 text-white shadow-sm";
-        btnKaryawan.className = "py-3 px-4 rounded-lg font-bold text-sm transition-all duration-200 flex justify-center items-center gap-2 text-gray-600 hover:bg-gray-100";
+        btnRekap.className = "py-3 px-4 rounded-xl font-black text-xs uppercase tracking-wider transition-all duration-200 flex justify-center items-center gap-2 bg-gradient-to-r from-red-600 to-red-700 text-white shadow-md border-b-2 border-red-900";
+        btnKaryawan.className = "py-3 px-4 rounded-xl font-black text-xs uppercase tracking-wider transition-all duration-200 flex justify-center items-center gap-2 text-gray-600 hover:bg-gray-100";
       } else {
         tabRekap.classList.add('hidden');
         tabKaryawan.classList.remove('hidden');
-        btnRekap.className = "py-3 px-4 rounded-lg font-bold text-sm transition-all duration-200 flex justify-center items-center gap-2 text-gray-600 hover:bg-gray-100";
-        btnKaryawan.className = "py-3 px-4 rounded-lg font-bold text-sm transition-all duration-200 flex justify-center items-center gap-2 bg-blue-600 text-white shadow-sm";
+        btnRekap.className = "py-3 px-4 rounded-xl font-black text-xs uppercase tracking-wider transition-all duration-200 flex justify-center items-center gap-2 text-gray-600 hover:bg-gray-100";
+        btnKaryawan.className = "py-3 px-4 rounded-xl font-black text-xs uppercase tracking-wider transition-all duration-200 flex justify-center items-center gap-2 bg-gradient-to-r from-red-600 to-red-700 text-white shadow-md border-b-2 border-red-900";
       }
     }
 
-    // 8. HITUNG ESTIMASI NOMINAL BERSIH DI LAYAR SECARA OTOMATIS
-    function hitungBersih() {
-      const unit = parseInt(document.getElementById('rekapUnit').value) || 0;
-      const tips = parseInt(document.getElementById('rekapTips').value) || 0;
-      const bonusManual = parseInt(document.getElementById('rekapBonus').value) || 0;
-      const kasbon = parseInt(document.getElementById('rekapKasbon').value) || 0;
-      const wifi = parseInt(document.getElementById('rekapWifi').value) || 0;
-
-      // 1. Hitung Komisi Dasar (Rp 3.000 per unit)
-      const komisiUnit = unit * 3000; 
-
-      // 2. Logika Hitung Bonus Target Otomatis berdasarkan Jabatan
-      let bonusTarget = 0;
-      const IsTembusTarget = document.getElementById('chkTarget').checked;
-      const karyawanSelected = document.getElementById('rekapKaryawan').value; // Mengandung "Nama (Jabatan)"
-
-      if (IsTembusTarget && karyawanSelected) {
-        if (karyawanSelected.includes("Kepala Toko")) {
-          bonusTarget = 10000; // Bonus KT jika tembus target
-        } else {
-          bonusTarget = 5000;  // Bonus Karyawan biasa jika tembus target
-        }
-      }
-
-      // Total Semua Bonus (Manual + Otomatis Target)
-      const totalBonus = bonusManual + bonusTarget;
-
-      // Rumus Bersih: (Komisi Unit + Tips + Total Bonus) - Kasbon - Potongan Wifi
-      const bersih = (komisiUnit + tips + totalBonus) - kasbon - wifi;
-
-      document.getElementById('txtNominalBersih').innerText = new Intl.NumberFormat('id-ID', {
-        style: 'currency',
-        currency: 'IDR',
-        maximumFractionDigits: 0
-      }).format(bersih);
-
-      return bersih;
-    }
-
-    // 9. SUBMIT FORM REKAP HARIAN KE GOOGLE SHEETS
     function submitRekap(event) {
       event.preventDefault();
       toggleLoading(true, "Sedang mengirim dan mengunci data rekap...");
@@ -394,20 +423,10 @@
       const unit = document.getElementById('rekapUnit').value;
       const tips = document.getElementById('rekapTips').value || 0;
       const kasbon = document.getElementById('rekapKasbon').value || 0;
-      const wifi = document.getElementById('rekapWifi').value || 0;
-      const nominalBersih = hitungBersih();
-
-      // Menghitung total bonus gabungan untuk dikirim ke Sheet
-      let bonusManual = parseInt(document.getElementById('rekapBonus').value) || 0;
-      let bonusTarget = 0;
-      if (document.getElementById('chkTarget').checked && karyawan) {
-        if (karyawan.includes("Kepala Toko")) {
-          bonusTarget = 10000;
-        } else {
-          bonusTarget = 5000;
-        }
-      }
-      const totalBonusDikirim = bonusManual + bonusTarget;
+      const wifi = 1000;
+      
+      // Ambil data kalkulasi akhir yang tersinkronisasi
+      const kalkulasi = hitungBersih();
 
       const formData = new URLSearchParams();
       formData.append("action", "insertRow");
@@ -417,29 +436,25 @@
       formData.append("karyawan", karyawan);
       formData.append("unit", unit);
       formData.append("tips", tips);
-      formData.append("bonus", totalBonusDikirim);
+      formData.append("bonus", kalkulasi.totalBonus);
       formData.append("kasbon", kasbon);
       formData.append("potongan_wifi", wifi);
-      formData.append("nominal_bersih", nominalBersih);
+      formData.append("nominal_clean", kalkulasi.bersih);
 
       fetch(WEB_APP_URL, {
         method: "POST",
         body: formData,
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded"
-        }
+        headers: { "Content-Type": "application/x-www-form-urlencoded" }
       })
       .then(res => res.json())
       .then(response => {
         toggleLoading(false);
         if (response.status === "Success") {
           showToast("Data rekap harian berhasil dikunci ke Google Sheet!", "success");
-          // Reset Form input saja
           document.getElementById('rekapUnit').value = "";
           document.getElementById('rekapTips').value = "";
           document.getElementById('rekapBonus').value = "";
           document.getElementById('rekapKasbon').value = "";
-          document.getElementById('chkTarget').checked = false;
           hitungBersih();
         } else {
           showToast(`Gagal menyimpan: ${response.message}`, "error");
@@ -452,7 +467,6 @@
       });
     }
 
-    // 10. SUBMIT PERSONEL BARU KE MASTER DATA
     function submitKaryawan(event) {
       event.preventDefault();
       toggleLoading(true, "Mendaftarkan personel baru...");
@@ -469,9 +483,7 @@
       fetch(WEB_APP_URL, {
         method: "POST",
         body: formData,
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded"
-        }
+        headers: { "Content-Type": "application/x-www-form-urlencoded" }
       })
       .then(res => res.json())
       .then(response => {
@@ -480,7 +492,6 @@
           showToast(`Berhasil mendaftarkan ${nama} ke sistem!`, "success");
           document.getElementById('masterNama').value = "";
           document.getElementById('masterJabatan').value = "";
-          
           loadKaryawanDropdown();
           switchTab('rekap');
         } else {
