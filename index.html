@@ -222,12 +222,12 @@
         </div>
 
         <div id="halamanUtama" style="display: none;">
-            <div class="nav-tabs">
+            <div class="nav-tabs" id="menuNavigasi" style="display: none;">
                 <button class="tab-btn active" onclick="switchTab('input-pemasukan')">Pemasukan</button>
                 <button class="tab-btn" onclick="switchTab('input-pengeluaran')">Pengeluaran</button>
             </div>
 
-            <div id="input-pemasukan" class="tab-content active">
+            <div id="input-pemasukan" class="tab-content">
                 <div class="card">
                     <h2>INPUT PEMASUKAN UNIT</h2>
                     <form id="formPemasukan" onsubmit="submitData(event, 'Pemasukan')">
@@ -302,6 +302,7 @@
     </div>
 
     <script>
+        // URL WEB APP ANDA SUDAH LANGSUNG DITANAM DI SINI
         const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxWBYtbeBe3-xH3R80axowIeVbI8n6fc-x3qwTbZammMY3dpsAOYR2y9DcD6R5AURaI/exec";
 
         window.onload = function() {
@@ -320,7 +321,6 @@
             }
         }
 
-        // HANDLING LOGIN & PENDAFTARAN KARYAWAN (ID OTOMATIS)
         function handleAuth(event, tipeAksi) {
             event.preventDefault();
             let prm = new URLSearchParams();
@@ -329,7 +329,7 @@
             if (tipeAksi === 'loginUser') {
                 document.getElementById('btn_login').disabled = true;
                 showStatus("Memeriksa ID & Akses...", "loading");
-                prm.append("username", document.getElementById('login_user').value); // ID Karyawan (EMP-XXX)
+                prm.append("username", document.getElementById('login_user').value); 
                 prm.append("sandi", document.getElementById('login_sandi').value);
             } else {
                 document.getElementById('btn_daftar').disabled = true;
@@ -352,12 +352,18 @@
                         fetch(cekUrl).then(res => res.json()).then(resData => {
                             document.getElementById('btn_login').disabled = false;
                             if (resData.status === "success") {
-                                showStatus("Akses Diterima! Memuat Lembar Gaji...", "success");
+                                showStatus("Akses Diterima! Selamat Datang " + resData.nama, "success");
                                 document.getElementById('gerbangAuth').style.display = 'none';
                                 document.getElementById('halamanUtama').style.display = 'block';
                                 
-                                // RENDER BENTUK KOTAK REKAP GAJI KARYAWAN SECARA PRIVAT
-                                tampilkanKotakGajiKaryawan(resData.gaji, resData.tarifUnit, resData.potonganWifi);
+                                // RENDER KOTAK REKAP GAJI PRIVAT
+                                tampilkanKotakGajiKaryawan(resData.gaji, resData.tarifUnit, resData.potonganWifi, resData.nama);
+                                
+                                // KONTROL HAK AKSES FORM INPUT PENDAPATAN
+                                if (resData.jabatan === "Kepala Toko" || resData.jabatan === "Admin" || resData.jabatan === "Owner") {
+                                    document.getElementById('menuNavigasi').style.display = 'flex';
+                                    document.getElementById('input-pemasukan').classList.add('active');
+                                }
                             } else {
                                 showStatus(resData.message, "error");
                             }
@@ -367,7 +373,7 @@
                         });
                     } else {
                         document.getElementById('btn_daftar').disabled = false;
-                        showStatus("Pendaftaran Berhasil! ID dibuat otomatis. Menunggu Persetujuan & Set Sandi oleh Owner.", "success");
+                        showStatus("Pendaftaran Berhasil! ID dibuat otomatis. Menunggu Persetujuan Owner.", "success");
                         tukarAuth('login');
                         document.getElementById('formDaftar').reset();
                     }
@@ -380,10 +386,9 @@
             });
         }
 
-        // GENERATE KOTAK REKAP GAJI PRIVAT PERSIS FORMAT YANG ANDA INGINKAN
-        function tampilkanKotakGajiKaryawan(dataGaji, tarifUnit, potonganWifi) {
+        function tampilkanKotakGajiKaryawan(dataGaji, tarifUnit, potonganWifi, nama) {
             let totalUnit = 0, totalTips = 0, totalBonus = 0, totalKasbon = 0;
-            let jumlahHariKerja = dataGaji.length; // Menghitung total hari kerja aktif di sheet
+            let jumlahHariKerja = dataGaji.length; 
             
             dataGaji.forEach(item => {
                 totalUnit += parseInt(item.unit);
@@ -392,16 +397,14 @@
                 totalKasbon += parseInt(item.kasbon);
             });
 
-            // Hitungan Gaji Kotor ditarik otomatis dari parameter Pengaturan (3000)
             let gajiKotorUnit = totalUnit * parseInt(tarifUnit); 
-            // Potongan WiFi wajib dikali jumlah hari kerja aktif dari database (1000/hari)
             let totalPotonganWifi = jumlahHariKerja * parseInt(potonganWifi); 
             let totalGajiBersih = (gajiKotorUnit + totalTips + totalBonus) - totalKasbon - totalPotonganWifi;
             
-            // Layout Kotak Rekap Hitam Cantik Sesuai Request Gambar Tanpa Merubah CSS Utama
             let htmlKotak = `
                 <div class="card" style="background: #111; color: #fff; border: 2px solid var(--accent-color); margin-bottom: 25px; padding: 20px; border-radius: 8px;">
-                    <h3 style="color: #fff; border-left: 4px solid var(--accent-color); padding-left: 10px; margin-bottom: 15px; font-size: 16px;">KOTAK REKAP REKENING GAJI PRIVAT</h3>
+                    <h3 style="color: #fff; border-left: 4px solid var(--accent-color); padding-left: 10px; margin-bottom: 5px; font-size: 15px;">KOTAK REKAP GAJI PRIVAT</h3>
+                    <p style="font-size: 12px; color: #aaa; margin-bottom: 15px;">Nama: ${nama} </p>
                     <div style="overflow-x: auto;">
                         <table style="width: 100%; border-collapse: collapse; min-width: 280px; color: #fff; font-size: 13px;">
                             <thead>
@@ -429,7 +432,7 @@
                                     <td style="padding: 12px 5px;">TOTAL</td>
                                     <td style="padding: 12px 5px;">Rp ${totalGajiBersih.toLocaleString('id-ID')}</td>
                                     <td colspan="2" style="padding: 12px 5px; font-size: 10px; background: #1a1a1a; color: #aaa; text-align: center; font-weight: normal; border: 1px solid #333;">
-                                        WIFI Rp ${parseInt(potonganWifi).toLocaleString('id-ID')} / Hari (${jumlahHariKerja} Hari Kerja = -Rp ${totalPotonganWifi.toLocaleString('id-ID')})
+                                        WIFI Rp ${parseInt(potonganWifi).toLocaleString('id-ID')} / Hari (${jumlahHariKerja} Hari = -Rp ${totalPotonganWifi.toLocaleString('id-ID')})
                                     </td>
                                 </tr>
                             </tbody>
@@ -438,17 +441,10 @@
                 </div>
             `;
             
-            // Tempel di atas halaman agar karyawan langsung disambut kotak gajinya
             let kontainerUtama = document.querySelector('.container');
             if (kontainerUtama) {
                 kontainerUtama.insertAdjacentHTML('afterbegin', htmlKotak);
             }
-            
-            // Karyawan biasa dikunci aksesnya agar tidak bisa input/melihat data operasional utama toko
-            let navTabs = document.querySelector('.nav-tabs');
-            let formInput = document.getElementById('input-pemasukan');
-            if (navTabs) navTabs.style.display = 'none';
-            if (formInput) formInput.style.display = 'none';
         }
 
         function switchTab(tabId) {
@@ -460,7 +456,7 @@
 
         function hitungKotor() {
             const unitInput = document.getElementById('unit_pemasukan').value;
-            const tarifPerUnit = 3000; // Log input kotor harian toko disesuaikan ke parameter 3000
+            const tarifPerUnit = 3000; 
             const totalNominal = unitInput ? parseInt(unitInput) * tarifPerUnit : 0;
             document.getElementById('nominal_pemasukan').value = totalNominal;
             document.getElementById('nominal_pemasukan_display').value = "Rp " + totalNominal.toLocaleString('id-ID');
