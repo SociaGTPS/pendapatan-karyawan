@@ -283,13 +283,13 @@
         </div>
 
         <div id="halamanUtama" style="display: none;">
-            <div class="nav-tabs" id="menuNavigasi" style="display: none;">
-                <button id="nav_pemasukan" class="tab-btn active" onclick="switchTab('input-pemasukan')">Pemasukan</button>
+            <div class="nav-tabs" id="menuNavigasi">
+                <button id="nav_pemasukan" class="tab-btn" onclick="switchTab('input-pemasukan')">Pemasukan</button>
                 <button id="nav_pengeluaran" class="tab-btn" onclick="switchTab('input-pengeluaran')">Pengeluaran</button>
                 <button id="nav_gaji_kt" class="tab-btn" style="display: none;" onclick="switchTab('gaji-kepala-toko')">Gaji Saya</button>
             </div>
 
-            <div id="input-pemasukan" class="tab-content active">
+            <div id="input-pemasukan" class="tab-content">
                 <div class="card">
                     <h2>INPUT PEMASUKAN UNIT</h2>
                     <form id="formPemasukan" onsubmit="submitData(event, 'Pemasukan')">
@@ -404,10 +404,10 @@
                     if (resData.status === "success") {
                         showStatus("Akses Diterima! Jabatan: " + resData.jabatan, "success");
                         
-                        // 1. Sembunyikan gerbang login utama
+                        // Sembunyikan gerbang login utama
                         document.getElementById('gerbangAuth').style.display = 'none';
                         
-                        // 2. TENTUKAN TAMPILAN OPERASIONAL DULUAN (AGAR TIDAK CRASH)
+                        // ATUR HAK AKSES DAN TAMPILAN SECARA AMAN (ANTI-CRASH)
                         if (resData.jabatan === "Karyawan") {
                             document.getElementById('halamanUtama').style.display = 'none';
                             document.getElementById('areaGaji').style.display = 'block';
@@ -432,7 +432,7 @@
                             switchTab('input-pemasukan');
                         }
 
-                        // 3. TERAKHIR AMBIL DATA KOTAK GAJI
+                        // JALANKAN LOG KOTAK GAJI DI AKHIR
                         tampilkanKotakGajiKaryawan(resData.gaji, resData.tarifUnit, resData.potonganWifi, resData.nama, resData.jabatan);
 
                     } else {
@@ -441,7 +441,7 @@
                 }).catch((err) => {
                     console.error("Login Error: ", err);
                     document.getElementById('btn_login').disabled = false;
-                    showStatus("Terjadi kegagalan komunikasi sistem.", "error");
+                    showStatus("ID PENDING atau Kombinasi Sandi salah.", "error");
                 });
             } 
             else if (tipeAksi === 'registerUser') {
@@ -478,22 +478,22 @@
             var targetBox = document.getElementById('areaGaji');
             if(!targetBox) return;
 
-            // JIKA OWNER ATAU ADMIN DAN DATA GAJI KOSONG
+            // Jika Owner/Admin dan tidak punya riwayat gaji harian
             if (jabatan === "Owner" || jabatan === "Admin") {
                 if (!dataGaji || dataGaji.length === 0) {
                     targetBox.innerHTML = `
                         <div class="card" style="background: #111113; color: #fff; border: 2px solid var(--accent-gold); margin-bottom: 25px; padding: 15px; border-radius: 12px; text-align:center;">
-                            <p style="font-size: 13px; color: var(--accent-gold); font-weight:600;">Log Akun: ${nama} (${jabatan} - Akses Terbuka)</p>
+                            <p style="font-size: 13px; color: var(--accent-gold); font-weight:600;">Log Akun: ${nama} (${jabatan} - Akses Penuh Terbuka)</p>
                         </div>`;
                     return;
                 }
             }
 
-            // JIKA DATA GAJI BENAR-BENAR BELUM ADA (KARYAWAN/KT BARU)
+            // Jika Karyawan/Kepala Toko tapi data gajinya di sheet masih kosong bersih
             if (!dataGaji || dataGaji.length === 0) {
                 targetBox.innerHTML = `
                     <div class="card" style="background: #111113; color: #fff; border: 2px solid var(--accent-gold); margin-bottom: 25px; padding: 15px; border-radius: 12px; text-align:center;">
-                        <p style="font-size: 13px; color: #ffffff;">Halo ${nama}, data rekap kerja Anda periode ini belum diinput oleh Admin.</p>
+                        <p style="font-size: 13px; color: #ffffff;">Halo ${nama}, laporan rincian gaji Anda belum diterbitkan oleh Admin.</p>
                     </div>`;
                 return;
             }
@@ -555,24 +555,23 @@
         }
 
         function switchTab(tabId) {
-            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            // Sembunyikan semua konten tab
+            document.querySelectorAll('.tab-content').forEach(content => content.style.display = 'none');
+            // Hapus kelas aktif dari semua tombol
             document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
             
+            // Tampilkan tab target
             var targetTab = document.getElementById(tabId);
-            if(targetTab) targetTab.classList.add('active');
+            if(targetTab) targetTab.style.display = 'block';
             
-            if(event && event.currentTarget && event.currentTarget.classList.contains('tab-btn')) {
-                event.currentTarget.classList.add('active');
-            } else {
-                if(tabId === 'input-pemasukan') {
-                    var btnPem = document.getElementById('nav_pemasukan');
-                    if(btnPem) btnPem.classList.add('active');
-                }
-            }
+            // Aktifkan tombol navigasi yang sesuai
+            if(tabId === 'input-pemasukan') document.getElementById('nav_pemasukan').classList.add('active');
+            if(tabId === 'input-pengeluaran') document.getElementById('nav_pengeluaran').classList.add('active');
+            if(tabId === 'gaji-kepala-toko') document.getElementById('nav_gaji_kt').classList.add('active');
 
-            // Logika Visibilitas Kotak Gaji Kepala Toko
-            var navGajiKt = document.getElementById('nav_gaji_kt');
-            if (navGajiKt && navGajiKt.style.display === 'block') {
+            // Kontrol khusus visibilitas rekap rekening gaji harian
+            var checkNavGaji = document.getElementById('nav_gaji_kt');
+            if (checkNavGaji && checkNavGaji.style.display === 'block') {
                 if (tabId === 'gaji-kepala-toko') {
                     document.getElementById('areaGaji').style.display = 'block';
                 } else {
