@@ -410,37 +410,39 @@
                         // Render Kotak Gaji Karyawan di Atas
                         tampilkanKotakGajiKaryawan(resData.gaji, resData.tarifUnit, resData.potonganWifi, resData.nama);
 
-                        // ATUR HAK AKSES BERDASARKAN JABATAN
+                        // ATUR HAK AKSES BERDASARKAN JABATAN (DIBAIKI SUPAYA ANTI KOSONG)
                         if (resData.jabatan === "Karyawan") {
-                            // Karyawan HANYA bisa lihat gaji, sembunyikan semua menu input
                             document.getElementById('halamanUtama').style.display = 'none';
                             document.getElementById('areaGaji').style.display = 'block';
                         } 
                         else if (resData.jabatan === "Kepala Toko") {
-                            // Kepala toko bisa input data + bisa pindah lihat gaji miliknya sendiri
                             document.getElementById('halamanUtama').style.display = 'block';
                             document.getElementById('menuNavigasi').style.display = 'flex';
                             document.getElementById('nav_pemasukan').style.display = 'block';
                             document.getElementById('nav_pengeluaran').style.display = 'block';
-                            document.getElementById('nav_gaji_kt').style.display = 'block'; // Munculkan tombol lihat gaji sendiri
-                            document.getElementById('areaGaji').style.display = 'none'; // Awalnya sembunyikan rekap gaji
+                            document.getElementById('nav_gaji_kt').style.display = 'block'; 
+                            document.getElementById('areaGaji').style.display = 'none'; 
+                            
+                            // Reset tab default ke pemasukan
+                            switchTab('input-pemasukan');
                         } 
                         else if (resData.jabatan === "Admin" || resData.jabatan === "Owner") {
-                            // Admin & Owner dapat akses penuh keseluruhan + buka akses link pendaftaran rekan baru
                             document.getElementById('halamanUtama').style.display = 'block';
                             document.getElementById('menuNavigasi').style.display = 'flex';
                             document.getElementById('nav_pemasukan').style.display = 'block';
                             document.getElementById('nav_pengeluaran').style.display = 'block';
                             document.getElementById('nav_gaji_kt').style.display = 'none';
-                            document.getElementById('areaGaji').style.display = 'block'; // Owner/Admin bisa pantau langsung kotak rekap gaji yang di-login
-                            
-                            // Munculkan opsi pendaftaran jika owner/admin mau daftarin orang pas logout/kembali
+                            document.getElementById('areaGaji').style.display = 'block'; 
                             document.getElementById('footerPendaftaran').style.display = 'block';
+                            
+                            // Reset tab default ke pemasukan
+                            switchTab('input-pemasukan');
                         }
                     } else {
                         showStatus(resData.message, "error");
                     }
-                }).catch(() => {
+                }).catch((err) => {
+                    console.error(err);
                     document.getElementById('btn_login').disabled = false;
                     showStatus("ID PENDING atau Kombinasi Sandi salah.", "error");
                 });
@@ -476,18 +478,27 @@
         }
 
         function tampilkanKotakGajiKaryawan(dataGaji, tarifUnit, potonganWifi, nama) {
+            // Jika tidak ada data gaji (kosong/untuk owner), pasang tampilan default tanpa merusak sistem
+            if (!dataGaji || dataGaji.length === 0) {
+                document.getElementById('areaGaji').innerHTML = `
+                    <div class="card" style="background: #111113; color: #fff; border: 2px solid var(--accent-gold); margin-bottom: 25px; padding: 15px; border-radius: 12px; text-align:center;">
+                        <p style="font-size: 13px; color: var(--accent-gold); font-weight:600;">Log Akun: ${nama} (Akses Penuh Terbuka)</p>
+                    </div>`;
+                return;
+            }
+
             let totalUnit = 0, totalTips = 0, totalBonus = 0, totalKasbon = 0;
             let jumlahHariKerja = dataGaji.length; 
             
             dataGaji.forEach(item => {
-                totalUnit += parseInt(item.unit);
-                totalTips += parseInt(item.tips);
-                totalBonus += parseInt(item.bonus);
-                totalKasbon += parseInt(item.kasbon);
+                totalUnit += parseInt(item.unit) || 0;
+                totalTips += parseInt(item.tips) || 0;
+                totalBonus += parseInt(item.bonus) || 0;
+                totalKasbon += parseInt(item.kasbon) || 0;
             });
 
-            let gajiKotorUnit = totalUnit * parseInt(tarifUnit); 
-            let totalPotonganWifi = jumlahHariKerja * parseInt(potonganWifi); 
+            let gajiKotorUnit = totalUnit * (parseInt(tarifUnit) || 3000); 
+            let totalPotonganWifi = jumlahHariKerja * (parseInt(potonganWifi) || 1000); 
             let totalGajiBersih = (gajiKotorUnit + totalTips + totalBonus) - totalKasbon - totalPotonganWifi;
             
             let htmlKotak = `
@@ -536,14 +547,20 @@
             document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
             document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
             
-            document.getElementById(tabId).classList.add('active');
-            event.currentTarget.classList.add('active');
+            var targetTab = document.getElementById(tabId);
+            if(targetTab) targetTab.classList.add('active');
+            
+            // Atur tombol nav aktif secara manual lewat event atau pencarian ID tombol
+            if(event && event.currentTarget && event.currentTarget.classList.contains('tab-btn')) {
+                event.currentTarget.classList.add('active');
+            } else {
+                if(tabId === 'input-pemasukan') document.getElementById('nav_pemasukan').classList.add('active');
+            }
 
-            // Logika spesifik Kepala Toko: jika pindah ke tab gaji, buka kotak gaji di atas. Jika pindah ke input, tutup kotak gajinya.
+            // Logika spesifik Kepala Toko
             if (tabId === 'gaji-kepala-toko') {
                 document.getElementById('areaGaji').style.display = 'block';
             } else {
-                // Jika sedang login sebagai kepala toko dan pindah ke tab input, rekap gaji disembunyikan agar fokus input data
                 if (document.getElementById('nav_gaji_kt').style.display === 'block') {
                     document.getElementById('areaGaji').style.display = 'none';
                 }
@@ -558,9 +575,9 @@
             document.getElementById('nominal_pemasukan_display').value = "Rp " + totalNominal.toLocaleString('id-ID');
         }
 
-        // Tampilkan notifikasi status di layar
         function showStatus(text, type) {
             const msgBox = document.getElementById('statusMessage');
+            if(!msgBox) return;
             msgBox.innerText = text;
             msgBox.className = ''; 
             if(type === 'success') msgBox.classList.add('status-success');
