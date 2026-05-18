@@ -178,15 +178,26 @@
         
         #areaGaji { display: none; }
         
-        /* NOTIFIKASI TARGET EMAS */
+        /* NOTIFIKASI TARGET EMAS SUPER MANTAP */
         .modal-target {
-            display: none; background: linear-gradient(135deg, var(--steam-gold) 0%, #b89020 100%); 
-            color: #fff; padding: 18px; border-radius: 12px; text-align: center;
-            font-weight: bold; font-size: 16px; margin-bottom: 20px; 
-            border: 2px solid #fff;
-            animation: guncangEmas 0.6s ease-in-out infinite alternate;
+            display: none; 
+            background: linear-gradient(135deg, #d4af37 0%, #aa7c11 50%, #c62828 100%); 
+            color: #ffffff; 
+            padding: 22px; 
+            border-radius: 14px; 
+            text-align: center;
+            font-weight: 800; 
+            font-size: 18px; 
+            margin-bottom: 25px; 
+            border: 3px solid #ffffff;
+            box-shadow: 0 10px 25px rgba(170, 124, 17, 0.4);
+            line-height: 1.4;
+            animation: guncangEmas 0.4s ease-in-out infinite alternate;
         }
-        @keyframes guncangEmas { from { transform: scale(0.97); } to { transform: scale(1.03); } }
+        @keyframes guncangEmas { 
+            from { transform: scale(0.96) translateY(0); box-shadow: 0 5px 15px rgba(170, 124, 17, 0.3); } 
+            to { transform: scale(1.02) translateY(-3px); box-shadow: 0 15px 30px rgba(198, 40, 40, 0.5); } 
+        }
 
         /* STYLING TABEL LAPORAN */
         .table-laporan { width:100%; font-size:14px; text-align:left; border-collapse:collapse; background:#fff; border-radius:8px; overflow:hidden; }
@@ -202,7 +213,13 @@
             <p>JUJUR DISIPLIN DAN TANGGUNG JAWAB</p>
         </div>
 
-        <div id="notifTarget" class="modal-target">🎉 LUAR BIASA! TEMBUS TARGET UTAMA! 🚀<br><small style="font-size:12px; font-weight:500;">Bonus Mutlak Telah Ditambahkan ke Sistem</small></div>
+        <div id="notifTarget" class="modal-target">
+            🌟 HOREEE! LUAR BIASA! SELAMAT TEMBUS TARGET HARI INI JOSS! 🚀<br>
+            <span style="font-size:12px; font-weight:500; display:block; margin-top:6px; opacity:0.95; font-style:italic;">
+                Tetap Jaga Kekompakan, Kejujuran, dan Semangat! Bonus Mutlak Milik Bersama Telah Masuk Sistem!
+            </span>
+        </div>
+        
         <div id="statusMessage"></div>
         <div id="areaGaji"></div>
 
@@ -350,7 +367,6 @@
             .then(res => res.json())
             .then(res => {
                 if(res.status === "success") {
-                    // FILTER HANYA JABATAN KARYAWAN & KEPALA TOKO (OWNER & ADMIN SEMBUNYI TOTAL)
                     ARRAY_KARYAWAN = res.data.filter(k => k.jabatan !== "Owner" && k.jabatan !== "Admin");
                     
                     let dropdown = document.getElementById('karyawan_pemasukan');
@@ -390,11 +406,10 @@
                     } 
                     else if(data.jabatan === "Kepala Toko") {
                         document.getElementById('halamanUtama').style.display = 'block';
-                        document.getElementById('boxFiturKT').style.display = 'block'; // Tombol Cek Pendapatan Pribadi KT Aktif
+                        document.getElementById('boxFiturKT').style.display = 'block'; 
                         document.getElementById('boxFiturOwner').style.display = 'none';
                         document.getElementById('nav_pengeluaran').style.display = 'none'; 
                         
-                        // KUNCI CABANG KEPALA TOKO AGAR TIDAK BISA DIUBAH-UBAH
                         if(data.cabang) {
                             document.getElementById('cabang_pemasukan').value = data.cabang;
                             document.getElementById('cabang_pemasukan').disabled = true;
@@ -455,10 +470,8 @@
             });
         }
 
-        // FUNGSI BARU KHUSUS KEPALA TOKO UNTUK CEK GAJI DIRINYA SENDIRI (MURNI UNIT x 3.000)
         function cekPendapatanKTPribadi() {
             showStatus("Menarik data pendapatan pribadi Anda...", "loading");
-            // Memanggil data gaji milik akun login Kepala Toko sendiri
             fetch(`${WEB_APP_URL}?action=loginUser&username=${encodeURIComponent(document.getElementById('login_user').value)}&sandi=${encodeURIComponent(document.getElementById('login_sandi').value)}`)
             .then(res => res.json())
             .then(data => {
@@ -467,8 +480,6 @@
                     let targetBox = document.getElementById('areaGaji');
                     targetBox.style.display = 'block';
                     tampilkanRincianGajiKaryawan(data.gaji, data.nama);
-                    
-                    // Otomatis geser/scroll layar ke box slip gaji di bawah agar langsung terlihat
                     targetBox.scrollIntoView({ behavior: 'smooth' });
                 } else {
                     showStatus("Gagal memperbarui data.", "error");
@@ -599,9 +610,11 @@
                 if(resText === "SUCCESS" || resText === "SUCCESS_TARGET") {
                     showStatus("Data Berhasil Disimpan!", "success");
                     
+                    // JAMINAN MEMUNCULKAN NOTIFIKASI BARU YANG HEBOH JOSS
                     if(resText === "SUCCESS_TARGET") {
                         document.getElementById('notifTarget').style.display = 'block';
-                        setTimeout(() => { document.getElementById('notifTarget').style.display = 'none'; }, 7000);
+                        window.scrollTo({ top: 0, behavior: 'smooth' }); // Scroll otomatis ke atas agar notif langsung terlihat
+                        setTimeout(() => { document.getElementById('notifTarget').style.display = 'none'; }, 8000); // Tampil 8 detik biar puas dibaca
                     }
 
                     if(tipeForm === 'Pemasukan') {
