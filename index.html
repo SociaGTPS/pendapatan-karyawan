@@ -122,18 +122,14 @@
             </div>
           </div>
 
-          <div class="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-4">
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-4">
             <div>
               <label class="block text-gray-700 text-xs font-bold uppercase tracking-wider mb-2">Jumlah Unit</label>
               <input type="number" id="rekapUnit" oninput="hitungBersih()" min="0" placeholder="0" class="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-red-500 outline-none font-bold text-gray-800" required>
             </div>
             <div>
-              <label class="block text-gray-700 text-xs font-bold uppercase tracking-wider mb-2">Tips Mandiri</label>
+              <label class="block text-gray-700 text-xs font-bold uppercase tracking-wider mb-2">Tips Pelanggan</label>
               <input type="number" id="rekapTips" oninput="hitungBersih()" min="0" placeholder="0" class="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-red-500 outline-none font-bold text-gray-800">
-            </div>
-            <div>
-              <label class="block text-gray-700 text-xs font-bold uppercase tracking-wider mb-2">Bonus Tambahan</label>
-              <input type="number" id="rekapBonus" oninput="hitungBersih()" min="0" placeholder="0" class="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-red-500 outline-none font-bold text-gray-800">
             </div>
             <div>
               <label class="block text-gray-700 text-xs font-bold uppercase tracking-wider mb-2">Kasbon</label>
@@ -141,7 +137,6 @@
             </div>
             <div>
               <label class="block text-gray-700 text-xs font-bold uppercase tracking-wider mb-2">Potongan Wifi</label>
-              <!-- Terkunci mati 1000 tidak bisa diubah -->
               <input type="number" id="rekapWifi" value="1000" disabled class="w-full px-4 py-2.5 border border-gray-200 rounded-xl bg-gray-100 font-bold text-gray-400 cursor-not-allowed outline-none">
             </div>
           </div>
@@ -178,7 +173,7 @@
         <form id="formKaryawan" onsubmit="submitKaryawan(event)">
           <div class="mb-4">
             <label class="block text-gray-700 text-xs font-bold uppercase tracking-wider mb-2">Nama Lengkap Personel</label>
-            <input type="text" id="masterNama" placeholder="Contoh: Budi Santoso" class="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-red-500 outline-none font-semibold text-gray-800" required>
+            <input type="text" id="masterNama" placeholder="Contoh: Andi Pratama" class="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-red-500 outline-none font-semibold text-gray-800" required>
           </div>
 
           <div class="mb-6">
@@ -315,7 +310,6 @@
       showToast("Berhasil keluar dari sistem.", "success");
     }
 
-    // Ambil keyword nama cabang murni untuk memotong teks panjang (misal: "Sukamulya 2" / "Grobogan")
     function getKeywordCabang() {
       if(!CURRENT_CABANG) return "";
       for (let key in TARGET_CABANG) {
@@ -326,13 +320,12 @@
       return "";
     }
 
-    // 8. LOGIKA INTEGRAL HITUNG BERSH & TARGET OTOMATIS
+    // LOGIKA INTEGRAL HITUNG BERSIH & TARGET OTOMATIS
     function hitungBersih() {
       const unit = parseInt(document.getElementById('rekapUnit').value) || 0;
       const tips = parseInt(document.getElementById('rekapTips').value) || 0;
-      const bonusManual = parseInt(document.getElementById('rekapBonus').value) || 0;
       const kasbon = parseInt(document.getElementById('rekapKasbon').value) || 0;
-      const wifi = 1000; // Dikunci mati otomatis 1.000 per hari
+      const wifi = 1000; // Terkunci otomatis
 
       // 1. Komisi Dasar Rp 3.000 / Unit
       const komisiUnit = unit * 3000; 
@@ -349,7 +342,7 @@
         }
       }
 
-      // 3. Hitung Bonus Otomatis Sesuai Jabatan
+      // 3. Hitung Bonus Otomatis Sesuai Jabatan (Bonus Tambahan Manual Dihapus)
       let bonusTargetOtomatis = 0;
       const karyawanSelected = document.getElementById('rekapKaryawan').value;
       const targetBox = document.getElementById('statusTargetBox');
@@ -357,19 +350,16 @@
 
       if (karyawanSelected) {
         if (isTembusTarget) {
-          // Update Box UI ke Hijau (Tembus)
           targetBox.className = "mb-5 bg-emerald-50 border border-emerald-300 p-3 rounded-xl flex items-center justify-between transition-all duration-200";
           txtStatus.className = "text-xs font-black uppercase tracking-wider text-emerald-700";
           txtStatus.innerHTML = `<i class="fa-solid fa-circle-check"></i> TEMBUS TARGET (${unit}/${targetUnitDibutuhkan} Unit)`;
 
-          // Tentukan besaran bonus otomatis
           if (karyawanSelected.includes("Kepala Toko")) {
             bonusTargetOtomatis = 10000;
           } else {
             bonusTargetOtomatis = 5000;
           }
         } else {
-          // Update Box UI ke Abu-abu/Merah pudar (Gagal/Belum Tembus)
           targetBox.className = "mb-5 bg-gray-50 border border-gray-200 p-3 rounded-xl flex items-center justify-between transition-all duration-200";
           txtStatus.className = "text-xs font-black uppercase tracking-wider text-gray-500";
           txtStatus.innerHTML = targetUnitDibutuhkan > 0 ? `Belum Target (${unit}/${targetUnitDibutuhkan} Unit)` : "Belum Target";
@@ -377,11 +367,8 @@
         }
       }
 
-      // Total Penggabungan Bonus
-      const totalBonus = bonusManual + bonusTargetOtomatis;
-
-      // Rumus Bersih Akhir
-      const bersih = (komisiUnit + tips + totalBonus) - kasbon - wifi;
+      // Rumus Bersih Akhir (Hanya memakai Bonus Otomatis)
+      const bersih = (komisiUnit + tips + bonusTargetOtomatis) - kasbon - wifi;
 
       document.getElementById('txtNominalBersih').innerText = new Intl.NumberFormat('id-ID', {
         style: 'currency',
@@ -389,7 +376,7 @@
         maximumFractionDigits: 0
       }).format(bersih);
 
-      return { bersih, totalBonus };
+      return { bersih, bonusTargetOtomatis };
     }
 
     function switchTab(tab) {
@@ -425,7 +412,6 @@
       const kasbon = document.getElementById('rekapKasbon').value || 0;
       const wifi = 1000;
       
-      // Ambil data kalkulasi akhir yang tersinkronisasi
       const kalkulasi = hitungBersih();
 
       const formData = new URLSearchParams();
@@ -436,7 +422,7 @@
       formData.append("karyawan", karyawan);
       formData.append("unit", unit);
       formData.append("tips", tips);
-      formData.append("bonus", kalkulasi.totalBonus);
+      formData.append("bonus", kalkulasi.bonusTargetOtomatis); // Hanya bonus target otomatis
       formData.append("kasbon", kasbon);
       formData.append("potongan_wifi", wifi);
       formData.append("nominal_clean", kalkulasi.bersih);
@@ -453,7 +439,6 @@
           showToast("Data rekap harian berhasil dikunci ke Google Sheet!", "success");
           document.getElementById('rekapUnit').value = "";
           document.getElementById('rekapTips').value = "";
-          document.getElementById('rekapBonus').value = "";
           document.getElementById('rekapKasbon').value = "";
           hitungBersih();
         } else {
