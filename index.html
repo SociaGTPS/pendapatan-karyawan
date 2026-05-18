@@ -16,9 +16,12 @@
 </head>
 <body class="bg-gradient-to-br from-red-600 via-red-500 to-white font-sans min-h-screen flex flex-col justify-between">
 
-  <!-- URL Web App Apps Script -->
+  <!-- URL Web App Apps Script & Link Google Sheets -->
   <script>
     const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxWBYtbeBe3-xH3R80axowIeVbI8n6fc-x3qwTbZammMY3dpsAOYR2y9DcD6R5AURaI/exec";
+    // Link Google Sheets resmi milik Steam MP 7000 sudah terpasang:
+    const GSHEET_VIEW_URL = "https://docs.google.com/spreadsheets/d/1Slh_aLbYhN7C5QCPWXhF6sJfTSapfbscwze1RRCgZFQ/edit?usp=sharing"; 
+    
     let CURRENT_CABANG = "";
     let LOGIN_DATA = {};
 
@@ -150,13 +153,18 @@
           </div>
 
           <!-- KOTAK ESTIMASI TOTAL BERSIH PREMIUM EMAS -->
-          <div class="bg-gradient-to-br from-amber-50 to-orange-50 border-2 border-gold rounded-2xl p-4 mb-6 flex justify-between items-center shadow-md">
+          <div class="bg-gradient-to-br from-amber-50 to-orange-50 border-2 border-gold rounded-2xl p-4 mb-4 flex justify-between items-center shadow-md">
             <div>
               <span class="text-xs font-black text-amber-900 uppercase tracking-wider block">Estimasi Nominal Bersih</span>
               <span class="text-gray-500 text-[10px] font-bold uppercase tracking-wide">Sistem Otomatis</span>
             </div>
             <div class="text-red-700 font-black text-2xl tracking-wide" id="txtNominalBersih">Rp 0</div>
           </div>
+
+          <!-- TOMBOL LIHAT HASIL GSHEETS UNTUK KARYAWAN -->
+          <a id="btnLinkGSheet" href="#" target="_blank" class="w-full mb-6 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 font-bold py-2.5 px-4 rounded-xl border border-emerald-300 transition duration-200 flex justify-center items-center gap-2 text-xs uppercase tracking-wider shadow-sm">
+            <i class="fa-solid fa-table text-emerald-600 text-sm"></i> Lihat Hasil Rekap & Gaji Pusat
+          </a>
 
           <button type="submit" class="w-full bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white font-black py-3.5 px-4 rounded-xl transition duration-200 shadow-lg border-b-4 border-red-900 flex justify-center items-center gap-2 tracking-wider text-sm">
             <i class="fa-solid fa-cloud-arrow-up text-amber-300"></i> SIMPAN REKAP KERJA
@@ -196,9 +204,12 @@
     &copy; 2026 Steam MP 7000. All Rights Reserved.
   </footer>
 
-  <!-- ================= LOGIKA JAVASCRIPT JALUR LOGIS ================= -->
+  <!-- ================= LOGIKA JAVASCRIPT ================= -->
   <script>
     document.getElementById('rekapTanggal').valueAsDate = new Date();
+
+    // Otomatis menaruh link asli spreadsheet milikmu ke tombol hasil rekap
+    document.getElementById('btnLinkGSheet').href = GSHEET_VIEW_URL;
 
     window.addEventListener('DOMContentLoaded', () => { initApp(); });
 
@@ -320,17 +331,14 @@
       return "";
     }
 
-    // LOGIKA INTEGRAL HITUNG BERSIH & TARGET OTOMATIS
     function hitungBersih() {
       const unit = parseInt(document.getElementById('rekapUnit').value) || 0;
       const tips = parseInt(document.getElementById('rekapTips').value) || 0;
       const kasbon = parseInt(document.getElementById('rekapKasbon').value) || 0;
-      const wifi = 1000; // Terkunci otomatis
+      const wifi = 1000;
 
-      // 1. Komisi Dasar Rp 3.000 / Unit
       const komisiUnit = unit * 3000; 
 
-      // 2. Cek Aturan Target Cabang
       let isTembusTarget = false;
       let targetUnitDibutuhkan = 0;
       const keyCabang = getKeywordCabang();
@@ -342,7 +350,6 @@
         }
       }
 
-      // 3. Hitung Bonus Otomatis Sesuai Jabatan (Bonus Tambahan Manual Dihapus)
       let bonusTargetOtomatis = 0;
       const karyawanSelected = document.getElementById('rekapKaryawan').value;
       const targetBox = document.getElementById('statusTargetBox');
@@ -367,7 +374,6 @@
         }
       }
 
-      // Rumus Bersih Akhir (Hanya memakai Bonus Otomatis)
       const bersih = (komisiUnit + tips + bonusTargetOtomatis) - kasbon - wifi;
 
       document.getElementById('txtNominalBersih').innerText = new Intl.NumberFormat('id-ID', {
@@ -398,6 +404,7 @@
       }
     }
 
+    // PENGIRIMAN DATA FORM REKAP
     function submitRekap(event) {
       event.preventDefault();
       toggleLoading(true, "Sedang mengirim dan mengunci data rekap...");
@@ -422,7 +429,7 @@
       formData.append("karyawan", karyawan);
       formData.append("unit", unit);
       formData.append("tips", tips);
-      formData.append("bonus", kalkulasi.bonusTargetOtomatis); // Hanya bonus target otomatis
+      formData.append("bonus", kalkulasi.bonusTargetOtomatis);
       formData.append("kasbon", kasbon);
       formData.append("potongan_wifi", wifi);
       formData.append("nominal_clean", kalkulasi.bersih);
@@ -452,6 +459,7 @@
       });
     }
 
+    // PENDAFTARAN KARYAWAN BARU
     function submitKaryawan(event) {
       event.preventDefault();
       toggleLoading(true, "Mendaftarkan personel baru...");
