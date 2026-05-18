@@ -368,7 +368,7 @@
     </div>
 
     <script>
-        // URL WEB APP MILIK ANDA YANG SUDAH DIPERBARUI
+        // URL WEB APP MILIK ANDA YANG SUDAH TERKUNCI SINKRON
         const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxWBYtbeBe3-xH3R80axowIeVbI8n6fc-x3qwTbZammMY3dpsAOYR2y9DcD6R5AURaI/exec";
 
         window.onload = function() {
@@ -404,15 +404,13 @@
                 .then(res => res.json())
                 .then(resData => {
                     document.getElementById('btn_login').disabled = false;
-                    console.log("Response Server:", resData); // FITUR CEK MONITOR LOG DATA
+                    console.log("Response Server:", resData);
                     
                     if (resData.status === "success") {
                         showStatus("Akses Diterima! Jabatan: " + resData.jabatan, "success");
                         
-                        // Sembunyikan gerbang login utama
                         document.getElementById('gerbangAuth').style.display = 'none';
                         
-                        // KONTROL VISIBILITAS HALAMAN DAN NAVIGASI FORM
                         if (resData.jabatan === "Karyawan") {
                             document.getElementById('halamanUtama').style.display = 'none';
                             document.getElementById('areaGaji').style.display = 'block';
@@ -437,7 +435,6 @@
                             switchTab('input-pemasukan');
                         }
 
-                        // JALANKAN LOG TAMPILAN KOTAK GAJI DI AKHIR
                         tampilkanKotakGajiKaryawan(resData.gaji, resData.tarifUnit, resData.potonganWifi, resData.nama, resData.jabatan);
 
                     } else {
@@ -483,7 +480,6 @@
             var targetBox = document.getElementById('areaGaji');
             if(!targetBox) return;
 
-            // Logika Konten jika Akun Owner / Admin dan Log Rincian Gaji Harian Kosong
             if (jabatan === "Owner" || jabatan === "Admin") {
                 if (!dataGaji || dataGaji.length === 0) {
                     targetBox.innerHTML = `
@@ -494,7 +490,6 @@
                 }
             }
 
-            // Logika Konten jika Karyawan baru dan Log Rincian di Sheet Gaji Kosong
             if (!dataGaji || dataGaji.length === 0) {
                 targetBox.innerHTML = `
                     <div class="card" style="background: #111113; color: #fff; border: 2px solid var(--accent-gold); margin-bottom: 25px; padding: 15px; border-radius: 12px; text-align:center;">
