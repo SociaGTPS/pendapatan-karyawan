@@ -179,27 +179,6 @@
         .status-loading { background-color: #fff3e0; color: #e65100; border: 1px solid #ffcc80; }
         
         #areaGaji { display: none; }
-        
-        /* NOTIFIKASI TARGET EMAS */
-        .modal-target {
-            display: none; 
-            background: linear-gradient(135deg, #d4af37 0%, #aa7c11 50%, #c62828 100%); 
-            color: #ffffff; 
-            padding: 22px; 
-            border-radius: 14px; 
-            text-align: center;
-            font-weight: 800; 
-            font-size: 18px; 
-            margin-bottom: 25px; 
-            border: 3px solid #ffffff;
-            box-shadow: 0 10px 25px rgba(170, 124, 17, 0.4);
-            line-height: 1.4;
-            animation: guncangEmas 0.4s ease-in-out infinite alternate;
-        }
-        @keyframes guncangEmas { 
-            from { transform: scale(0.96) translateY(0); box-shadow: 0 5px 15px rgba(170, 124, 17, 0.3); } 
-            to { transform: scale(1.02) translateY(-3px); box-shadow: 0 15px 30px rgba(198, 40, 40, 0.5); } 
-        }
 
         /* STYLING TABEL LAPORAN */
         .table-laporan { width:100%; font-size:14px; text-align:left; border-collapse:collapse; background:#fff; border-radius:8px; overflow:hidden; }
@@ -213,13 +192,6 @@
         <div class="app-header">
             <h1>STEAM <span>MP 7000</span></h1>
             <p>JUJUR DISIPLIN DAN TANGGUNG JAWAB</p>
-        </div>
-
-        <div id="notifTarget" class="modal-target">
-            🌟 HOREEE! LUAR BIASA! SELAMAT TEMBUS TARGET HARI INI JOSS! 🚀<br>
-            <span style="font-size:12px; font-weight:500; display:block; margin-top:6px; opacity:0.95; font-style:italic;">
-                Tetap Jaga Kekompakan, Kejujuran, dan Semangat! Bonus Mutlak Milik Bersama Telah Masuk Sistem!
-            </span>
         </div>
         
         <div id="statusMessage"></div>
@@ -279,10 +251,15 @@
                                 <option value="">-- Memuat Data Anggota --</option>
                             </select>
                         </div>
-                        <div class="form-group">
+                        <div class="form-group" style="margin-bottom: 5px;">
                             <label>Jumlah Unit (Motor)</label>
                             <input type="number" id="unit_pemasukan" placeholder="Masukkan total motor" oninput="hitungKotorEstimasi()" required>
                         </div>
+
+                        <div id="notifTargetBawahUnit" style="display: none; font-size: 13px; font-weight: bold; color: #aa7c11; background: #fffde7; border: 1.5px dashed #d4af37; padding: 10px; border-radius: 8px; margin-bottom: 20px; text-align: center;">
+                            🌟 Selamat! Target Cabang Hari Ini Tembus, Bos! JOSS! 🚀
+                        </div>
+
                         <div class="form-group">
                             <label>Estimasi Pendapatan Anggota (Rp3.000 / Unit)</label>
                             <input type="text" id="nominal_pemasukan_display" value="Rp 0" disabled style="font-weight:bold; color: var(--success-color); background: #f1f8e9; border-color:#c5e1a5;">
@@ -464,14 +441,12 @@
         function bukaRekapOwner() {
             showStatus("Menghitung seluruh kas utama owner (Semua tanggal)...", "loading");
             
-            // Tembak ulang loginUser secara aman di balik layar agar mengangkut seluruh array data dari sheet
             let user = document.getElementById('login_user').value;
             let sandi = document.getElementById('login_sandi').value;
             
             fetch(`${WEB_APP_URL}?action=loginUser&username=${encodeURIComponent(user)}&sandi=${encodeURIComponent(sandi)}`)
             .then(res => res.json())
             .then(loginRes => {
-                // Sekarang tarik data rekap kotor owner dan biaya pengeluaran dari Sheet1 dan GajiKaryawan
                 fetch(WEB_APP_URL + "?action=getLaporanOwner")
                 .then(res => res.json())
                 .then(res => {
@@ -479,14 +454,12 @@
                     let targetBox = document.getElementById('areaGaji');
                     targetBox.style.display = "block";
 
-                    // Bagian Karyawan: Menggunakan kalkulasi data berjalan
                     let listGajiHtml = "";
                     for (let namaK in res.rekapKaryawan) {
                         listGajiHtml += `<tr style="border-bottom:1px solid #eee;"> <td style="padding:10px;">${namaK}</td> <td style="padding:10px; font-weight:bold; text-align:right; color:var(--steam-red);">Rp ${res.rekapKaryawan[namaK].toLocaleString('id-ID')}</td> </tr>`;
                     }
                     if(listGajiHtml === "") listGajiHtml = "<tr><td colspan='2' style='text-align:center; padding:10px; color:#999;'>Belum ada data pendapatan hari ini</td></tr>";
 
-                    // TAMPILAN DASHBOARD OWNER: KAS PORSI 4000 KESELURUHAN & REKAP KARYAWAN HARI INI
                     targetBox.innerHTML = `
                         <div class="card" style="background: #ffffff; border: 2px solid var(--steam-gold); margin-bottom: 25px; padding: 20px;">
                             <h3 style="color:var(--steam-red); font-size:13px; border-left:4px solid var(--steam-gold); padding-left:10px; margin-bottom:15px; text-transform:uppercase;">📊 NERACA TOTAL KAS UTAMA OWNER (Porsi Rp4.000 - Keseluruhan)</h3>
@@ -611,9 +584,26 @@
         }
 
         function hitungKotorEstimasi() {
-            let unit = document.getElementById('unit_pemasukan').value;
-            let total = unit ? parseInt(unit) * 3000 : 0;
+            let unitInput = document.getElementById('unit_pemasukan').value;
+            let unit = unitInput ? parseInt(unitInput) : 0;
+            
+            // Hitung Estimasi Upah Karyawan
+            let total = unit * 3000;
             document.getElementById('nominal_pemasukan_display').value = "Rp " + total.toLocaleString('id-ID');
+
+            // Cek Batasan Target Cabang Secara Real-Time
+            let cabangTerpilih = document.getElementById('cabang_pemasukan').value;
+            let batasanTarget = 50; 
+            if (cabangTerpilih === "Cabang Grobogan") batasanTarget = 100;
+            if (cabangTerpilih === "Cabang Palis") batasanTarget = 50;
+            if (cabangTerpilih === "Cabang Cayur") batasanTarget = 50;
+
+            let boxNotifTarget = document.getElementById('notifTargetBawahUnit');
+            if (unit >= batasanTarget) {
+                boxNotifTarget.style.display = "block"; // Muncul tulisan selamat jika tembus
+            } else {
+                boxNotifTarget.style.display = "none";  // Sembunyi jika belum tembus
+            }
         }
 
         function showStatus(text, type) {
@@ -686,11 +676,8 @@
                 if(resText === "SUCCESS" || resText === "SUCCESS_TARGET") {
                     showStatus("Data Berhasil Disimpan!", "success");
                     
-                    if(resText === "SUCCESS_TARGET") {
-                        document.getElementById('notifTarget').style.display = 'block';
-                        window.scrollTo({ top: 0, behavior: 'smooth' });
-                        setTimeout(() => { document.getElementById('notifTarget').style.display = 'none'; }, 8000);
-                    }
+                    // Sembunyikan kembali box notifikasi target setelah form di-reset
+                    document.getElementById('notifTargetBawahUnit').style.display = "none";
 
                     if(tipeForm === 'Pemasukan') {
                         document.getElementById('formPemasukan').reset();
