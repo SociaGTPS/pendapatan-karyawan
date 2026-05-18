@@ -273,7 +273,7 @@
                             <input type="number" id="kasbon_pemasukan" placeholder="Isi 0 jika tidak ada" value="0" required>
                         </div>
                         <div class="form-group">
-                            <label>Iuran Kebersihan Wifi Harian</label>
+                            <label>Iuran Wifi Harian</label>
                             <input type="text" value="Rp 1.000 (Dipotong Otomatis)" disabled style="color:var(--steam-red); font-weight:bold; background:#fff5f5;">
                         </div>
                         <div class="form-group">
@@ -331,7 +331,6 @@
     </div>
 
     <script>
-        // URL WEB APP TERBARU SINKRONISASI AKTIF
         const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxWBYtbeBe3-xH3R80axowIeVbI8n6fc-x3qwTbZammMY3dpsAOYR2y9DcD6R5AURaI/exec";
         let SESSION_USER = null;
         let ARRAY_KARYAWAN = [];
@@ -437,44 +436,53 @@
             });
         }
 
-        // AMBIL LAPORAN NERACA KESELURUHAN (SEMUA TANGGAL) UNTUK OWNER
         function bukaRekapOwner() {
             showStatus("Menghitung seluruh kas utama owner (Semua tanggal)...", "loading");
             
-            let user = document.getElementById('login_user').value;
-            let sandi = document.getElementById('login_sandi').value;
-            
-            fetch(`${WEB_APP_URL}?action=loginUser&username=${encodeURIComponent(user)}&sandi=${encodeURIComponent(sandi)}`)
+            fetch(WEB_APP_URL + "?action=getLaporanOwner")
             .then(res => res.json())
-            .then(loginRes => {
-                fetch(WEB_APP_URL + "?action=getLaporanOwner")
-                .then(res => res.json())
-                .then(res => {
-                    showStatus("Seluruh database kas disinkronkan.", "success");
-                    let targetBox = document.getElementById('areaGaji');
-                    targetBox.style.display = "block";
+            .then(res => {
+                showStatus("Seluruh database kas disinkronkan.", "success");
+                let targetBox = document.getElementById('areaGaji');
+                targetBox.style.display = "block";
 
-                    let listGajiHtml = "";
-                    for (let namaK in res.rekapKaryawan) {
-                        listGajiHtml += `<tr style="border-bottom:1px solid #eee;"> <td style="padding:10px;">${namaK}</td> <td style="padding:10px; font-weight:bold; text-align:right; color:var(--steam-red);">Rp ${res.rekapKaryawan[namaK].toLocaleString('id-ID')}</td> </tr>`;
-                    }
-                    if(listGajiHtml === "") listGajiHtml = "<tr><td colspan='2' style='text-align:center; padding:10px; color:#999;'>Belum ada data pendapatan hari ini</td></tr>";
+                let hitungTotalSeluruhUnit = 0;
+                let listGajiHtml = "";
+                
+                for (let namaK in res.rekapKaryawan) {
+                    let unitKaryawan = res.rekapKaryawan[namaK].totalUnit || 0;
+                    let gajiBerjalan = res.rekapKaryawan[namaK].gaji || 0;
+                    
+                    hitungTotalSeluruhUnit += unitKaryawan;
+                    
+                    listGajiHtml += `<tr style="border-bottom:1px solid #eee;"> 
+                        <td style="padding:10px;">${namaK} <span style="font-size:11px; color:#78909c;">(${unitKaryawan} Unit)</span></td> 
+                        <td style="padding:10px; font-weight:bold; text-align:right; color:var(--steam-red);">Rp ${gajiBerjalan.toLocaleString('id-ID')}</td> 
+                    </tr>`;
+                }
+                
+                if(listGajiHtml === "") listGajiHtml = "<tr><td colspan='2' style='text-align:center; padding:10px; color:#999;'>Belum ada data pendapatan hari ini</td></tr>";
 
-                    targetBox.innerHTML = `
-                        <div class="card" style="background: #ffffff; border: 2px solid var(--steam-gold); margin-bottom: 25px; padding: 20px;">
-                            <h3 style="color:var(--steam-red); font-size:13px; border-left:4px solid var(--steam-gold); padding-left:10px; margin-bottom:15px; text-transform:uppercase;">📊 NERACA TOTAL KAS UTAMA OWNER (Porsi Rp4.000 - Keseluruhan)</h3>
-                            <table style="width:100%; font-size:14px; text-align:left; border-collapse:collapse; margin-bottom:20px;">
-                                <tr style="border-bottom:1px solid #eee;"><td style="padding:10px; color:#555;">Total Pemasukan Kotor Owner</td><td style="padding:10px; font-weight:bold; color:#2e7d32; text-align:right;">Rp ${res.kotorOwner.toLocaleString('id-ID')}</td></tr>
-                                <tr style="border-bottom:1px solid #eee;"><td style="padding:10px; color:#555;">Total Seluruh Pengeluaran Toko</td><td style="padding:10px; font-weight:bold; color:var(--steam-red); text-align:right;">- Rp ${res.pengeluaran.toLocaleString('id-ID')}</td></tr>
-                                <tr style="background:#fff5f5; font-weight:bold;"><td style="padding:12px; border-radius:6px 0 0 6px; color:var(--text-dark);">PROFIT BERSIH SAYA SEKARANG</td><td style="padding:12px; text-align:right; border-radius:0 6px 6px 0; color:var(--success-color); font-size:16px;">Rp ${res.bersihOwner.toLocaleString('id-ID')}</td></tr>
-                            </table>
-                            
-                            <h3 style="color:var(--text-dark); font-size:13px; border-left:4px solid var(--steam-red); padding-left:10px; margin-bottom:10px; text-transform:uppercase;">👥 REKAP GAJI BERJALAN KARYAWAN (HARI INI)</h3>
-                            <table class="table-laporan">
-                                ${listGajiHtml}
-                            </table>
-                        </div>`;
-                });
+                let kotorOwnerTerbaru = hitungTotalSeluruhUnit * 4000;
+                let bersihOwnerTerbaru = kotorOwnerTerbaru - (res.pengeluaran || 0);
+
+                targetBox.innerHTML = `
+                    <div class="card" style="background: #ffffff; border: 2px solid var(--steam-gold); margin-bottom: 25px; padding: 20px;">
+                        <h3 style="color:var(--steam-red); font-size:13px; border-left:4px solid var(--steam-gold); padding-left:10px; margin-bottom:15px; text-transform:uppercase;">📊 NERACA TOTAL KAS UTAMA OWNER (Porsi Rp4.000 - Keseluruhan)</h3>
+                        <table style="width:100%; font-size:14px; text-align:left; border-collapse:collapse; margin-bottom:20px;">
+                            <tr style="border-bottom:1px solid #eee;"><td style="padding:10px; color:#555;">Total Akumulasi Cucian</td><td style="padding:10px; font-weight:bold; text-align:right; color:var(--text-dark);">${hitungTotalSeluruhUnit} Unit</td></tr>
+                            <tr style="border-bottom:1px solid #eee;"><td style="padding:10px; color:#555;">Total Pemasukan Kotor Owner (Unit x Rp4.000)</td><td style="padding:10px; font-weight:bold; color:#2e7d32; text-align:right;">Rp ${kotorOwnerTerbaru.toLocaleString('id-ID')}</td></tr>
+                            <tr style="border-bottom:1px solid #eee;"><td style="padding:10px; color:#555;">Total Seluruh Pengeluaran Toko</td><td style="padding:10px; font-weight:bold; color:var(--steam-red); text-align:right;">- Rp ${(res.pengeluaran || 0).toLocaleString('id-ID')}</td></tr>
+                            <tr style="background:#fff5f5; font-weight:bold;"><td style="padding:12px; border-radius:6px 0 0 6px; color:var(--text-dark);">PROFIT BERSIH SAYA SEKARANG</td><td style="padding:12px; text-align:right; border-radius:0 6px 6px 0; color:var(--success-color); font-size:16px;">Rp ${bersihOwnerTerbaru.toLocaleString('id-ID')}</td></tr>
+                        </table>
+                        
+                        <h3 style="color:var(--text-dark); font-size:13px; border-left:4px solid var(--steam-red); padding-left:10px; margin-bottom:10px; text-transform:uppercase;">👥 REKAP GAJI BERJALAN KARYAWAN (HARI INI)</h3>
+                        <table class="table-laporan">
+                            ${listGajiHtml}
+                        </table>
+                    </div>`;
+            }).catch(() => {
+                showStatus("Gagal menyinkronkan data owner harian.", "error");
             });
         }
 
@@ -549,7 +557,7 @@
                         <tr style="border-bottom:1px solid #eee;"><td style="padding:8px 0; color:#2e7d32;">Total Tips Masuk</td><td style="padding:8px 0; color:#2e7d32; text-align:right; font-weight:600;">+ Rp ${totalTips.toLocaleString('id-ID')}</td></tr>
                         <tr style="border-bottom:1px solid #eee;"><td style="padding:8px 0; color:#aa7c11;">Total Bonus Target</td><td style="padding:8px 0; color:#aa7c11; font-weight:bold; text-align:right;">+ Rp ${totalBonus.toLocaleString('id-ID')}</td></tr>
                         <tr style="border-bottom:1px solid #eee;"><td style="padding:8px 0; color:var(--steam-red);">Total Potongan Kasbon</td><td style="padding:8px 0; color:var(--steam-red); text-align:right; font-weight:600;">- Rp ${totalKasbon.toLocaleString('id-ID')}</td></tr>
-                        <tr style="border-bottom:1px solid #ddd;"><td style="padding:8px 0; color:#666;">Total Iuran Kebersihan & Wifi (${totalHariKerja} Hari)</td><td style="padding:8px 0; color:var(--steam-red); text-align:right;">- Rp ${akumulasiPotonganWifi.toLocaleString('id-ID')}</td></tr>
+                        <tr style="border-bottom:1px solid #ddd;"><td style="padding:8px 0; color:#666;">Total Iuran Wifi (${totalHariKerja} Hari)</td><td style="padding:8px 0; color:var(--steam-red); text-align:right;">- Rp ${akumulasiPotonganWifi.toLocaleString('id-ID')}</td></tr>
                         <tr style="background:#f1f8e9; font-weight:bold; font-size:16px;"><td style="padding:12px; border-radius:4px 0 0 4px; color:var(--text-dark);">TOTAL PENDAPATAN BERSIH</td><td style="padding:12px; text-align:right; border-radius:0 4px 4px 0; color:var(--success-color);">Rp ${akumulasiTerimaBersihFinal.toLocaleString('id-ID')}</td></tr>
                     </table>
                 </div>
@@ -587,11 +595,9 @@
             let unitInput = document.getElementById('unit_pemasukan').value;
             let unit = unitInput ? parseInt(unitInput) : 0;
             
-            // Hitung Estimasi Upah Karyawan
             let total = unit * 3000;
             document.getElementById('nominal_pemasukan_display').value = "Rp " + total.toLocaleString('id-ID');
 
-            // Cek Batasan Target Cabang Secara Real-Time
             let cabangTerpilih = document.getElementById('cabang_pemasukan').value;
             let batasanTarget = 50; 
             if (cabangTerpilih === "Cabang Grobogan") batasanTarget = 100;
@@ -600,9 +606,9 @@
 
             let boxNotifTarget = document.getElementById('notifTargetBawahUnit');
             if (unit >= batasanTarget) {
-                boxNotifTarget.style.display = "block"; // Muncul tulisan selamat jika tembus
+                boxNotifTarget.style.display = "block";
             } else {
-                boxNotifTarget.style.display = "none";  // Sembunyi jika belum tembus
+                boxNotifTarget.style.display = "none";
             }
         }
 
@@ -676,7 +682,6 @@
                 if(resText === "SUCCESS" || resText === "SUCCESS_TARGET") {
                     showStatus("Data Berhasil Disimpan!", "success");
                     
-                    // Sembunyikan kembali box notifikasi target setelah form di-reset
                     document.getElementById('notifTargetBawahUnit').style.display = "none";
 
                     if(tipeForm === 'Pemasukan') {
