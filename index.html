@@ -3,16 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistem Manajemen Toko</title>
+    <title>STEAM MP 7000</title>
     <style>
         :root {
-            --bg-color: #0d0d0d;
-            --card-bg: #141414;
-            --accent-color: #ff3333;
-            --text-color: #ffffff;
-            --text-muted: #888888;
-            --success-color: #00ff66;
-            --warning-color: #ffcc00;
+            --bg-color: #0f0f11;
+            --card-bg: #ffffff;
+            --accent-red: #d32f2f;
+            --accent-gold: #d4af37;
+            --text-dark: #1a1a1a;
+            --text-muted: #666666;
+            --success-color: #2e7d32;
+            --warning-color: #ef6c00;
         }
 
         * {
@@ -24,7 +25,8 @@
 
         body {
             background-color: var(--bg-color);
-            color: var(--text-color);
+            background-image: radial-gradient(circle at 50% 50%, #2a0808 0%, #0f0f11 100%);
+            color: var(--text-dark);
             padding: 20px;
             display: flex;
             justify-content: center;
@@ -37,24 +39,59 @@
             max-width: 500px;
         }
 
+        .app-header {
+            text-align: center;
+            margin-bottom: 25px;
+            border-bottom: 3px solid var(--accent-gold);
+            padding-bottom: 15px;
+        }
+
+        .app-header h1 {
+            color: #ffffff;
+            font-size: 26px;
+            font-weight: 800;
+            letter-spacing: 1.5px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.6);
+        }
+
+        .app-header h1 span {
+            color: var(--accent-red);
+            background: #ffffff;
+            padding: 2px 8px;
+            border-radius: 4px;
+            border: 1px solid var(--accent-gold);
+        }
+
+        .app-header p {
+            color: var(--accent-gold);
+            font-size: 11px;
+            font-weight: 700;
+            margin-top: 6px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
         .card {
             background-color: var(--card-bg);
-            border-radius: 12px;
+            border-radius: 14px;
             padding: 24px;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.5);
-            border: 1px solid #222;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.7);
+            border-top: 5px solid var(--accent-red);
+            border-bottom: 5px solid var(--accent-gold);
             margin-bottom: 20px;
+            position: relative;
         }
 
         h2 {
-            font-size: 20px;
+            font-size: 18px;
             margin-bottom: 20px;
             text-align: center;
             text-transform: uppercase;
             letter-spacing: 1px;
-            color: var(--text-color);
-            border-left: 4px solid var(--accent-color);
-            padding-left: 8px;
+            color: var(--accent-red);
+            font-weight: 700;
+            border-bottom: 2px dashed #ddd;
+            padding-bottom: 10px;
         }
 
         .form-group {
@@ -63,42 +100,46 @@
 
         label {
             display: block;
-            font-size: 12px;
+            font-size: 11px;
             text-transform: uppercase;
             color: var(--text-muted);
             margin-bottom: 6px;
+            font-weight: 700;
             letter-spacing: 0.5px;
         }
 
         input, select, textarea {
             width: 100%;
             padding: 12px;
-            background-color: #080808;
-            border: 1px solid #333;
-            border-radius: 6px;
-            color: white;
+            background-color: #f8f9fa;
+            border: 1.5px solid #dddddd;
+            border-radius: 8px;
+            color: var(--text-dark);
             font-size: 14px;
+            font-weight: 500;
             transition: all 0.3s ease;
         }
 
         input:focus, select:focus, textarea:focus {
             outline: none;
-            border-color: var(--accent-color);
-            box-shadow: 0 0 8px rgba(255, 51, 51, 0.2);
+            border-color: var(--accent-red);
+            background-color: #ffffff;
+            box-shadow: 0 0 8px rgba(211, 47, 47, 0.15);
         }
 
         input[disabled] {
-            background-color: #1a1a1a;
-            color: var(--text-muted);
+            background-color: #e9ecef;
+            color: #495057;
             cursor: not-allowed;
+            border-color: #ced4da;
         }
 
         .btn {
             width: 100%;
             padding: 14px;
-            background-color: var(--accent-color);
-            border: none;
-            border-radius: 6px;
+            background: linear-gradient(135deg, var(--accent-red) 0%, #b71c1c 100%);
+            border: 1px solid var(--accent-gold);
+            border-radius: 8px;
             color: white;
             font-weight: bold;
             font-size: 14px;
@@ -107,17 +148,22 @@
             letter-spacing: 1px;
             transition: all 0.3s ease;
             margin-top: 10px;
+            box-shadow: 0 4px 10px rgba(183, 28, 28, 0.3);
         }
 
         .btn:hover {
-            background-color: #e02e2e;
-            box-shadow: 0 4px 12px rgba(255, 51, 51, 0.3);
+            background: linear-gradient(135deg, #b71c1c 0%, #8e1c1c 100%);
+            box-shadow: 0 4px 14px rgba(212, 175, 55, 0.4);
+            transform: translateY(-1px);
         }
 
         .btn:disabled {
-            background-color: #555;
+            background: #cccccc !important;
+            border-color: #aaaaaa !important;
+            color: #666666;
             cursor: not-allowed;
             box-shadow: none;
+            transform: none;
         }
 
         .nav-tabs {
@@ -129,10 +175,10 @@
         .tab-btn {
             flex: 1;
             padding: 12px;
-            background-color: #141414;
-            border: 1px solid #222;
-            color: var(--text-muted);
-            border-radius: 6px;
+            background-color: #222;
+            border: 1px solid var(--accent-gold);
+            color: #ffffff;
+            border-radius: 8px;
             cursor: pointer;
             font-weight: bold;
             font-size: 12px;
@@ -141,9 +187,9 @@
         }
 
         .tab-btn.active {
-            background-color: var(--accent-color);
-            color: white;
-            border-color: var(--accent-color);
+            background: #ffffff;
+            color: var(--accent-red);
+            border-top: 3px solid var(--accent-red);
         }
 
         .tab-content {
@@ -155,36 +201,43 @@
         }
 
         #statusMessage {
-            padding: 12px;
-            border-radius: 6px;
+            padding: 14px;
+            border-radius: 8px;
             text-align: center;
             font-size: 13px;
             margin-bottom: 16px;
             display: none;
-            font-weight: 500;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
         }
 
-        .status-success { background-color: rgba(0, 255, 102, 0.1); color: var(--success-color); border: 1px solid var(--success-color); }
-        .status-error { background-color: rgba(255, 51, 51, 0.1); color: var(--accent-color); border: 1px solid var(--accent-color); }
-        .status-loading { background-color: rgba(255, 204, 0, 0.1); color: var(--warning-color); border: 1px solid var(--warning-color); }
+        .status-success { background-color: #e8f5e9; color: var(--success-color); border: 1px solid var(--success-color); }
+        .status-error { background-color: #ffebee; color: var(--accent-red); border: 1px solid var(--accent-red); }
+        .status-loading { background-color: #fff3e0; color: var(--warning-color); border: 1px solid var(--warning-color); }
 
         .auth-footer {
             text-align: center;
-            margin-top: 16px;
+            margin-top: 18px;
             font-size: 13px;
             color: var(--text-muted);
+            font-weight: 500;
         }
 
         .auth-footer a {
-            color: var(--accent-color);
+            color: var(--accent-red);
             text-decoration: none;
-            font-weight: bold;
+            font-weight: 700;
         }
     </style>
 </head>
 <body>
 
     <div class="container">
+        <div class="app-header">
+            <h1>STEAM <span>MP 7000</span></h1>
+            <p>JUJUR • DISIPLIN • TANGGUNG JAWAB</p>
+        </div>
+
         <div id="statusMessage"></div>
 
         <div id="gerbangAuth">
@@ -192,14 +245,14 @@
                 <h2>MASUK SISTEM</h2>
                 <form id="formLogin" onsubmit="handleAuth(event, 'loginUser')">
                     <div class="form-group">
-                        <label>ID KARYAWAN</label>
-                        <input type="text" id="login_user" placeholder="Contoh: EMP-001" required>
+                        <label>ID KARYAWAN (ANGKA MURNI)</label>
+                        <input type="number" id="login_user" placeholder="Masukkan ID Angka Anda" required>
                     </div>
                     <div class="form-group">
                         <label>KATA SANDI</label>
                         <input type="password" id="login_sandi" placeholder="Masukkan Sandi Anda" required>
                     </div>
-                    <button type="submit" id="btn_login" class="btn">MASUK</button>
+                    <button type="submit" id="btn_login" class="btn">MASUK SISTEM</button>
                 </form>
                 <div class="auth-footer">
                     Karyawan Baru? <a href="#" onclick="tukarAuth('daftar')">Daftar Di Sini</a>
@@ -207,13 +260,13 @@
             </div>
 
             <div id="boxDaftar" class="card" style="display: none;">
-                <h2>DAFTAR KARYAWAN</h2>
+                <h2>REGISTRASI KARYAWAN</h2>
                 <form id="formDaftar" onsubmit="handleAuth(event, 'registerUser')">
                     <div class="form-group">
                         <label>NAMA LENGKAP KARYAWAN</label>
                         <input type="text" id="reg_nama" placeholder="Masukkan Nama Sesuai KTP" required>
                     </div>
-                    <button type="submit" id="btn_daftar" class="btn">DAFTARKAN</button>
+                    <button type="submit" id="btn_daftar" class="btn">DAFTARKAN SEKARANG</button>
                 </form>
                 <div class="auth-footer">
                     Sudah Punya ID? <a href="#" onclick="tukarAuth('login')">Masuk Di Sini</a>
@@ -302,7 +355,7 @@
     </div>
 
     <script>
-        // URL WEB APP ANDA SUDAH LANGSUNG DITANAM DI SINI
+        // URL WEB APP ANDA OTOMATIS SUDAH DITANAM DI SINI
         const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxWBYtbeBe3-xH3R80axowIeVbI8n6fc-x3qwTbZammMY3dpsAOYR2y9DcD6R5AURaI/exec";
 
         window.onload = function() {
@@ -328,62 +381,61 @@
 
             if (tipeAksi === 'loginUser') {
                 document.getElementById('btn_login').disabled = true;
-                showStatus("Memeriksa ID & Akses...", "loading");
-                prm.append("username", document.getElementById('login_user').value); 
-                prm.append("sandi", document.getElementById('login_sandi').value);
-            } else {
+                showStatus("Memeriksa Akses...", "loading");
+                
+                var cekUrl = WEB_APP_URL + "?action=loginUser&username=" + encodeURIComponent(document.getElementById('login_user').value) + "&sandi=" + encodeURIComponent(document.getElementById('login_sandi').value);
+                
+                fetch(cekUrl)
+                .then(res => res.json())
+                .then(resData => {
+                    document.getElementById('btn_login').disabled = false;
+                    if (resData.status === "success") {
+                        showStatus("Akses Diterima! Selamat Datang " + resData.nama, "success");
+                        document.getElementById('gerbangAuth').style.display = 'none';
+                        document.getElementById('halamanUtama').style.display = 'block';
+                        
+                        tampilkanKotakGajiKaryawan(resData.gaji, resData.tarifUnit, resData.potonganWifi, resData.nama);
+                        
+                        if (resData.jabatan === "Kepala Toko" || resData.jabatan === "Admin" || resData.jabatan === "Owner") {
+                            document.getElementById('menuNavigasi').style.display = 'flex';
+                            document.getElementById('input-pemasukan').classList.add('active');
+                        }
+                    } else {
+                        showStatus(resData.message, "error");
+                    }
+                }).catch(() => {
+                    document.getElementById('btn_login').disabled = false;
+                    showStatus("ID PENDING atau Kombinasi Sandi salah.", "error");
+                });
+            } 
+            else if (tipeAksi === 'registerUser') {
                 document.getElementById('btn_daftar').disabled = true;
                 showStatus("Mendaftarkan karyawan baru...", "loading");
                 prm.append("nama", document.getElementById('reg_nama').value);
-                prm.append("username", "AUTO_GENERATE");
-                prm.append("sandi", "PENDING_OWNER");
-            }
 
-            fetch(WEB_APP_URL, {
-                method: "POST",
-                mode: "no-cors",
-                headers: { "Content-Type": "application/x-www-form-urlencoded" },
-                body: prm.toString()
-            })
-            .then(() => {
-                setTimeout(() => {
-                    if (tipeAksi === 'loginUser') {
-                        var cekUrl = WEB_APP_URL + "?action=loginUser&username=" + encodeURIComponent(document.getElementById('login_user').value) + "&sandi=" + encodeURIComponent(document.getElementById('login_sandi').value);
-                        fetch(cekUrl).then(res => res.json()).then(resData => {
-                            document.getElementById('btn_login').disabled = false;
-                            if (resData.status === "success") {
-                                showStatus("Akses Diterima! Selamat Datang " + resData.nama, "success");
-                                document.getElementById('gerbangAuth').style.display = 'none';
-                                document.getElementById('halamanUtama').style.display = 'block';
-                                
-                                // RENDER KOTAK REKAP GAJI PRIVAT
-                                tampilkanKotakGajiKaryawan(resData.gaji, resData.tarifUnit, resData.potonganWifi, resData.nama);
-                                
-                                // KONTROL HAK AKSES FORM INPUT PENDAPATAN
-                                if (resData.jabatan === "Kepala Toko" || resData.jabatan === "Admin" || resData.jabatan === "Owner") {
-                                    document.getElementById('menuNavigasi').style.display = 'flex';
-                                    document.getElementById('input-pemasukan').classList.add('active');
-                                }
-                            } else {
-                                showStatus(resData.message, "error");
-                            }
-                        }).catch(() => {
-                            document.getElementById('btn_login').disabled = false;
-                            showStatus("ID belum AKTIF atau kombinasi Sandi salah.", "error");
-                        });
-                    } else {
-                        document.getElementById('btn_daftar').disabled = false;
-                        showStatus("Pendaftaran Berhasil! ID dibuat otomatis. Menunggu Persetujuan Owner.", "success");
+                fetch(WEB_APP_URL, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                    body: prm.toString()
+                })
+                .then(res => res.text())
+                .then(textData => {
+                    document.getElementById('btn_daftar').disabled = false;
+                    var hasil = textData.split(",");
+                    if(hasil[0] === "SUCCESS") {
+                        alert("PENDAFTARAN BERHASIL!\n\nID Karyawan Baru: " + hasil[1] + "\nSandi Acak Sistem: " + hasil[2] + "\n\nHarap CATAT ID dan Sandi di atas! Status akun saat ini masih PENDING menunggu persetujuan aktif dari Owner di sheet.");
+                        showStatus("Karyawan Berhasil Didaftar! ID: " + hasil[1], "success");
                         tukarAuth('login');
                         document.getElementById('formDaftar').reset();
+                    } else {
+                        showStatus("Gagal memproses pendaftaran.", "error");
                     }
-                }, 1500);
-            })
-            .catch(err => {
-                showStatus("Gagal terhubung ke server.", "error");
-                document.getElementById('btn_login').disabled = false;
-                document.getElementById('btn_daftar').disabled = false;
-            });
+                })
+                .catch(err => {
+                    showStatus("Gagal terhubung ke server.", "error");
+                    document.getElementById('btn_daftar').disabled = false;
+                });
+            }
         }
 
         function tampilkanKotakGajiKaryawan(dataGaji, tarifUnit, potonganWifi, nama) {
@@ -402,37 +454,37 @@
             let totalGajiBersih = (gajiKotorUnit + totalTips + totalBonus) - totalKasbon - totalPotonganWifi;
             
             let htmlKotak = `
-                <div class="card" style="background: #111; color: #fff; border: 2px solid var(--accent-color); margin-bottom: 25px; padding: 20px; border-radius: 8px;">
-                    <h3 style="color: #fff; border-left: 4px solid var(--accent-color); padding-left: 10px; margin-bottom: 5px; font-size: 15px;">KOTAK REKAP GAJI PRIVAT</h3>
-                    <p style="font-size: 12px; color: #aaa; margin-bottom: 15px;">Nama: ${nama} </p>
+                <div class="card" style="background: #111113; color: #fff; border: 2px solid var(--accent-gold); margin-bottom: 25px; padding: 20px; border-radius: 12px; box-shadow: inset 0 0 10px rgba(212,175,55,0.2);">
+                    <h3 style="color: #ffffff; border-left: 4px solid var(--accent-red); padding-left: 10px; margin-bottom: 5px; font-size: 15px; font-weight:700;">REKAP REKENING GAJI PRIVAT</h3>
+                    <p style="font-size: 12px; color: var(--accent-gold); margin-bottom: 15px; font-weight:600;">Nama Karyawan: ${nama} </p>
                     <div style="overflow-x: auto;">
                         <table style="width: 100%; border-collapse: collapse; min-width: 280px; color: #fff; font-size: 13px;">
                             <thead>
-                                <tr style="border-bottom: 2px solid #333; text-align: left; background: #1a1a1a;">
-                                    <th style="padding: 10px 5px;">UNIT</th>
-                                    <th style="padding: 10px 5px;">TIPS</th>
-                                    <th style="padding: 10px 5px;">BONUS</th>
-                                    <th style="padding: 10px 5px;">KASBON</th>
+                                <tr style="border-bottom: 2px solid var(--accent-gold); text-align: left; background: #1a1a1e;">
+                                    <th style="padding: 10px 5px; color: var(--accent-gold);">UNIT</th>
+                                    <th style="padding: 10px 5px; color: var(--accent-gold);">TIPS</th>
+                                    <th style="padding: 10px 5px; color: var(--accent-gold);">BONUS</th>
+                                    <th style="padding: 10px 5px; color: var(--accent-gold);">KASBON</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr style="background: #222; border-bottom: 1px solid #333;">
-                                    <td style="padding: 12px 5px;">${totalUnit}</td>
+                                <tr style="background: #25252b; border-bottom: 1px solid #333;">
+                                    <td style="padding: 12px 5px; font-weight:600;">${totalUnit}</td>
                                     <td style="padding: 12px 5px;">Rp ${totalTips.toLocaleString('id-ID')}</td>
                                     <td style="padding: 12px 5px;">Rp ${totalBonus.toLocaleString('id-ID')}</td>
                                     <td style="padding: 12px 5px; color: #ff5252;">Rp ${totalKasbon.toLocaleString('id-ID')}</td>
                                 </tr>
-                                <tr style="background: #fffb15; color: #000; font-weight: bold; border-bottom: 1px solid #333;">
+                                <tr style="background: var(--accent-gold); color: #000; font-weight: bold; border-bottom: 1px solid #333;">
                                     <td style="padding: 10px 5px;">JUMLAH</td>
                                     <td style="padding: 10px 5px;">${totalUnit}</td>
                                     <td style="padding: 10px 5px;">${totalTips > 0 ? 'Ada' : '0'}</td>
-                                    <td style="padding: 10px 5px; color: #c62828;">- Rp ${totalKasbon.toLocaleString('id-ID')}</td>
+                                    <td style="padding: 10px 5px; color: #b71c1c;">- Rp ${totalKasbon.toLocaleString('id-ID')}</td>
                                 </tr>
-                                <tr style="background: #00e676; color: #000; font-weight: bold;">
+                                <tr style="background: #2e7d32; color: #fff; font-weight: bold;">
                                     <td style="padding: 12px 5px;">TOTAL</td>
-                                    <td style="padding: 12px 5px;">Rp ${totalGajiBersih.toLocaleString('id-ID')}</td>
-                                    <td colspan="2" style="padding: 12px 5px; font-size: 10px; background: #1a1a1a; color: #aaa; text-align: center; font-weight: normal; border: 1px solid #333;">
-                                        WIFI Rp ${parseInt(potonganWifi).toLocaleString('id-ID')} / Hari (${jumlahHariKerja} Hari = -Rp ${totalPotonganWifi.toLocaleString('id-ID')})
+                                    <td style="padding: 12px 5px; font-size:14px; text-shadow:1px 1px 2px #000;">Rp ${totalGajiBersih.toLocaleString('id-ID')}</td>
+                                    <td colspan="2" style="padding: 12px 5px; font-size: 10px; background: #1a1a1e; color: #ccc; text-align: center; font-weight: normal; border: 1px solid #333;">
+                                        WIFI Rp ${parseInt(potonganWifi).toLocaleString('id-ID')} / Hari (${jumlahHariKerja} Hari Kerja = -Rp ${totalPotonganWifi.toLocaleString('id-ID')})
                                     </td>
                                 </tr>
                             </tbody>
