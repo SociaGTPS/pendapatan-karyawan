@@ -368,6 +368,7 @@
     </div>
 
     <script>
+        // URL WEB APP MILIK ANDA YANG SUDAH DIPERBARUI
         const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxWBYtbeBe3-xH3R80axowIeVbI8n6fc-x3qwTbZammMY3dpsAOYR2y9DcD6R5AURaI/exec";
 
         window.onload = function() {
@@ -395,19 +396,23 @@
                 document.getElementById('btn_login').disabled = true;
                 showStatus("Memeriksa Akses...", "loading");
                 
-                var cekUrl = WEB_APP_URL + "?action=loginUser&username=" + encodeURIComponent(document.getElementById('login_user').value) + "&sandi=" + encodeURIComponent(document.getElementById('login_sandi').value);
+                var usernameInput = document.getElementById('login_user').value;
+                var sandiInput = document.getElementById('login_sandi').value;
+                var cekUrl = WEB_APP_URL + "?action=loginUser&username=" + encodeURIComponent(usernameInput) + "&sandi=" + encodeURIComponent(sandiInput);
                 
                 fetch(cekUrl)
                 .then(res => res.json())
                 .then(resData => {
                     document.getElementById('btn_login').disabled = false;
+                    console.log("Response Server:", resData); // FITUR CEK MONITOR LOG DATA
+                    
                     if (resData.status === "success") {
                         showStatus("Akses Diterima! Jabatan: " + resData.jabatan, "success");
                         
                         // Sembunyikan gerbang login utama
                         document.getElementById('gerbangAuth').style.display = 'none';
                         
-                        // ATUR HAK AKSES DAN TAMPILAN SECARA AMAN (ANTI-CRASH)
+                        // KONTROL VISIBILITAS HALAMAN DAN NAVIGASI FORM
                         if (resData.jabatan === "Karyawan") {
                             document.getElementById('halamanUtama').style.display = 'none';
                             document.getElementById('areaGaji').style.display = 'block';
@@ -432,16 +437,16 @@
                             switchTab('input-pemasukan');
                         }
 
-                        // JALANKAN LOG KOTAK GAJI DI AKHIR
+                        // JALANKAN LOG TAMPILAN KOTAK GAJI DI AKHIR
                         tampilkanKotakGajiKaryawan(resData.gaji, resData.tarifUnit, resData.potonganWifi, resData.nama, resData.jabatan);
 
                     } else {
                         showStatus(resData.message, "error");
                     }
                 }).catch((err) => {
-                    console.error("Login Error: ", err);
+                    console.error("Login Error Catch:", err);
                     document.getElementById('btn_login').disabled = false;
-                    showStatus("ID PENDING atau Kombinasi Sandi salah.", "error");
+                    showStatus("Komunikasi Gagal. Pastikan Web App sudah di-Deploy sebagai 'Anyone'.", "error");
                 });
             } 
             else if (tipeAksi === 'registerUser') {
@@ -478,7 +483,7 @@
             var targetBox = document.getElementById('areaGaji');
             if(!targetBox) return;
 
-            // Jika Owner/Admin dan tidak punya riwayat gaji harian
+            // Logika Konten jika Akun Owner / Admin dan Log Rincian Gaji Harian Kosong
             if (jabatan === "Owner" || jabatan === "Admin") {
                 if (!dataGaji || dataGaji.length === 0) {
                     targetBox.innerHTML = `
@@ -489,7 +494,7 @@
                 }
             }
 
-            // Jika Karyawan/Kepala Toko tapi data gajinya di sheet masih kosong bersih
+            // Logika Konten jika Karyawan baru dan Log Rincian di Sheet Gaji Kosong
             if (!dataGaji || dataGaji.length === 0) {
                 targetBox.innerHTML = `
                     <div class="card" style="background: #111113; color: #fff; border: 2px solid var(--accent-gold); margin-bottom: 25px; padding: 15px; border-radius: 12px; text-align:center;">
@@ -555,21 +560,16 @@
         }
 
         function switchTab(tabId) {
-            // Sembunyikan semua konten tab
             document.querySelectorAll('.tab-content').forEach(content => content.style.display = 'none');
-            // Hapus kelas aktif dari semua tombol
             document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
             
-            // Tampilkan tab target
             var targetTab = document.getElementById(tabId);
             if(targetTab) targetTab.style.display = 'block';
             
-            // Aktifkan tombol navigasi yang sesuai
             if(tabId === 'input-pemasukan') document.getElementById('nav_pemasukan').classList.add('active');
             if(tabId === 'input-pengeluaran') document.getElementById('nav_pengeluaran').classList.add('active');
             if(tabId === 'gaji-kepala-toko') document.getElementById('nav_gaji_kt').classList.add('active');
 
-            // Kontrol khusus visibilitas rekap rekening gaji harian
             var checkNavGaji = document.getElementById('nav_gaji_kt');
             if (checkNavGaji && checkNavGaji.style.display === 'block') {
                 if (tabId === 'gaji-kepala-toko') {
@@ -612,7 +612,7 @@
                 return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth()+1).padStart(2, '0')}/${d.getFullYear()}`;
             };
 
-            showStatus("Sedang menyimpan data ke Google Sheets...", "loading");
+            showStatus("Sedang menyimpan data...", "loading");
             urlParams.append("action", "insertRow");
             urlParams.append("tipe", tipeForm);
 
@@ -662,7 +662,7 @@
                 btnSubmit.disabled = false;
             })
             .catch(error => {
-                console.error("Error:", error);
+                console.error("Submit Error:", error);
                 showStatus("Gagal mengirim data.", "error");
                 btnSubmit.disabled = false;
             });
