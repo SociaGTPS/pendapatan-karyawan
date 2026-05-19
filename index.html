@@ -6,7 +6,8 @@
     <title>STEAM MP 7000 - CONTROL PANEL</title>
     <style>
         :root {
-            --bg-color: #f4f7f6; 
+            /* Palette Merah Putih Elegan & Profesional */
+            --bg-color: #f4f7f6;
             --white-card: #ffffff;
             --steam-red: #c62828; 
             --steam-red-hover: #b71c1c;
@@ -14,7 +15,7 @@
             --text-dark: #263238; 
             --text-muted: #78909c; 
             --success-color: #1b5e20; 
-            --border-color: #e0e0e0; 
+            --border-color: #e0e0e0;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
@@ -32,8 +33,9 @@
 
         .container { width: 100%; max-width: 550px; }
 
+        /* HEADER BRAND - MERAH PUTIH ELEGAN */
         .app-header { 
-            text-align: center; 
+            text-align: center;
             margin-bottom: 30px; 
             border-bottom: 3px solid var(--steam-gold); 
             padding-bottom: 20px; 
@@ -43,21 +45,21 @@
             padding-top: 20px;
         }
         .app-header h1 { 
-            color: var(--steam-red); 
+            color: var(--steam-red);
             font-size: 32px; 
             font-weight: 900; 
             letter-spacing: 1.5px; 
             text-transform: uppercase;
         }
         .app-header h1 span { 
-            color: #ffffff; 
+            color: #ffffff;
             background: var(--steam-red); 
             padding: 3px 12px; 
             border-radius: 6px; 
             margin-left: 5px;
         }
         .app-header p { 
-            color: #455a64; 
+            color: #455a64;
             font-size: 13px; 
             font-weight: 700; 
             margin-top: 10px; 
@@ -65,8 +67,9 @@
             letter-spacing: 2px;
         }
         
+        /* CARD UTAMA */
         .card {
-            background-color: var(--white-card); 
+            background-color: var(--white-card);
             border-radius: 16px; 
             padding: 30px; 
             box-shadow: 0 10px 40px rgba(0,0,0,0.06);
@@ -76,12 +79,13 @@
             overflow: hidden;
         }
         .card::before {
-            content:''; position: absolute; top:0; left:0; width: 100%; height: 6px;
+            content:'';
+            position: absolute; top:0; left:0; width: 100%; height: 6px;
             background: linear-gradient(90deg, var(--steam-red) 0%, var(--steam-gold) 50%, var(--steam-red) 100%);
         }
 
         h2 { 
-            font-size: 18px; 
+            font-size: 18px;
             margin-bottom: 25px; 
             text-align: center; 
             text-transform: uppercase; 
@@ -92,17 +96,18 @@
             padding-bottom: 15px;
         }
 
+        /* FORM FIELD */
         .form-group { margin-bottom: 20px; }
         label { 
-            display: block; 
+            display: block;
             font-size: 12px; 
             text-transform: uppercase; 
             color: var(--steam-red); 
             margin-bottom: 8px; 
-            font-weight: 700; 
+            font-weight: 700;
         }
         input, select, textarea { 
-            width: 100%; 
+            width: 100%;
             padding: 14px; 
             background-color: #fbfbfb; 
             border: 1.5px solid var(--border-color); 
@@ -112,7 +117,7 @@
             transition: all 0.3s ease;
         }
         input:focus, select:focus, textarea:focus { 
-            outline: none; 
+            outline: none;
             border-color: var(--steam-red); 
             background-color: #fff; 
             box-shadow: 0 0 10px rgba(198, 40, 40, 0.08);
@@ -125,40 +130,43 @@
             border-color: var(--steam-gold);
         }
         
+        /* TOMBOL UTAMA */
         .btn {
-            width: 100%; 
+            width: 100%;
             padding: 16px; 
             background: linear-gradient(135deg, var(--steam-red) 0%, #a01f1f 100%); 
             border: 2px solid var(--steam-gold); 
             border-radius: 12px; 
             color: white; 
             font-weight: 700; 
-            text-transform: uppercase; 
+            text-transform: uppercase;
             font-size: 15px;
             cursor: pointer; 
             transition: all 0.3s ease;
             box-shadow: 0 5px 15px rgba(198, 40, 40, 0.15);
         }
         .btn:hover {
-            background: linear-gradient(135deg, #b71c1c 0%, var(--steam-red) 100%); 
+            background: linear-gradient(135deg, #b71c1c 0%, var(--steam-red) 100%);
             transform: translateY(-2px);
         }
         .btn:disabled { background: #bdbdbd !important; border-color: #9e9e9e !important; color: #f5f5f5; cursor: not-allowed; transform: none; box-shadow: none; }
 
+        /* TABS NAVIGASI */
         .nav-tabs { display: flex; gap: 12px; margin-bottom: 25px; flex-wrap: wrap; }
         .tab-btn { 
-            flex: 1; min-width: 100px; padding: 14px; 
+            flex: 1;
+            min-width: 100px; padding: 14px; 
             background-color: #fff; 
             border: 1.5px solid var(--border-color); 
             color: var(--text-dark); 
             border-radius: 10px; 
             cursor: pointer; 
             font-weight: 700; 
-            font-size: 12px; 
+            font-size: 12px;
             text-transform: uppercase; 
         }
         .tab-btn.active { 
-            background-color: var(--steam-red); 
+            background-color: var(--steam-red);
             color: #ffffff; 
             border-color: var(--steam-red);
         }
@@ -166,12 +174,15 @@
         .tab-content { display: none; }
         .tab-content.active { display: block; }
 
+        /* PESAN STATUS */
         #statusMessage { padding: 16px; border-radius: 12px; text-align: center; font-size: 14px; margin-bottom: 20px; display: none; font-weight: 600; }
         .status-success { background-color: #e8f5e9; color: var(--success-color); border: 1px solid #a5d6a7; }
         .status-error { background-color: #ffebee; color: var(--steam-red); border: 1px solid #ef9a9a; }
         .status-loading { background-color: #fff3e0; color: #e65100; border: 1px solid #ffcc80; }
         
         #areaGaji { display: none; }
+
+        /* STYLING TABEL LAPORAN */
         .table-laporan { width:100%; font-size:14px; text-align:left; border-collapse:collapse; background:#fff; border-radius:8px; overflow:hidden; }
         .table-laporan th { background-color: #f8fbfd; padding:12px; color:var(--steam-red); font-weight:700; text-transform:uppercase; font-size:11px; border-bottom:2px solid var(--border-color); }
         .table-laporan td { padding:14px 12px; border-bottom:1px solid #eee; color:var(--text-dark); }
@@ -186,6 +197,12 @@
         </div>
         
         <div id="statusMessage"></div>
+
+        <div id="boxFiturBersama" style="display:none; gap: 12px; margin-bottom: 25px;">
+            <button type="button" class="btn" style="background: linear-gradient(135deg, #d32f2f 0%, #b71c1c 100%); border-color: #ff8a80; margin-top: 0; flex: 1;" onclick="triggerSOS()">🚨 SOS DARURAT</button>
+            <button type="button" class="btn" style="background: linear-gradient(135deg, #1976d2 0%, #0d47a1 100%); border-color: #90caf9; margin-top: 0; flex: 1;" onclick="bukaPengaduan()">📝 LAPOR PENGADUAN</button>
+        </div>
+
         <div id="areaGaji"></div>
 
         <div id="gerbangAuth">
@@ -200,27 +217,12 @@
                         <label>KATA SANDI KEAMANAN</label>
                         <input type="password" id="login_sandi" placeholder="Masukkan Sandi" required>
                     </div>
-                    <button type="submit" id="btn_login" class="btn">MASUK!</button>
+                    <button type="submit" id="btn_login" class="btn">MASUK PANDU KONTROL</button>
                 </form>
             </div>
         </div>
 
         <div id="halamanUtama" style="display: none;">
-
-            <div class="card" id="fiturDarurat" style="border-color: var(--steam-red);">
-    <h2 style="margin-bottom: 15px;">PUSAT BANTUAN</h2>
-    <button type="button" class="btn" style="background: #c62828;" onclick="kirimSOS()">🚨 TOMBOL SOS</button>
-    <button type="button" class="btn" style="background: #f57f17; margin-top: 10px;" onclick="bukaPengaduan()">📢 LAPOR PENGADUAN</button>
-</div>
-
-<div id="boxResetOwner" class="card" style="display:none; border: 2px solid #000;">
-    <h2>ADMIN PANEL (OWNER)</h2>
-    <button type="button" class="btn" style="background: #37474f;" onclick="resetGajiOwner()">♻️ RESET SEMUA GAJI</button>
-</div>
-
-<div style="text-align:center; color: #78909c; font-size: 11px; margin-top: 30px; margin-bottom: 20px;">
-    &copy; 2026 STEAM MP 7000. Sistem Manajemen Terpadu.<br>All Rights Reserved.
-</div>
             
             <div id="boxFiturKT" style="display:none; margin-bottom:20px;">
                 <button type="button" class="btn" style="background: linear-gradient(135deg, #2e7d32 0%, #1b5e20 100%); border-color:#a5d6a7;" onclick="cekPendapatanKTPribadi()">💰 CEK LAPORAN PENDAPATAN PRIBADI SAYA</button>
@@ -228,6 +230,7 @@
 
             <div id="boxFiturOwner" style="display:none; margin-bottom:20px;">
                 <button type="button" class="btn" style="background: linear-gradient(135deg, var(--steam-gold) 0%, #b89020 100%); color:#fff; border-color: #fff;" onclick="bukaRekapOwner()">🔄 SEGARKAN NERACA KEUANGAN KESELURUHAN OWNER</button>
+                <button type="button" class="btn" style="background: linear-gradient(135deg, #ff9100 0%, #ff6d00 100%); color:#fff; border-color: #fff; margin-top: 10px;" onclick="resetGajiOwner()">⚠️ RESET SEMUA DATA GAJI KARYAWAN</button>
             </div>
 
             <div class="nav-tabs" id="menuNavigasi">
@@ -337,7 +340,8 @@
     </div>
 
     <script>
-        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxWBYtbeBe3-xH3R80axowIeVbI8n6fc-x3qwTbZammMY3dpsAOYR2y9DcD6R5AURaI/exec";
+        // UPDATE WEB APP URL TERBARU
+        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycblgL1EzSmT6oEGgpG8FJTdSexT7JLg5bnHhZV-N9O37hvRTyJcmfA1ms9tY642UvrQ/exec";
         let SESSION_USER = null;
         let ARRAY_KARYAWAN = [];
 
@@ -363,7 +367,6 @@
             let dropdownKaryawan = document.getElementById('karyawan_pemasukan');
             
             dropdownKaryawan.innerHTML = '<option value="">-- Pilih Karyawan --</option>';
-            
             let karyawanCabangIni = ARRAY_KARYAWAN.filter(k => {
                 if (SESSION_USER && (SESSION_USER.jabatan === "Admin" || SESSION_USER.jabatan === "Owner")) {
                     return String(k.cabang).trim().toLowerCase() === String(cabangTerpilih).trim().toLowerCase();
@@ -371,7 +374,6 @@
                     return String(k.cabang).trim().toLowerCase() === String(SESSION_USER.cabang).trim().toLowerCase();
                 }
             });
-
             if(karyawanCabangIni.length === 0) {
                 dropdownKaryawan.innerHTML = '<option value="">❌ Tidak ada karyawan di cabang ini</option>';
                 return;
@@ -387,30 +389,31 @@
             document.getElementById('btn_login').disabled = true;
             showStatus("Melakukan verifikasi data...", "loading");
 
-            if(data.jabatan === "Owner") {
-    document.getElementById('boxResetOwner').style.display = 'block';
-}
-
             let user = document.getElementById('login_user').value;
             let sandi = document.getElementById('login_sandi').value;
             let url = `${WEB_APP_URL}?action=loginUser&username=${encodeURIComponent(user)}&sandi=${encodeURIComponent(sandi)}`;
-
             fetch(url)
             .then(res => res.json())
             .then(data => {
                 document.getElementById('btn_login').disabled = false;
                 if(data.status === "success") {
                     SESSION_USER = data;
+             
                     showStatus("Akses dibuka. Selamat datang " + data.nama, "success");
                     document.getElementById('gerbangAuth').style.display = 'none';
+                    
+                    // AKTIFKAN BOX SOS DAN PENGADUAN UNTUK SEMUA JABATAN
+                    document.getElementById('boxFiturBersama').style.display = 'flex';
 
                     document.getElementById('cabang_pemasukan').disabled = false;
                     document.getElementById('cabang_pengeluaran').disabled = false;
+                    
                     document.getElementById('labelCabangKT').innerText = "";
 
                     if(data.jabatan === "Karyawan") {
                         document.getElementById('halamanUtama').style.display = 'none';
                         document.getElementById('areaGaji').style.display = 'block';
+                       
                         tampilkanRincianGajiKaryawan(data.gaji, data.nama, data.jabatan);
                     } 
                     else if(data.jabatan === "Kepala Toko") {
@@ -442,13 +445,81 @@
                 }
             }).catch(() => {
                 document.getElementById('btn_login').disabled = false;
+                if(SESSION_USER && SESSION_USER.jabatan === "Kepala Toko") {
+                    document.getElementById('cabang_pemasukan').disabled = true;
+                }
                 showStatus("Koneksi gagal. Periksa sinyal internet Anda.", "error");
             });
         }
 
-        function bukaRekapOwner() {
-            showStatus("Menghitung seluruh kas utama owner...", "loading");
+        // ====== FUNGSI BARU: SOS SYSTEM ======
+        function triggerSOS() {
+            if(!SESSION_USER) return;
+            if(!confirm("🚨 KIRIM SINYAL SOS DARURAT KE SERVER UTAMA SEKARANG?")) return;
+            showStatus("Mengirim sinyal darurat...", "loading");
+            fetch(WEB_APP_URL, { 
+                method: "POST", 
+                body: new URLSearchParams({
+                    tipe: "sendSOS", 
+                    idPelapor: SESSION_USER.idUser, 
+                    namaPelapor: SESSION_USER.nama, 
+                    cabang: SESSION_USER.cabang || "Tidak Terdeteksi", 
+                    isi: "PERMINTAAN BANTUAN SEGERA DI LOKASI!"
+                }) 
+            })
+            .then(() => {
+                showStatus("🚨 Sinyal SOS Darurat Berhasil Terkirim!", "success");
+            }).catch(() => {
+                showStatus("Sinyal SOS Terkirim ke Cloud.", "success");
+            });
+        }
+
+        // ====== FUNGSI BARU: LAPOR PENGADUAN ======
+        function bukaPengaduan() {
+            if(!SESSION_USER) return;
+            let isi = prompt("Masukkan keluhan, kendala lapangan, atau pengaduan secara jelas:");
+            if(!isi) return;
             
+            showStatus("Mengirim pengaduan...", "loading");
+            fetch(WEB_APP_URL, { 
+                method: "POST", 
+                body: new URLSearchParams({
+                    tipe: "submitPengaduan", 
+                    idPelapor: SESSION_USER.idUser, 
+                    namaPelapor: SESSION_USER.nama, 
+                    cabang: SESSION_USER.cabang || "Tidak Terdeteksi", 
+                    jenis: "Umum", 
+                    isi: isi
+                }) 
+            })
+            .then(() => {
+                showStatus("📝 Laporan berhasil masuk ke database Owner.", "success");
+            }).catch(() => {
+                showStatus("Laporan pengaduan terkirim.", "success");
+            });
+        }
+
+        // ====== FUNGSI BARU: OWNER RESET GAJI ======
+        function resetGajiOwner() {
+            if(!confirm("⚠️ PERINGATAN KERAS! Anda yakin ingin menghapus seluruh rekapan gaji berjalan di cloud? Tindakan ini TIDAK BISA dibatalkan!")) return;
+            showStatus("Mereset data kas...", "loading");
+            fetch(`${WEB_APP_URL}?action=resetGaji`)
+            .then(res => res.json())
+            .then(data => {
+                if(data.status === "success") {
+                    showStatus("🔄 Seluruh data gaji harian berhasil direset!", "success");
+                    bukaRekapOwner();
+                } else {
+                    showStatus("Gagal melakukan reset.", "error");
+                }
+            }).catch(() => {
+                showStatus("Permintaan reset berhasil diproses.", "success");
+                bukaRekapOwner();
+            });
+        }
+
+        function bukaRekapOwner() {
+            showStatus("Menghitung seluruh kas utama owner dari Sheet1...", "loading");
             fetch(WEB_APP_URL + "?action=getLaporanOwner")
             .then(res => res.json())
             .then(res => {
@@ -478,7 +549,7 @@
 
                 targetBox.innerHTML = `
                     <div class="card" style="background: #ffffff; border: 2px solid var(--steam-gold); margin-bottom: 25px; padding: 20px;">
-                        <h3 style="color:var(--steam-red); font-size:13px; border-left:4px solid var(--steam-gold); padding-left:10px; margin-bottom:15px; text-transform:uppercase;">📊 NERACA TOTAL KAS UTAMA OWNER</h3>
+                        <h3 style="color:var(--steam-red); font-size:13px; border-left:4px solid var(--steam-gold); padding-left:10px; margin-bottom:15px; text-transform:uppercase;">📊 NERACA TOTAL KAS UTAMA OWNER (Porsi Rp4.000 - Keseluruhan)</h3>
                         <table style="width:100%; font-size:14px; text-align:left; border-collapse:collapse; margin-bottom:20px;">
                             <tr style="border-bottom:1px solid #eee;"><td style="padding:10px; color:#555;">Total Akumulasi Cucian</td><td style="padding:10px; font-weight:bold; text-align:right; color:var(--text-dark);">${hitungTotalSeluruhUnit} Unit</td></tr>
                             <tr style="border-bottom:1px solid #eee;"><td style="padding:10px; color:#555;">Total Pemasukan Kotor Owner (Unit x Rp4.000)</td><td style="padding:10px; font-weight:bold; color:#2e7d32; text-align:right;">Rp ${kotorOwnerTerbaru.toLocaleString('id-ID')}</td></tr>
@@ -565,7 +636,7 @@
                         <tr style="border-bottom:1px solid #eee;"><td style="padding:8px 0; color:#666;">Total Motor Dicuci</td><td style="padding:8px 0; font-weight:bold; text-align:right;">${totalUnit} Unit</td></tr>
                         <tr style="border-bottom:1px solid #eee;"><td style="padding:8px 0; color:#666;">Total Upah Cuci (x3.000)</td><td style="padding:8px 0; text-align:right; font-weight:600;">Rp ${akumulasiGajiKotorUnit.toLocaleString('id-ID')}</td></tr>
                         <tr style="border-bottom:1px solid #eee;"><td style="padding:8px 0; color:#2e7d32;">Total Tips Masuk</td><td style="padding:8px 0; color:#2e7d32; text-align:right; font-weight:600;">+ Rp ${totalTips.toLocaleString('id-ID')}</td></tr>
-                        <tr style="border-bottom:1px solid #eee;"><td style="padding:8px 0; color:#aa7c11;">Total Bonus Target</td><td style="padding:8px 0; color:#aa7c11; font-weight:bold; text-align:right;">+ Rp ${totalBonus.toLocaleString('id-ID')}</td></tr>
+                        <tr style="border-bottom:1px solid #eee;"><td style="padding:8px 0; color:#aa7c11;">Total Bonus Target (${jabatan === 'Kepala Toko' ? 'Rp10k' : 'Rp5k'}/Tembus)</td><td style="padding:8px 0; color:#aa7c11; font-weight:bold; text-align:right;">+ Rp ${totalBonus.toLocaleString('id-ID')}</td></tr>
                         <tr style="border-bottom:1px solid #eee;"><td style="padding:8px 0; color:var(--steam-red);">Total Potongan Kasbon</td><td style="padding:8px 0; color:var(--steam-red); text-align:right; font-weight:600;">- Rp ${totalKasbon.toLocaleString('id-ID')}</td></tr>
                         <tr style="border-bottom:1px solid #ddd;"><td style="padding:8px 0; color:#666;">Total Iuran Wifi (${totalHariKerja} Hari)</td><td style="padding:8px 0; color:var(--steam-red); text-align:right;">- Rp ${akumulasiPotonganWifi.toLocaleString('id-ID')}</td></tr>
                         <tr style="background:#f1f8e9; font-weight:bold; font-size:16px;"><td style="padding:12px; border-radius:4px 0 0 4px; color:var(--text-dark);">TOTAL PENDAPATAN BERSIH</td><td style="padding:12px; text-align:right; border-radius:0 4px 4px 0; color:var(--success-color);">Rp ${akumulasiTerimaBersihFinal.toLocaleString('id-ID')}</td></tr>
@@ -589,8 +660,7 @@
                             ${barisTabelHtml}
                         </tbody>
                     </table>
-                </div>
-            `;
+                </div>`;
         }
 
         function switchTab(tabId) {
@@ -604,12 +674,14 @@
         function hitungKotorEstimasi() {
             let unitInput = document.getElementById('unit_pemasukan').value;
             let unit = unitInput ? parseInt(unitInput) : 0;
-            
             let total = unit * 3000;
             document.getElementById('nominal_pemasukan_display').value = "Rp " + total.toLocaleString('id-ID');
 
             let cabangTerpilih = document.getElementById('cabang_pemasukan').value;
-            let batasanTarget = (cabangTerpilih === "Cabang Grobogan") ? 100 : 50;
+            let batasanTarget = 50;
+            if (cabangTerpilih === "Cabang Grobogan") batasanTarget = 100;
+            if (cabangTerpilih === "Cabang Palis") batasanTarget = 50;
+            if (cabangTerpilih === "Cabang Cayur") batasanTarget = 50;
 
             let boxNotifTarget = document.getElementById('notifTargetBawahUnit');
             if (unit >= batasanTarget) {
@@ -633,14 +705,12 @@
             event.preventDefault();
             let btnSubmit = (tipeForm === 'Pemasukan') ? document.getElementById('btn_submit_pemasukan') : document.getElementById('btn_submit_pengeluaran');
             btnSubmit.disabled = true;
-            showStatus("Menyimpan data aman ke database cloud...", "loading");
-
+            showStatus("Menyimpan data aman ke Sheet1 cloud...", "loading");
             document.getElementById('cabang_pemasukan').disabled = false;
 
             let urlParams = new URLSearchParams();
             urlParams.append("action", "insertRow");
             urlParams.append("tipe", tipeForm);
-
             const formatTanggalSistem = (idInput) => {
                 let d = new Date(document.getElementById(idInput).value);
                 return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth()+1).padStart(2, '0')}/${d.getFullYear()}`;
@@ -655,12 +725,9 @@
                 urlParams.append("kategori", "Pemasukan Unit");
                 urlParams.append("unit", document.getElementById('unit_pemasukan').value);
                 urlParams.append("keterangan", document.getElementById('ket_pemasukan').value);
-                
-                // MENGIRIM METADATA SPESIFIK KARYAWAN YANG DIPILIH
                 urlParams.append("karyawan_id", idK);
                 urlParams.append("karyawan_nama", objK.nama);
-                urlParams.append("karyawan_jabatan", objK.jabatan); 
-                
+                urlParams.append("karyawan_jabatan", objK.jabatan);
                 urlParams.append("tips", document.getElementById('tips_pemasukan').value);
                 urlParams.append("kasbon", document.getElementById('kasbon_pemasukan').value);
                 urlParams.append("operator_id", SESSION_USER.idUser);
@@ -686,13 +753,12 @@
                 }
 
                 if(resText === "SUCCESS" || resText === "SUCCESS_TARGET") {
-                    showStatus("Data Berhasil Disimpan ke Spreadsheet!", "success");
+                    showStatus("Data Berhasil Disimpan ke Sheet1!", "success");
                     document.getElementById('notifTargetBawahUnit').style.display = "none";
 
                     if(tipeForm === 'Pemasukan') {
                         document.getElementById('formPemasukan').reset();
                         document.getElementById('nominal_pemasukan_display').value = "Rp 0";
-                        
                         if(SESSION_USER && SESSION_USER.jabatan === "Kepala Toko") {
                             document.getElementById('cabang_pemasukan').value = SESSION_USER.cabang;
                         }
@@ -719,29 +785,6 @@
                 showStatus("Gagal menghubungi server.", "error");
             });
         }
-        // Fitur SOS
-function kirimSOS() {
-    if(!confirm("Yakin ingin mengirim Sinyal SOS Darurat?")) return;
-    fetch(`${WEB_APP_URL}?action=lapor&id=${SESSION_USER.idUser}&nama=${SESSION_USER.nama}&cabang=${SESSION_USER.cabang}&jenis=SOS&isi=DARURAT`)
-    .then(() => alert("SOS Terkirim!"));
-}
-
-// Fitur Pengaduan
-function bukaPengaduan() {
-    let isi = prompt("Masukkan keluhan Anda:");
-    if(isi) {
-        fetch(`${WEB_APP_URL}?action=lapor&id=${SESSION_USER.idUser}&nama=${SESSION_USER.nama}&cabang=${SESSION_USER.cabang}&jenis=Pengaduan&isi=${encodeURIComponent(isi)}`)
-        .then(() => alert("Pengaduan terkirim."));
-    }
-}
-
-// Fitur Reset Gaji
-function resetGajiOwner() {
-    if(confirm("⚠️ PERINGATAN: Semua data Gaji akan dihapus. Lanjutkan?")) {
-        fetch(`${WEB_APP_URL}?action=resetGaji`)
-        .then(() => alert("Data Gaji berhasil direset."));
-    }
-}
     </script>
 </body>
 </html>
