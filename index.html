@@ -7,7 +7,7 @@
     <style>
         :root {
             /* Palette Merah Putih Elegan & Profesional */
-            --bg-color: #f4f7f6;
+            --bg-color: #f4f7f6; 
             --white-card: #ffffff;
             --steam-red: #c62828; 
             --steam-red-hover: #b71c1c;
@@ -15,7 +15,7 @@
             --text-dark: #263238; 
             --text-muted: #78909c; 
             --success-color: #1b5e20; 
-            --border-color: #e0e0e0;
+            --border-color: #e0e0e0; 
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
@@ -33,7 +33,7 @@
 
         .container { width: 100%; max-width: 550px; }
 
-        /* HEADER BRAND - MERAH PUTIH ELEGAN */
+        /* HEADER BRAND */
         .app-header { 
             text-align: center;
             margin-bottom: 30px; 
@@ -210,8 +210,8 @@
                 <h2>VERIFIKASI AKSES ANGGOTA</h2>
                 <form id="formLogin" onsubmit="handleAuth(event)">
                     <div class="form-group">
-                        <label>ID KARYAWAN (USERNAME)</label>
-                        <input type="number" id="login_user" placeholder="Masukkan ID Anda" required>
+                        <label>ID KARYAWAN / USERNAME</label>
+                        <input type="text" id="login_user" placeholder="Masukkan Username Anda" required>
                     </div>
                     <div class="form-group">
                         <label>KATA SANDI KEAMANAN</label>
@@ -230,7 +230,7 @@
 
             <div id="boxFiturOwner" style="display:none; margin-bottom:20px;">
                 <button type="button" class="btn" style="background: linear-gradient(135deg, var(--steam-gold) 0%, #b89020 100%); color:#fff; border-color: #fff;" onclick="bukaRekapOwner()">🔄 SEGARKAN NERACA KEUANGAN KESELURUHAN OWNER</button>
-                <button type="button" class="btn" style="background: linear-gradient(135deg, #ff9100 0%, #ff6d00 100%); color:#fff; border-color: #fff; margin-top: 10px;" onclick="resetGajiOwner()">⚠️ RESET SEMUA DATA GAJI KARYAWAN</button>
+                <button type="button" class="btn" style="background: linear-gradient(135deg, #ff9100 0%, #ff6d00 100%); color:#fff; border-color: #fff; margin-top: 10px;" onclick="resetGajiOwner()">⚠️ RESET SEMUA DATA TRANSAKSI SHEET1</button>
             </div>
 
             <div class="nav-tabs" id="menuNavigasi">
@@ -255,7 +255,7 @@
                             </select>
                         </div>
                         <div class="form-group">
-                            <label>Anggota Yang Mencuci (Hanya Cabang Terkait)</label>
+                            <label>Anggota Yang Mencuci (Tabel Master Karyawan)</label>
                             <select id="karyawan_pemasukan" required>
                                 <option value="">-- Memuat Data Anggota --</option>
                             </select>
@@ -283,11 +283,11 @@
                         </div>
                         <div class="form-group">
                             <label>Iuran Wifi Harian</label>
-                            <input type="text" value="Rp 1.000 (Dipotong Otomatis)" disabled style="color:var(--steam-red); font-weight:bold; background:#fff5f5;">
+                            <input type="text" value="Rp 1.000 (Dipotong Otomatis Harian)" disabled style="color:var(--steam-red); font-weight:bold; background:#fff5f5;">
                         </div>
                         <div class="form-group">
-                            <label>Catatan Lapangan (Opsional)</label>
-                            <textarea id="ket_pemasukan" rows="2" placeholder="Keterangan tambahan..."></textarea>
+                            <label>Catatan Lapangan (Keterangan)</label>
+                            <textarea id="ket_pemasukan" rows="2" placeholder="Keterangan tambahan lapangan..."></textarea>
                         </div>
                         <button type="submit" id="btn_submit_pemasukan" class="btn">KIRIM FINAL DATA PEMASUKAN</button>
                     </form>
@@ -329,7 +329,7 @@
                             <input type="number" id="nominal_pengeluaran" placeholder="Contoh: 50000" required>
                         </div>
                         <div class="form-group">
-                            <label>Deskripsi Detail Pembelian (Wajib Jelas)</label>
+                            <label>Deskripsi Detail Pembelian</label>
                             <textarea id="ket_pengeluaran" rows="2" placeholder="Beli apa, merk apa..." required></textarea>
                         </div>
                         <button type="submit" id="btn_submit_pengeluaran" class="btn">KIRIM FINAL DATA PENGELUARAN</button>
@@ -340,7 +340,6 @@
     </div>
 
     <script>
-        // URL WEB APP TERBARU SINKRON SESUAI DENGAN AKSI BARU DEPLOYMENT
         const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyCHnkFRly_CHcwSixKyLpi2wzbZmLPJIdk-qORUWanqq-t36pdSuOLNnDlwZDDj76X/exec";
         let SESSION_USER = null;
         let ARRAY_KARYAWAN = [];
@@ -356,42 +355,36 @@
             .then(res => res.json())
             .then(res => {
                 if(res.status === "success") {
-                    ARRAY_KARYAWAN = res.data.filter(k => k.jabatan !== "Owner" && k.jabatan !== "Admin");
+                    ARRAY_KARYAWAN = res.data;
                     filterKaryawanBerdasarkanCabang();
                 }
             });
         }
 
         function filterKaryawanBerdasarkanCabang() {
-            let cabangTerpilih = document.getElementById('cabang_pemasukan').value;
             let dropdownKaryawan = document.getElementById('karyawan_pemasukan');
+            dropdownKaryawan.innerHTML = '<option value="">-- Pilih Anggota --</option>';
             
-            dropdownKaryawan.innerHTML = '<option value="">-- Pilih Karyawan --</option>';
-            let karyawanCabangIni = ARRAY_KARYAWAN.filter(k => {
-                if (SESSION_USER && (SESSION_USER.jabatan === "Admin" || SESSION_USER.jabatan === "Owner")) {
-                    return String(k.cabang).trim().toLowerCase() === String(cabangTerpilih).trim().toLowerCase();
-                } else {
-                    return String(k.cabang).trim().toLowerCase() === String(SESSION_USER.cabang).trim().toLowerCase();
-                }
-            });
-            if(karyawanCabangIni.length === 0) {
-                dropdownKaryawan.innerHTML = '<option value="">❌ Tidak ada karyawan di cabang ini</option>';
+            if(ARRAY_KARYAWAN.length === 0) {
+                dropdownKaryawan.innerHTML = '<option value="">❌ Tabel Master Karyawan Kosong</option>';
                 return;
             }
 
-            karyawanCabangIni.forEach(k => {
-                dropdownKaryawan.innerHTML += `<option value="${k.id}">${k.nama} [${k.jabatan}]</option>`;
+            // Tampilkan semua karyawan aktif dari Master Karyawan
+            ARRAY_KARYAWAN.forEach(k => {
+                dropdownKaryawan.innerHTML += `<option value="${k.id}">${k.nama} (ID: ${k.id})</option>`;
             });
         }
 
         function handleAuth(event) {
             event.preventDefault();
             document.getElementById('btn_login').disabled = true;
-            showStatus("Melakukan verifikasi data...", "loading");
+            showStatus("Menghubungkan ke server secure database...", "loading");
 
             let user = document.getElementById('login_user').value;
             let sandi = document.getElementById('login_sandi').value;
             let url = `${WEB_APP_URL}?action=loginUser&username=${encodeURIComponent(user)}&sandi=${encodeURIComponent(sandi)}`;
+            
             fetch(url)
             .then(res => res.json())
             .then(data => {
@@ -399,21 +392,17 @@
                 if(data.status === "success") {
                     SESSION_USER = data;
              
-                    showStatus("Akses dibuka. Selamat datang " + data.nama, "success");
+                    showStatus("Akses Diterima! Selamat datang " + data.nama, "success");
                     document.getElementById('gerbangAuth').style.display = 'none';
                     
-                    // AKTIFKAN BOX SOS DAN PENGADUAN UNTUK SEMUA JABATAN
                     document.getElementById('boxFiturBersama').style.display = 'flex';
-
                     document.getElementById('cabang_pemasukan').disabled = false;
                     document.getElementById('cabang_pengeluaran').disabled = false;
-                    
                     document.getElementById('labelCabangKT').innerText = "";
 
                     if(data.jabatan === "Karyawan") {
                         document.getElementById('halamanUtama').style.display = 'none';
                         document.getElementById('areaGaji').style.display = 'block';
-                       
                         tampilkanRincianGajiKaryawan(data.gaji, data.nama, data.jabatan);
                     } 
                     else if(data.jabatan === "Kepala Toko") {
@@ -425,7 +414,7 @@
                         if(data.cabang) {
                             document.getElementById('cabang_pemasukan').value = data.cabang;
                             document.getElementById('cabang_pemasukan').disabled = true; 
-                            document.getElementById('labelCabangKT').innerText = "📌 TERKUNCI KHUSUS: " + data.cabang.toUpperCase();
+                            document.getElementById('labelCabangKT').innerText = "📌 TERKUNCI CABANG: " + data.cabang.toUpperCase();
                         }
 
                         loadKaryawanDropdown();
@@ -445,151 +434,126 @@
                 }
             }).catch(() => {
                 document.getElementById('btn_login').disabled = false;
-                if(SESSION_USER && SESSION_USER.jabatan === "Kepala Toko") {
-                    document.getElementById('cabang_pemasukan').disabled = true;
-                }
-                showStatus("Koneksi gagal. Periksa sinyal internet Anda.", "error");
+                showStatus("Koneksi gagal. Periksa sinyal internet atau setelan Apps Script Anda.", "error");
             });
         }
 
-        // ====== SOS SYSTEM ======
         function triggerSOS() {
             if(!SESSION_USER) return;
-            if(!confirm("🚨 KIRIM SINYAL SOS DARURAT KE SERVER UTAMA SEKARANG?")) return;
-            showStatus("Mengirim sinyal darurat...", "loading");
+            if(!confirm("🚨 KIRIM SIGNAL SOS EMERGENSI KE SERVER UTAMA SEKARANG?")) return;
+            showStatus("Mengirim sinyal SOS...", "loading");
             fetch(WEB_APP_URL, { 
                 method: "POST", 
                 body: new URLSearchParams({
                     tipe: "sendSOS", 
                     idPelapor: SESSION_USER.idUser, 
                     namaPelapor: SESSION_USER.nama, 
-                    cabang: SESSION_USER.cabang || "Tidak Terdeteksi", 
-                    isi: "PERMINTAAN BANTUAN SEGERA DI LOKASI!"
+                    cabang: SESSION_USER.cabang || "Pusat", 
+                    isi: "BANTUAN SEGERA! DARURAT DI LAPANGAN!"
                 }) 
             })
-            .then(() => {
-                showStatus("🚨 Sinyal SOS Darurat Berhasil Terkirim!", "success");
-            }).catch(() => {
-                showStatus("Sinyal SOS Terkirim.", "success");
-            });
+            .then(() => { showStatus("🚨 Sinyal SOS Berhasil Masuk Ke Database Pengaduan!", "success"); })
+            .catch(() => { showStatus("Sinyal SOS terkirim aman.", "success"); });
         }
 
-        // ====== LAPOR PENGADUAN ======
         function bukaPengaduan() {
             if(!SESSION_USER) return;
-            let isi = prompt("Masukkan keluhan, kendala lapangan, atau pengaduan secara jelas:");
+            let isi = prompt("Tuliskan detail kronologi / keluhan pengaduan lapangan:");
             if(!isi) return;
             
-            showStatus("Mengirim pengaduan...", "loading");
+            showStatus("Mengirim laporan...", "loading");
             fetch(WEB_APP_URL, { 
                 method: "POST", 
                 body: new URLSearchParams({
                     tipe: "submitPengaduan", 
                     idPelapor: SESSION_USER.idUser, 
                     namaPelapor: SESSION_USER.nama, 
-                    cabang: SESSION_USER.cabang || "Tidak Terdeteksi", 
-                    jenis: "Umum", 
+                    cabang: SESSION_USER.cabang || "Pusat", 
                     isi: isi
                 }) 
             })
-            .then(() => {
-                showStatus("📝 Laporan berhasil masuk ke database Owner.", "success");
-            }).catch(() => {
-                showStatus("Laporan pengaduan terkirim.", "success");
-            });
+            .then(() => { showStatus("📝 Laporan resmi berhasil masuk sheet Pengaduan.", "success"); })
+            .catch(() => { showStatus("Laporan pengaduan disimpan.", "success"); });
         }
 
-        // ====== OWNER RESET GAJI ======
         function resetGajiOwner() {
-            if(!confirm("⚠️ PERINGATAN KERAS! Anda yakin ingin menghapus seluruh rekapan gaji berjalan di cloud? Tindakan ini TIDAK BISA dibatalkan!")) return;
-            showStatus("Mereset data kas...", "loading");
+            if(!confirm("⚠️ PERINGATAN KERAS OWNER! Anda yakin ingin mengosongkan total riwayat transaksi berjalan di Sheet1?")) return;
+            showStatus("Mereset database...", "loading");
             fetch(`${WEB_APP_URL}?action=resetGaji`)
             .then(res => res.json())
             .then(data => {
                 if(data.status === "success") {
-                    showStatus("🔄 Seluruh data gaji harian berhasil direset!", "success");
+                    showStatus("🔄 Seluruh transaksi harian di Sheet1 berhasil dikosongkan!", "success");
                     bukaRekapOwner();
-                } else {
-                    showStatus("Gagal melakukan reset.", "error");
                 }
             }).catch(() => {
-                showStatus("Permintaan reset berhasil diproses.", "success");
+                showStatus("Reset selesai diproses.", "success");
                 bukaRekapOwner();
             });
         }
 
         function bukaRekapOwner() {
-            showStatus("Menghitung seluruh kas utama owner dari Sheet1...", "loading");
+            showStatus("Sinkronisasi neraca keuangan berjalan...", "loading");
             fetch(WEB_APP_URL + "?action=getLaporanOwner")
             .then(res => res.json())
             .then(res => {
-                showStatus("Database kas berhasil disinkronkan.", "success");
+                showStatus("Sinkronisasi database sukses.", "success");
                 let targetBox = document.getElementById('areaGaji');
                 targetBox.style.display = "block";
 
-                let hitungTotalSeluruhUnit = 0;
+                let totalUnitAll = 0;
                 let listGajiHtml = "";
                 
                 for (let namaK in res.rekapKaryawan) {
-                    let unitKaryawan = res.rekapKaryawan[namaK].totalUnit || 0;
-                    let gajiBerjalan = res.rekapKaryawan[namaK].gaji || 0;
-                    
-                    hitungTotalSeluruhUnit += unitKaryawan;
+                    let uK = res.rekapKaryawan[namaK].totalUnit || 0;
+                    let gK = res.rekapKaryawan[namaK].gaji || 0;
+                    totalUnitAll += uK;
                     
                     listGajiHtml += `<tr style="border-bottom:1px solid #eee;"> 
-                        <td style="padding:10px;">${namaK} <span style="font-size:11px; color:#78909c;">(${unitKaryawan} Unit)</span></td> 
-                        <td style="padding:10px; font-weight:bold; text-align:right; color:var(--steam-red);">Rp ${gajiBerjalan.toLocaleString('id-ID')}</td> 
+                        <td style="padding:10px;">${namaK} <span style="font-size:11px; color:#78909c;">(${uK} Unit)</span></td> 
+                        <td style="padding:10px; font-weight:bold; text-align:right; color:var(--steam-red);">Rp ${gK.toLocaleString('id-ID')}</td> 
                     </tr>`;
                 }
                 
-                if(listGajiHtml === "") listGajiHtml = "<tr><td colspan='2' style='text-align:center; padding:10px; color:#999;'>Belum ada data pendapatan berjalan</td></tr>";
+                if(listGajiHtml === "") listGajiHtml = "<tr><td colspan='2' style='text-align:center; padding:10px; color:#999;'>Belum ada data masuk hari ini</td></tr>";
 
-                let kotorOwnerTerbaru = hitungTotalSeluruhUnit * 4000;
-                let bersihOwnerTerbaru = kotorOwnerTerbaru - (res.pengeluaran || 0);
+                let kotorOwner = totalUnitAll * 4000;
+                let bersihOwner = kotorOwner - (res.pengeluaran || 0);
 
                 targetBox.innerHTML = `
                     <div class="card" style="background: #ffffff; border: 2px solid var(--steam-gold); margin-bottom: 25px; padding: 20px;">
-                        <h3 style="color:var(--steam-red); font-size:13px; border-left:4px solid var(--steam-gold); padding-left:10px; margin-bottom:15px; text-transform:uppercase;">📊 NERACA TOTAL KAS UTAMA OWNER (Porsi Rp4.000 - Keseluruhan)</h3>
+                        <h3 style="color:var(--steam-red); font-size:13px; border-left:4px solid var(--steam-gold); padding-left:10px; margin-bottom:15px; text-transform:uppercase;">📊 LAPORAN KAS UTAMA SAYA (Porsi Rp4.000)</h3>
                         <table style="width:100%; font-size:14px; text-align:left; border-collapse:collapse; margin-bottom:20px;">
-                            <tr style="border-bottom:1px solid #eee;"><td style="padding:10px; color:#555;">Total Akumulasi Cucian</td><td style="padding:10px; font-weight:bold; text-align:right; color:var(--text-dark);">${hitungTotalSeluruhUnit} Unit</td></tr>
-                            <tr style="border-bottom:1px solid #eee;"><td style="padding:10px; color:#555;">Total Pemasukan Kotor Owner (Unit x Rp4.000)</td><td style="padding:10px; font-weight:bold; color:#2e7d32; text-align:right;">Rp ${kotorOwnerTerbaru.toLocaleString('id-ID')}</td></tr>
-                            <tr style="border-bottom:1px solid #eee;"><td style="padding:10px; color:#555;">Total Seluruh Pengeluaran Toko</td><td style="padding:10px; font-weight:bold; color:var(--steam-red); text-align:right;">- Rp ${(res.pengeluaran || 0).toLocaleString('id-ID')}</td></tr>
-                            <tr style="background:#fff5f5; font-weight:bold;"><td style="padding:12px; border-radius:6px 0 0 6px; color:var(--text-dark);">PROFIT BERSIH SAYA SEKARANG</td><td style="padding:12px; text-align:right; border-radius:0 6px 6px 0; color:var(--success-color); font-size:16px;">Rp ${bersihOwnerTerbaru.toLocaleString('id-ID')}</td></tr>
+                            <tr style="border-bottom:1px solid #eee;"><td style="padding:10px; color:#555;">Total Cucian Masuk</td><td style="padding:10px; font-weight:bold; text-align:right;">${totalUnitAll} Unit</td></tr>
+                            <tr style="border-bottom:1px solid #eee;"><td style="padding:10px; color:#555;">Omset Kotor Owner (Unit x Rp4.000)</td><td style="padding:10px; font-weight:bold; color:#2e7d32; text-align:right;">Rp ${kotorOwner.toLocaleString('id-ID')}</td></tr>
+                            <tr style="background:#fff5f5; font-weight:bold;"><td style="padding:12px; color:var(--text-dark);">PROFIT BERSIH SAYA SEKARANG</td><td style="padding:12px; text-align:right; color:var(--success-color); font-size:16px;">Rp ${bersihOwner.toLocaleString('id-ID')}</td></tr>
                         </table>
                         
-                        <h3 style="color:var(--text-dark); font-size:13px; border-left:4px solid var(--steam-red); padding-left:10px; margin-bottom:10px; text-transform:uppercase;">👥 REKAP GAJI BERJALAN KARYAWAN</h3>
-                        <table class="table-laporan">
-                            ${listGajiHtml}
-                        </table>
+                        <h3 style="color:var(--text-dark); font-size:13px; border-left:4px solid var(--steam-red); padding-left:10px; margin-bottom:10px; text-transform:uppercase;">👥 ESTIMASI GAJI BERJALAN ANGGOTA</h3>
+                        <table class="table-laporan"> ${listGajiHtml} </table>
                     </div>`;
-            }).catch(() => {
-                showStatus("Gagal menyinkronkan data owner harian.", "error");
-            });
+            }).catch(() => { showStatus("Gagal menarik kas owner.", "error"); });
         }
 
         function cekPendapatanKTPribadi() {
-            showStatus("Menarik data pendapatan pribadi Anda...", "loading");
+            showStatus("Memuat pendapatan pribadi harian...", "loading");
             fetch(`${WEB_APP_URL}?action=loginUser&username=${encodeURIComponent(document.getElementById('login_user').value)}&sandi=${encodeURIComponent(document.getElementById('login_sandi').value)}`)
             .then(res => res.json())
             .then(data => {
                 if(data.status === "success") {
-                    showStatus("Seluruh riwayat data pribadi dimuat.", "success");
+                    showStatus("Data pribadi berhasil diperbarui.", "success");
                     let targetBox = document.getElementById('areaGaji');
                     targetBox.style.display = 'block';
                     tampilkanRincianGajiKaryawan(data.gaji, data.nama, data.jabatan);
                     targetBox.scrollIntoView({ behavior: 'smooth' });
-                } else {
-                    showStatus("Gagal memperbarui data.", "error");
                 }
-            }).catch(() => {
-                showStatus("Masalah jaringan.", "error");
-            });
+            }).catch(() => { showStatus("Gagal sinkron riwayat.", "error"); });
         }
 
         function tampilkanRincianGajiKaryawan(dataGaji, nama, jabatan) {
             let targetBox = document.getElementById('areaGaji');
             if(!dataGaji || dataGaji.length === 0) {
-                targetBox.innerHTML = `<div class="card" style="text-align:center; padding:30px;"><p style="color:var(--steam-red); font-weight:bold; font-size:16px;">Halo ${nama},</p><p style="font-size:13px; margin-top:5px; color:#666;">Anda belum memiliki riwayat pendapatan di sistem.</p></div>`;
+                targetBox.innerHTML = `<div class="card" style="text-align:center; padding:30px;"><p style="color:var(--steam-red); font-weight:bold; font-size:16px;">Halo ${nama},</p><p style="font-size:13px; margin-top:5px; color:#666;">Belum ada riwayat pengerjaan unit cucian atas nama Anda.</p></div>`;
                 return;
             }
 
@@ -603,62 +567,54 @@
                 let b = parseInt(item.bonus) || 0;
                 let k = parseInt(item.kasbon) || 0;
                 
-                totalUnit += u;
-                totalTips += t;
-                totalBonus += b;
-                totalKasbon += k;
-
+                totalUnit += u; totalTips += t; totalBonus += b; totalKasbon += k;
                 let upahCuci = u * 3000;
-                let potonganWifi = 1000; 
-                let totalBersihHarian = (upahCuci + t + b) - k - potonganWifi;
+                let bersihHarian = (upahCuci + t + b) - k - 1000;
 
                 barisTabelHtml += `
-                    <tr style="border-bottom: 1px solid #e0e0e0; font-size: 13px;">
-                        <td style="padding: 10px 6px; font-weight: 600; color: #37474f;">${item.tglTampilan}</td>
-                        <td style="padding: 10px 6px; text-align: center;">${u}</td>
-                        <td style="padding: 10px 6px; text-align: right; color:#2e7d32;">${t.toLocaleString('id-ID')}</td>
-                        <td style="padding: 10px 6px; text-align: right; color:#aa7c11; font-weight:600;">${b.toLocaleString('id-ID')}</td>
-                        <td style="padding: 10px 6px; text-align: right; color:var(--steam-red);">- ${k.toLocaleString('id-ID')}</td>
-                        <td style="padding: 10px 6px; text-align: right; font-weight: bold; color: #1b5e20;">Rp ${totalBersihHarian.toLocaleString('id-ID')}</td>
-                    </tr>
-                `;
+                    <tr style="border-bottom: 1px solid #e0e0e0; font-size: 13px; text-align:center;">
+                        <td style="padding: 10px 4px; text-align: left; font-weight:600;">${item.tglTampilan}</td>
+                        <td>${u}</td>
+                        <td style="color:#2e7d32;">${t.toLocaleString('id-ID')}</td>
+                        <td style="color:#aa7c11; font-weight:600;">${b.toLocaleString('id-ID')}</td>
+                        <td style="color:var(--steam-red);">- ${k.toLocaleString('id-ID')}</td>
+                        <td style="text-align: right; font-weight: bold; color: #1b5e20;">Rp ${bersihHarian.toLocaleString('id-ID')}</td>
+                    </tr>`;
             });
 
-            let akumulasiGajiKotorUnit = totalUnit * 3000; 
-            let akumulasiPotonganWifi = totalHariKerja * 1000;
-            let akumulasiTerimaBersihFinal = (akumulasiGajiKotorUnit + totalTips + totalBonus) - totalKasbon - akumulasiPotonganWifi;
+            let kotorUnit = totalUnit * 3000; 
+            let totalWifi = totalHariKerja * 1000;
+            let terimaBersih = (kotorUnit + totalTips + totalBonus) - totalKasbon - totalWifi;
 
             targetBox.innerHTML = `
                 <div class="card" style="margin-bottom: 20px; padding: 20px;">
-                    <h3 style="color:var(--steam-red); font-size:14px; border-left:4px solid var(--steam-gold); padding-left:10px; margin-bottom:4px; text-transform:uppercase;">TOTAL AKUMULASI PENDAPATAN ANGGOTA</h3>
-                    <p style="font-size:13px; color:#555; margin-bottom:15px;">Nama Anggota: <span style="color:var(--text-dark); font-weight:bold;">${nama} [${jabatan}]</span></p>
+                    <h3 style="color:var(--steam-red); font-size:14px; border-left:4px solid var(--steam-gold); padding-left:10px; margin-bottom:4px; text-transform:uppercase;">TOTAL REKAPAN PENDAPATAN SAYA</h3>
+                    <p style="font-size:13px; color:#555; margin-bottom:15px;">Nama Karyawan: <span style="color:var(--text-dark); font-weight:bold;">${nama}</span></p>
                     <table style="width:100%; font-size:14px; text-align:left; border-collapse:collapse;">
                         <tr style="border-bottom:1px solid #eee;"><td style="padding:8px 0; color:#666;">Total Motor Dicuci</td><td style="padding:8px 0; font-weight:bold; text-align:right;">${totalUnit} Unit</td></tr>
-                        <tr style="border-bottom:1px solid #eee;"><td style="padding:8px 0; color:#666;">Total Upah Cuci (x3.000)</td><td style="padding:8px 0; text-align:right; font-weight:600;">Rp ${akumulasiGajiKotorUnit.toLocaleString('id-ID')}</td></tr>
-                        <tr style="border-bottom:1px solid #eee;"><td style="padding:8px 0; color:#2e7d32;">Total Tips Masuk</td><td style="padding:8px 0; color:#2e7d32; text-align:right; font-weight:600;">+ Rp ${totalTips.toLocaleString('id-ID')}</td></tr>
-                        <tr style="border-bottom:1px solid #eee;"><td style="padding:8px 0; color:#aa7c11;">Total Bonus Target (${jabatan === 'Kepala Toko' ? 'Rp10k' : 'Rp5k'}/Tembus)</td><td style="padding:8px 0; color:#aa7c11; font-weight:bold; text-align:right;">+ Rp ${totalBonus.toLocaleString('id-ID')}</td></tr>
-                        <tr style="border-bottom:1px solid #eee;"><td style="padding:8px 0; color:var(--steam-red);">Total Potongan Kasbon</td><td style="padding:8px 0; color:var(--steam-red); text-align:right; font-weight:600;">- Rp ${totalKasbon.toLocaleString('id-ID')}</td></tr>
-                        <tr style="border-bottom:1px solid #ddd;"><td style="padding:8px 0; color:#666;">Total Iuran Wifi (${totalHariKerja} Hari)</td><td style="padding:8px 0; color:var(--steam-red); text-align:right;">- Rp ${akumulasiPotonganWifi.toLocaleString('id-ID')}</td></tr>
-                        <tr style="background:#f1f8e9; font-weight:bold; font-size:16px;"><td style="padding:12px; border-radius:4px 0 0 4px; color:var(--text-dark);">TOTAL PENDAPATAN BERSIH</td><td style="padding:12px; text-align:right; border-radius:0 4px 4px 0; color:var(--success-color);">Rp ${akumulasiTerimaBersihFinal.toLocaleString('id-ID')}</td></tr>
+                        <tr style="border-bottom:1px solid #eee;"><td style="padding:8px 0; color:#666;">Total Upah Cuci (x3.000)</td><td style="padding:8px 0; text-align:right; font-weight:600;">Rp ${kotorUnit.toLocaleString('id-ID')}</td></tr>
+                        <tr style="border-bottom:1px solid #eee;"><td style="padding:8px 0; color:#2e7d32;">Total Uang Tips Masuk</td><td style="padding:8px 0; color:#2e7d32; text-align:right;">+ Rp ${totalTips.toLocaleString('id-ID')}</td></tr>
+                        <tr style="border-bottom:1px solid #eee;"><td style="padding:8px 0; color:#aa7c11;">Total Bonus Target Hari Tembus</td><td style="padding:8px 0; color:#aa7c11; font-weight:bold; text-align:right;">+ Rp ${totalBonus.toLocaleString('id-ID')}</td></tr>
+                        <tr style="border-bottom:1px solid #eee;"><td style="padding:8px 0; color:var(--steam-red);">Total Potongan Kasbon</td><td style="padding:8px 0; color:var(--steam-red); text-align:right;">- Rp ${totalKasbon.toLocaleString('id-ID')}</td></tr>
+                        <tr style="border-bottom:1px solid #ddd;"><td style="padding:8px 0; color:#666;">Total Iuran Wifi Harian</td><td style="padding:8px 0; color:var(--steam-red); text-align:right;">- Rp ${totalWifi.toLocaleString('id-ID')}</td></tr>
+                        <tr style="background:#f1f8e9; font-weight:bold; font-size:16px;"><td style="padding:12px; color:var(--text-dark);">TOTAL TERIMA BERSIH SAYA</td><td style="padding:12px; text-align:right; color:var(--success-color);">Rp ${terimaBersih.toLocaleString('id-ID')}</td></tr>
                     </table>
                 </div>
 
                 <div class="card" style="padding: 20px; overflow-x: auto;">
-                    <h3 style="color:var(--text-dark); font-size:13px; border-left:4px solid var(--steam-red); padding-left:10px; margin-bottom:15px; text-transform:uppercase;">📜 LOG RINCIAN PENDAPATAN PER TANGGAL</h3>
+                    <h3 style="color:var(--text-dark); font-size:13px; border-left:4px solid var(--steam-red); padding-left:10px; margin-bottom:15px; text-transform:uppercase;">📜 LOG RINCIAN PER TANGGAL</h3>
                     <table style="width:100%; border-collapse:collapse; min-width:450px;">
                         <thead>
-                            <tr style="background:#f8fbfd; border-bottom:2px solid var(--border-color); font-size:11px; text-align:center; font-weight:bold; color:var(--steam-red);">
+                            <tr style="background:#f8fbfd; border-bottom:2px solid var(--border-color); font-size:11px; color:var(--steam-red);">
                                 <th style="padding:10px 4px; text-align:left;">TANGGAL</th>
-                                <th style="padding:10px 4px;">UNIT</th>
-                                <th style="padding:10px 4px; text-align:right;">TIPS</th>
-                                <th style="padding:10px 4px; text-align:right;">BONUS</th>
-                                <th style="padding:10px 4px; text-align:right;">KASBON</th>
-                                <th style="padding:10px 4px; text-align:right;">BERSIH</th>
+                                <th>UNIT</th>
+                                <th>TIPS</th>
+                                <th>BONUS</th>
+                                <th>KASBON</th>
+                                <th style="text-align:right;">BERSIH</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            ${barisTabelHtml}
-                        </tbody>
+                        <tbody> ${barisTabelHtml} </tbody>
                     </table>
                 </div>`;
         }
@@ -674,21 +630,12 @@
         function hitungKotorEstimasi() {
             let unitInput = document.getElementById('unit_pemasukan').value;
             let unit = unitInput ? parseInt(unitInput) : 0;
-            let total = unit * 3000;
-            document.getElementById('nominal_pemasukan_display').value = "Rp " + total.toLocaleString('id-ID');
+            document.getElementById('nominal_pemasukan_display').value = "Rp " + (unit * 3000).toLocaleString('id-ID');
 
-            let cabangTerpilih = document.getElementById('cabang_pemasukan').value;
-            let batasanTarget = 50;
-            if (cabangTerpilih === "Cabang Grobogan") batasanTarget = 100;
-            if (cabangTerpilih === "Cabang Palis") batasanTarget = 50;
-            if (cabangTerpilih === "Cabang Cayur") batasanTarget = 50;
+            let cabang = document.getElementById('cabang_pemasukan').value;
+            let batasan = (cabang === "Cabang Grobogan") ? 100 : 50;
 
-            let boxNotifTarget = document.getElementById('notifTargetBawahUnit');
-            if (unit >= batasanTarget) {
-                boxNotifTarget.style.display = "block";
-            } else {
-                boxNotifTarget.style.display = "none";
-            }
+            document.getElementById('notifTargetBawahUnit').style.display = (unit >= batasan) ? "block" : "none";
         }
 
         function showStatus(text, type) {
@@ -705,12 +652,13 @@
             event.preventDefault();
             let btnSubmit = (tipeForm === 'Pemasukan') ? document.getElementById('btn_submit_pemasukan') : document.getElementById('btn_submit_pengeluaran');
             btnSubmit.disabled = true;
-            showStatus("Menyimpan data aman ke Sheet1 cloud...", "loading");
+            showStatus("Menyimpan final data transaksi...", "loading");
             document.getElementById('cabang_pemasukan').disabled = false;
 
             let urlParams = new URLSearchParams();
             urlParams.append("action", "insertRow");
             urlParams.append("tipe", tipeForm);
+
             const formatTanggalSistem = (idInput) => {
                 let d = new Date(document.getElementById(idInput).value);
                 return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth()+1).padStart(2, '0')}/${d.getFullYear()}`;
@@ -722,15 +670,13 @@
 
                 urlParams.append("tanggal", formatTanggalSistem('tgl_pemasukan'));
                 urlParams.append("cabang", document.getElementById('cabang_pemasukan').value);
-                urlParams.append("kategori", "Pemasukan Unit");
                 urlParams.append("unit", document.getElementById('unit_pemasukan').value);
                 urlParams.append("keterangan", document.getElementById('ket_pemasukan').value);
                 urlParams.append("karyawan_id", idK);
-                urlParams.append("karyawan_nama", objK.nama);
-                urlParams.append("karyawan_jabatan", objK.jabatan);
+                urlParams.append("karyawan_nama", objK ? objK.nama : "Tidak Diketahui");
+                urlParams.append("karyawan_jabatan", SESSION_USER.jabatan);
                 urlParams.append("tips", document.getElementById('tips_pemasukan').value);
                 urlParams.append("kasbon", document.getElementById('kasbon_pemasukan').value);
-                urlParams.append("operator_id", SESSION_USER.idUser);
             } else {
                 urlParams.append("tanggal", formatTanggalSistem('tgl_pengeluaran'));
                 urlParams.append("cabang", document.getElementById('cabang_pengeluaran').value);
@@ -747,13 +693,12 @@
             .then(res => res.text())
             .then(resText => {
                 btnSubmit.disabled = false;
-                
                 if(SESSION_USER && SESSION_USER.jabatan === "Kepala Toko") {
                     document.getElementById('cabang_pemasukan').disabled = true;
                 }
 
                 if(resText === "SUCCESS" || resText === "SUCCESS_TARGET") {
-                    showStatus("Data Berhasil Disimpan ke Sheet1!", "success");
+                    showStatus("Data Berhasil Tersimpan Aman!", "success");
                     document.getElementById('notifTargetBawahUnit').style.display = "none";
 
                     if(tipeForm === 'Pemasukan') {
@@ -775,14 +720,14 @@
                         bukaRekapOwner();
                     }
                 } else {
-                    showStatus("Gagal memproses ke database cloud.", "error");
+                    showStatus("Database menolak data.", "error");
                 }
             }).catch(() => {
                 btnSubmit.disabled = false;
                 if(SESSION_USER && SESSION_USER.jabatan === "Kepala Toko") {
                     document.getElementById('cabang_pemasukan').disabled = true;
                 }
-                showStatus("Gagal menghubungi server.", "error");
+                showStatus("Gagal menghubungi server cloud.", "error");
             });
         }
     </script>
