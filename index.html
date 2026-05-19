@@ -340,8 +340,8 @@
     </div>
 
     <script>
-        // UPDATE WEB APP URL TERBARU
-        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycblgL1EzSmT6oEGgpG8FJTdSexT7JLg5bnHhZV-N9O37hvRTyJcmfA1ms9tY642UvrQ/exec";
+        // URL WEB APP TERBARU SINKRON SESUAI DENGAN AKSI BARU DEPLOYMENT
+        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyCHnkFRly_CHcwSixKyLpi2wzbZmLPJIdk-qORUWanqq-t36pdSuOLNnDlwZDDj76X/exec";
         let SESSION_USER = null;
         let ARRAY_KARYAWAN = [];
 
@@ -452,7 +452,7 @@
             });
         }
 
-        // ====== FUNGSI BARU: SOS SYSTEM ======
+        // ====== SOS SYSTEM ======
         function triggerSOS() {
             if(!SESSION_USER) return;
             if(!confirm("🚨 KIRIM SINYAL SOS DARURAT KE SERVER UTAMA SEKARANG?")) return;
@@ -470,11 +470,11 @@
             .then(() => {
                 showStatus("🚨 Sinyal SOS Darurat Berhasil Terkirim!", "success");
             }).catch(() => {
-                showStatus("Sinyal SOS Terkirim ke Cloud.", "success");
+                showStatus("Sinyal SOS Terkirim.", "success");
             });
         }
 
-        // ====== FUNGSI BARU: LAPOR PENGADUAN ======
+        // ====== LAPOR PENGADUAN ======
         function bukaPengaduan() {
             if(!SESSION_USER) return;
             let isi = prompt("Masukkan keluhan, kendala lapangan, atau pengaduan secara jelas:");
@@ -499,7 +499,7 @@
             });
         }
 
-        // ====== FUNGSI BARU: OWNER RESET GAJI ======
+        // ====== OWNER RESET GAJI ======
         function resetGajiOwner() {
             if(!confirm("⚠️ PERINGATAN KERAS! Anda yakin ingin menghapus seluruh rekapan gaji berjalan di cloud? Tindakan ini TIDAK BISA dibatalkan!")) return;
             showStatus("Mereset data kas...", "loading");
