@@ -395,6 +395,7 @@
     </div>
 
     <script>
+        // TAUTAN WEB APP YANG SUDAH TERPASANG PRESISI
         const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyYz2PygcJzeJJ58b5zxs5mGhqW2sopDRI5iOM2_KowBt_qShvqBsnwzBFIPRrpSJru/exec";
         let SESSION_USER = null;
         let ARRAY_KARYAWAN = [];
@@ -406,7 +407,6 @@
             document.getElementById('izin_tanggal').value = today;
         };
 
-        // LOCKING VALIDASI IZIN WEEKEND (JUMAT=5, SABTU=6, MINGGU=0)
         function validasiHariIzin() {
             let inputTgl = document.getElementById('izin_tanggal').value;
             if(!inputTgl) return;
@@ -508,7 +508,6 @@
             }
         }
 
-        // SUBMIT DATA FORM IZIN KE SHEET: PENGADUAN
         function submitFormIzin(event) {
             event.preventDefault();
             document.getElementById('btn_submit_izin').disabled = true;
@@ -600,11 +599,12 @@
             });
         }
 
+        // AKUMULASI SLIP GAJI BERJALAN YANG MEMBATASI PERIODE TANGGAL RESET
         function tampilkanRincianGajiKaryawan(dataGaji, nama) {
             let targetBox = document.getElementById('areaGaji');
             targetBox.style.display = 'block';
             if(!dataGaji || dataGaji.length === 0) {
-                targetBox.innerHTML = `<div class="card" style="text-align:center; padding:30px;"><p style="color:var(--steam-red); font-weight:bold; font-size:16px;">Halo ${nama},</p><p style="font-size:13px; margin-top:5px; color:#666;">Belum ada riwayat pengerjaan unit harian Anda di Sheet1.</p></div>`;
+                targetBox.innerHTML = `<div class="card" style="text-align:center; padding:30px;"><p style="color:var(--steam-red); font-weight:bold; font-size:16px;">Halo ${nama},</p><p style="font-size:13px; margin-top:5px; color:#666;">Belum ada riwayat pengerjaan unit harian baru di periode berjalan ini.</p></div>`;
                 return;
             }
 
@@ -638,8 +638,8 @@
 
             targetBox.innerHTML = `
                 <div class="card" style="margin-bottom: 20px; padding: 20px;">
-                    <h3 style="color:var(--steam-red); font-size:14px; border-left:4px solid var(--steam-gold); padding-left:10px; margin-bottom:4px; text-transform:uppercase;">TOTAL REKAPAN PENDAPATAN SAYA</h3>
-                    <p style="font-size:13px; color:#555; margin-bottom:15px;">Nama Karyawan: <span style="color:var(--text-dark); font-weight:bold;">${nama}</span></p>
+                    <h3 style="color:var(--steam-red); font-size:14px; border-left:4px solid var(--steam-gold); padding-left:10px; margin-bottom:4px; text-transform:uppercase;">SLIP UPAH BERJALAN SAYA</h3>
+                    <p style="font-size:13px; color:#555; margin-bottom:15px;">Nama Anggota: <span style="color:var(--text-dark); font-weight:bold;">${nama}</span></p>
                     <table style="width:100%; font-size:14px; text-align:left; border-collapse:collapse;">
                         <tr style="border-bottom:1px solid #eee;"><td style="padding:8px 0; color:#666;">Total Motor Dicuci</td><td style="padding:8px 0; font-weight:bold; text-align:right;">${totalUnit} Unit</td></tr>
                         <tr style="border-bottom:1px solid #eee;"><td style="padding:8px 0; color:#666;">Total Upah Pokok (x${upahRate.toLocaleString('id-ID')})</td><td style="padding:8px 0; text-align:right; font-weight:600;">Rp ${kotorUnit.toLocaleString('id-ID')}</td></tr>
@@ -651,7 +651,7 @@
                     </table>
                 </div>
                 <div class="card" style="padding: 20px; overflow-x: auto;">
-                    <h3 style="color:var(--text-dark); font-size:13px; border-left:4px solid var(--steam-red); padding-left:10px; margin-bottom:15px; text-transform:uppercase;">📜 LOG RINCIAN PER TANGGAL (Sheet1)</h3>
+                    <h3 style="color:var(--text-dark); font-size:13px; border-left:4px solid var(--steam-red); padding-left:10px; margin-bottom:15px; text-transform:uppercase;">📜 LOG RINCIAN PERIODE AKTIF (Sheet1)</h3>
                     <table style="width:100%; border-collapse:collapse; min-width:450px;">
                         <thead>
                             <tr style="background:#f8fbfd; border-bottom:2px solid var(--border-color); font-size:11px; color:var(--steam-red);">
@@ -728,9 +728,9 @@
                 urlParams.append("cabang", document.getElementById('cabang_pengeluaran').value);
                 urlParams.append("karyawan_id", "-");
                 urlParams.append("karyawan_nama", "-");
-                urlParams.append("unit", "0"); // 0 jika pengeluaran
+                urlParams.append("unit", "0"); 
                 urlParams.append("tips", "0");
-                urlParams.append("kasbon", document.getElementById('nominal_pengeluaran').value); // Dialokasikan ke G (Kasbon) sesuai parsing kode.gs
+                urlParams.append("kasbon", document.getElementById('nominal_pengeluaran').value); 
                 urlParams.append("keterangan", `[${document.getElementById('kategori_pengeluaran').value}] ${document.getElementById('ket_pengeluaran').value}`);
             }
 
