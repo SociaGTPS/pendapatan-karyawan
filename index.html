@@ -180,7 +180,7 @@
         .table-laporan th { background-color: #f8fbfd; padding:10px; color:var(--steam-red); font-weight:700; text-transform:uppercase; font-size:11px; border-bottom:2px solid var(--border-color); }
         .table-laporan td { padding:10px; border-bottom:1px solid #eee; color:var(--text-dark); vertical-align: middle; }
 
-        /* DESIGN TOMBOL MENGAMBANG (FAB) */
+        /* FAB DESIGN */
         .fab-wrapper {
             position: fixed;
             bottom: 20px;
@@ -208,17 +208,6 @@
         .fab-btn:hover { transform: scale(1.1); }
         .fab-sos { background: linear-gradient(135deg, #d32f2f 0%, #b71c1c 100%); }
         .fab-izin { background: linear-gradient(135deg, #ff8f00 0%, #ff6f00 100%); }
-
-        .badge-status {
-            padding: 4px 8px;
-            border-radius: 6px;
-            font-size: 11px;
-            font-weight: bold;
-            text-transform: uppercase;
-        }
-        .status-proses { background-color: #ffe082; color: #b77f00; }
-        .status-terima { background-color: #c8e6c9; color: #2e7d32; }
-        .status-tolak { background-color: #ffcdd2; color: #c62828; }
 
         .weekend-warning {
             background-color: #ffebee;
@@ -275,20 +264,6 @@
                 </div>
                 <button type="submit" id="btn_submit_izin" class="btn" style="background: linear-gradient(135deg, #ff8f00 0%, #e65100 100%);">KIRIM PERMOHONAN IZIN</button>
             </form>
-
-            <h3 style="margin-top:30px; margin-bottom:15px; font-size:13px; text-transform:uppercase; color:var(--text-dark); border-left:4px solid var(--steam-gold); padding-left:10px;">📋 MONITORING STATUS PENGAJUAN SAYA</h3>
-            <div id="boxHistoriIzinPribadi" style="overflow-x:auto;">
-                <p style="font-size:12px; color:#78909c; text-align:center; padding:10px;">Belum ada riwayat pengajuan izin.</p>
-            </div>
-
-            <button type="button" class="btn" style="margin-top:20px; background:#263238; border-color:var(--steam-gold);" onclick="kembaliKeHalamanUtamaDariIzin()">« KEMBALI KE HALAMAN UTAMA</button>
-        </div>
-
-        <div id="panelAprovalIzinOwner" class="card" style="display:none; border-color:var(--steam-red);">
-            <h2>📥 PERSETUJUAN IZIN KARYAWAN</h2>
-            <div id="boxDaftarIzinMasukOwner" style="overflow-x:auto;">
-                <p style="font-size:12px; color:#78909c; text-align:center; padding:10px;">Tidak ada pengajuan izin masuk yang perlu diproses.</p>
-            </div>
             <button type="button" class="btn" style="margin-top:20px; background:#263238; border-color:var(--steam-gold);" onclick="kembaliKeHalamanUtamaDariIzin()">« KEMBALI KE HALAMAN UTAMA</button>
         </div>
 
@@ -297,8 +272,8 @@
                 <h2>VERIFIKASI AKSES ANGGOTA</h2>
                 <form id="formLogin" onsubmit="handleAuth(event)">
                     <div class="form-group">
-                        <label>ID KARYAWAN / USERNAME</label>
-                        <input type="text" id="login_user" placeholder="Masukkan Username / ID Anda" required>
+                        <label>USERNAME / ID LOGIN</label>
+                        <input type="text" id="login_user" placeholder="Masukkan Username Anda" required>
                     </div>
                     <div class="form-group">
                         <label>KATA SANDI KEAMANAN</label>
@@ -312,11 +287,11 @@
         <div id="halamanUtama" style="display: none;">
             
             <div id="boxFiturKT" style="display:none; margin-bottom:20px;">
-                <button type="button" class="btn" style="background: linear-gradient(135deg, #2e7d32 0%, #1b5e20 100%); border-color:#a5d6a7;" onclick="cekPendapatanKTPribadi()">💰 CEK LAPORAN PENDAPATAN PRIBADI SAYA</button>
+                <button type="button" class="btn" style="background: linear-gradient(135deg, #2e7d32 0%, #1b5e20 100%); border-color:#a5d6a7;" onclick="cekPendapatanKTPribadi()">💰 SINKRONISASI DATA PENDAPATAN SAYA</button>
             </div>
 
             <div id="boxFiturOwner" style="display:none; margin-bottom:20px;">
-                <button type="button" class="btn" style="background: linear-gradient(135deg, var(--steam-gold) 0%, #b89020 100%); color:#fff; border-color: #fff;" onclick="bukaRekapOwner()">🔄 SEGARKAN NERACA KEUANGAN KESELURUHAN OWNER</button>
+                <button type="button" class="btn" style="background: linear-gradient(135deg, var(--steam-gold) 0%, #b89020 100%); color:#fff; border-color: #fff;" onclick="bukaRekapOwner()">🔄 SEGAR KAN REKAP DATA UTAMA OWNER</button>
             </div>
 
             <div class="nav-tabs" id="menuNavigasi">
@@ -334,14 +309,14 @@
                         </div>
                         <div class="form-group">
                             <label>Lokasi Cabang</label>
-                            <select id="cabang_pemasukan" required onchange="filterKaryawanBerdasarkanCabang()">
-                                <option value="Cabang Grobogan">Cabang Grobogan (Target: 100)</option>
-                                <option value="Cabang Palis">Cabang Palis (Target: 50)</option>
-                                <option value="Cabang Cayur">Cabang Cayur (Target: 50)</option>
+                            <select id="cabang_pemasukan" required>
+                                <option value="Cabang Grobogan">Cabang Grobogan</option>
+                                <option value="Cabang Palis">Cabang Palis</option>
+                                <option value="Cabang Cayur">Cabang Cayur</option>
                             </select>
                         </div>
                         <div class="form-group">
-                            <label>Anggota Yang Mencuci</label>
+                            <label>Anggota Lapangan (Mencuci)</label>
                             <select id="karyawan_pemasukan" required>
                                 <option value="">-- Memuat Data Anggota --</option>
                             </select>
@@ -352,30 +327,26 @@
                         </div>
 
                         <div id="notifTargetBawahUnit" style="display: none; font-size: 13px; font-weight: bold; color: #aa7c11; background: #fffde7; border: 1.5px dashed #d4af37; padding: 10px; border-radius: 8px; margin-bottom: 20px; text-align: center;">
-                            🌟 Selamat! Target Cabang Hari Ini Tembus, Bos! JOSS! 🚀
+                            🌟 TARGET HARIAN CABANG TEMBUS, BOS! JOSS! 🚀
                         </div>
 
                         <div class="form-group">
-                            <label>Estimasi Pendapatan Anggota (Rp3.000 / Unit)</label>
+                            <label>Estimasi Premi Anggota</label>
                             <input type="text" id="nominal_pemasukan_display" value="Rp 0" disabled style="font-weight:bold; color: var(--success-color); background: #f1f8e9; border-color:#c5e1a5;">
                         </div>
                         <div class="form-group">
                             <label>Uang Tips Pelanggan (Manual)</label>
-                            <input type="number" id="tips_pemasukan" placeholder="Isi 0 jika tidak ada" value="0" required>
+                            <input type="number" id="tips_pemasukan" value="0" required>
                         </div>
                         <div class="form-group">
                             <label>Potongan Kasbon Anggota (Manual)</label>
-                            <input type="number" id="kasbon_pemasukan" placeholder="Isi 0 jika tidak ada" value="0" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Iuran Wifi Harian</label>
-                            <input type="text" value="Rp 1.000 (Dipotong Otomatis Harian)" disabled style="color:var(--steam-red); font-weight:bold; background:#fff5f5;">
+                            <input type="number" id="kasbon_pemasukan" value="0" required>
                         </div>
                         <div class="form-group">
                             <label>Catatan Lapangan (Keterangan)</label>
-                            <textarea id="ket_pemasukan" rows="2" placeholder="Keterangan tambahan lapangan..."></textarea>
+                            <textarea id="ket_pemasukan" rows="2" placeholder="Keterangan ops harian..."></textarea>
                         </div>
-                        <button type="submit" id="btn_submit_pemasukan" class="btn">KIRIM FINAL DATA PEMASUKAN</button>
+                        <button type="submit" id="btn_submit_pemasukan" class="btn">KIRIM DATA KE SHEET1</button>
                     </form>
                 </div>
             </div>
@@ -397,28 +368,26 @@
                             </select>
                         </div>
                         <div class="form-group">
-                            <label>Kategori Alokasi Dana</label>
+                            <label>Kategori Alokasi Pembelian</label>
                             <select id="kategori_pengeluaran" required>
                                 <option value="Beras Karyawan">Beras Karyawan</option>
                                 <option value="Kopi Karyawan">Kopi Karyawan</option>
                                 <option value="Listrik Token">Listrik Token</option>
                                 <option value="Sabun">Sabun</option>
                                 <option value="Maintenance">Maintenance</option>
-                                <option value="Perawatan">Perawatan</option>
-                                <option value="Oli">Oli</option>
                                 <option value="Wifi">Wifi</option>
                                 <option value="Lain-lain">Lain-lain</option>
                             </select>
                         </div>
                         <div class="form-group">
-                            <label>Nominal Dana Keluar (Rp)</label>
+                            <label>Nominal Dana Keluar (Ditulis di kolom Kasbon Sheet1)</label>
                             <input type="number" id="nominal_pengeluaran" placeholder="Contoh: 50000" required>
                         </div>
                         <div class="form-group">
                             <label>Deskripsi Detail Pembelian</label>
-                            <textarea id="ket_pengeluaran" rows="2" placeholder="Beli apa, merk apa..." required></textarea>
+                            <textarea id="ket_pengeluaran" rows="2" placeholder="Detail barang belanjaan..." required></textarea>
                         </div>
-                        <button type="submit" id="btn_submit_pengeluaran" class="btn">KIRIM FINAL DATA PENGELUARAN</button>
+                        <button type="submit" id="btn_submit_pengeluaran" class="btn">KIRIM DATA PENGELUARAN</button>
                     </form>
                 </div>
             </div>
@@ -426,10 +395,9 @@
     </div>
 
     <script>
-        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxWBYtbeBe3-xH3R80axowIeVbI8n6fc-x3qwTbZammMY3dpsAOYR2y9DcD6R5AURaI/exec";
+        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyYz2PygcJzeJJ58b5zxs5mGhqW2sopDRI5iOM2_KowBt_qShvqBsnwzBFIPRrpSJru/exec";
         let SESSION_USER = null;
         let ARRAY_KARYAWAN = [];
-        let LIST_ALL_IZIN = []; 
 
         window.onload = function() {
             const today = new Date().toISOString().split('T')[0];
@@ -438,14 +406,13 @@
             document.getElementById('izin_tanggal').value = today;
         };
 
-        // VALIDASI WEEKEND (JUMAT=5, SABTU=6, MINGGU=0)
+        // LOCKING VALIDASI IZIN WEEKEND (JUMAT=5, SABTU=6, MINGGU=0)
         function validasiHariIzin() {
             let inputTgl = document.getElementById('izin_tanggal').value;
             if(!inputTgl) return;
             
             let d = new Date(inputTgl);
             let dayNum = d.getDay(); 
-
             let boxWarn = document.getElementById('notifWeekend');
             let btnSub = document.getElementById('btn_submit_izin');
 
@@ -464,23 +431,19 @@
             .then(res => {
                 if(res.status === "success") {
                     ARRAY_KARYAWAN = res.data;
-                    filterKaryawanBerdasarkanCabang();
+                    let dropdown = document.getElementById('karyawan_pemasukan');
+                    dropdown.innerHTML = '<option value="">-- Pilih Anggota --</option>';
+                    ARRAY_KARYAWAN.forEach(k => {
+                        dropdown.innerHTML += `<option value="${k.id}">${k.nama} (ID: ${k.id})</option>`;
+                    });
                 }
-            });
-        }
-
-        function filterKaryawanBerdasarkanCabang() {
-            let dropdownKaryawan = document.getElementById('karyawan_pemasukan');
-            dropdownKaryawan.innerHTML = '<option value="">-- Pilih Anggota --</option>';
-            ARRAY_KARYAWAN.forEach(k => {
-                dropdownKaryawan.innerHTML += `<option value="${k.id}">${k.nama} (ID: ${k.id})</option>`;
             });
         }
 
         function handleAuth(event) {
             event.preventDefault();
             document.getElementById('btn_login').disabled = true;
-            showStatus("Menghubungkan ke server cloud secure database...", "loading");
+            showStatus("Menghubungkan ke cloud server secure...", "loading");
 
             let user = document.getElementById('login_user').value;
             let sandi = document.getElementById('login_sandi').value;
@@ -498,7 +461,7 @@
                     if(data.jabatan === "Karyawan") {
                         document.getElementById('halamanUtama').style.display = 'none';
                         document.getElementById('areaGaji').style.display = 'block';
-                        tampilkanRincianGajiKaryawan(data.gaji, data.nama, data.jabatan);
+                        tampilkanRincianGajiKaryawan(data.gaji, data.nama);
                     } 
                     else if(data.jabatan === "Kepala Toko") {
                         document.getElementById('halamanUtama').style.display = 'block';
@@ -506,142 +469,37 @@
                         if(data.cabang) {
                             document.getElementById('cabang_pemasukan').value = data.cabang;
                             document.getElementById('cabang_pemasukan').disabled = true; 
-                            document.getElementById('labelCabangKT').innerText = "📌 TERKUNCI CABANG: " + data.cabang.toUpperCase();
+                            document.getElementById('labelCabangKT').innerText = "📌 POS STORE LOCK: " + data.cabang.toUpperCase();
                         }
                         loadKaryawanDropdown();
                         switchTab('input-pemasukan');
                     } 
                     else if(data.jabatan === "Admin" || data.jabatan === "Owner") {
                         document.getElementById('halamanUtama').style.display = 'block';
-                        document.getElementById('menuNavigasi').style.display = 'flex';
-                        document.getElementById('boxFiturOwner').style.add = 'block';
+                        document.getElementById('boxFiturOwner').style.display = 'block';
                         loadKaryawanDropdown();
                         switchTab('input-pemasukan');
                         bukaRekapOwner();
                     }
-                    getFetchDataIzinSistem();
                 } else {
                     showStatus(data.message, "error");
                 }
             }).catch(() => {
                 document.getElementById('btn_login').disabled = false;
-                showStatus("Koneksi ke server gagal.", "error");
+                showStatus("Gagal otentikasi jaringan.", "error");
             });
         }
 
-        // AMBIL DATA TRANSAKSI PENGAJUAN IZIN KARYAWAN DARI CLOUD
-        function getFetchDataIzinSistem() {
-            fetch(WEB_APP_URL + "?action=getIzinDataList")
-            .then(res => res.json())
-            .then(res => {
-                if(res.status === "success") {
-                    LIST_ALL_IZIN = res.data || [];
-                    renderTampilanIzinSesuaiRole();
-                }
-            }).catch(()=>{});
-        }
-
-        function renderTampilanIzinSesuaiRole() {
-            if(!SESSION_USER) return;
-
-            // Jika Owner/Admin -> Render panel approval izin masuk
-            if(SESSION_USER.jabatan === "Owner" || SESSION_USER.jabatan === "Admin") {
-                let boxOwner = document.getElementById('boxDaftarIzinMasukOwner');
-                let pendingIzin = LIST_ALL_IZIN.filter(x => x.status === "Pending");
-
-                if(pendingIzin.length === 0) {
-                    boxOwner.innerHTML = "<p style='text-align:center; padding:15px; color:#999; font-size:12px;'>Tidak ada permohonan izin baru yang masuk.</p>";
-                    return;
-                }
-
-                let htmlOwner = `<table class="table-laporan">
-                    <thead>
-                        <tr>
-                            <th>Nama / Tgl</th>
-                            <th>Alasan</th>
-                            <th>Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody>`;
-                
-                pendingIzin.forEach(item => {
-                    htmlOwner += `<tr>
-                        <td>
-                            <strong>${item.nama}</strong><br>
-                            <span style="font-size:11px; color:#555;">Tgl: ${item.tanggal}</span><br>
-                            <span style="font-size:10px; color:var(--steam-gold); font-weight:bold;">[${item.jenis}]</span>
-                        </td>
-                        <td style="font-size:12px;">${item.keterangan}</td>
-                        <td>
-                            <button class="badge-status status-terima" style="border:none; cursor:pointer; margin-bottom:5px; width:100%; display:block;" onclick="prosesKeputusanIzinOwner('${item.rowId}', 'Disetujui')">TERIMA</button>
-                            <button class="badge-status status-tolak" style="border:none; cursor:pointer; width:100%; display:block;" onclick="prosesKeputusanIzinOwner('${item.rowId}', 'Ditolak')">TOLAK</button>
-                        </td>
-                    </tr>`;
-                });
-                htmlOwner += "</tbody></table>";
-                boxOwner.innerHTML = htmlOwner;
-            } 
-            // Jika Karyawan/Kepala Toko -> Render riwayat histori pribadinya
-            else {
-                let boxUser = document.getElementById('boxHistoriIzinPribadi');
-                let izinSaya = LIST_ALL_IZIN.filter(x => String(x.idKaryawan) === String(SESSION_USER.username || SESSION_USER.idUser || SESSION_USER.nama));
-
-                if(izinSaya.length === 0) {
-                    boxUser.innerHTML = "<p style='text-align:center; padding:15px; color:#999; font-size:12px;'>Anda belum pernah melakukan pengajuan izin libur.</p>";
-                    return;
-                }
-
-                let htmlUser = `<table class="table-laporan">
-                    <thead>
-                        <tr>
-                            <th>Tgl Izin</th>
-                            <th>Pengajuan</th>
-                            <th>Status / Balasan</th>
-                        </tr>
-                    </thead>
-                    <tbody>`;
-
-                izinSaya.forEach(item => {
-                    let badgeClass = "status-proses";
-                    if(item.status === "Disetujui") badgeClass = "status-terima";
-                    if(item.status === "Ditolak") badgeClass = "status-tolak";
-
-                    htmlUser += `<tr>
-                        <td><strong>${item.tanggal}</strong></td>
-                        <td style="font-size:12px;">
-                            <span style="font-weight:bold; color:var(--steam-red); font-size:11px;">${item.jenis}</span><br>
-                            ${item.keterangan}
-                        </td>
-                        <td>
-                            <span class="badge-status ${badgeClass}">${item.status}</span>
-                            <div style="font-size:11px; color:#455a64; margin-top:4px; font-style:italic;">${item.catatanOwner || ''}</div>
-                        </td>
-                    </tr>`;
-                });
-                htmlUser += "</tbody></table>";
-                boxUser.innerHTML = htmlUser;
-            }
-        }
-
-        // AKSI KLIK TOMBOL FAB IZIN LIBUR
         function bukaHalamanIzin() {
             if(!SESSION_USER) return alert("Silahkan login terlebih dahulu!");
-            
             document.getElementById('areaGaji').style.display = 'none';
             document.getElementById('halamanUtama').style.display = 'none';
-
-            if(SESSION_USER.jabatan === "Owner" || SESSION_USER.jabatan === "Admin") {
-                document.getElementById('panelAprovalIzinOwner').style.display = 'block';
-            } else {
-                document.getElementById('panelFormIzinKaryawan').style.display = 'block';
-                validasiHariIzin();
-            }
+            document.getElementById('panelFormIzinKaryawan').style.display = 'block';
+            validasiHariIzin();
         }
 
         function kembaliKeHalamanUtamaDariIzin() {
             document.getElementById('panelFormIzinKaryawan').style.display = 'none';
-            document.getElementById('panelAprovalIzinOwner').style.display = 'none';
-
             if(SESSION_USER.jabatan === "Karyawan") {
                 document.getElementById('areaGaji').style.display = 'block';
             } else {
@@ -650,22 +508,21 @@
             }
         }
 
-        // SUBMIT FORM PENGAJUAN IZIN KARYAWAN/KT KEMBALI KE SERVER SHEET
+        // SUBMIT DATA FORM IZIN KE SHEET: PENGADUAN
         function submitFormIzin(event) {
             event.preventDefault();
             document.getElementById('btn_submit_izin').disabled = true;
-            showStatus("Mengirim berkas pengajuan izin ke cloud database...", "loading");
+            showStatus("Mengirim dokumen pengajuan...", "loading");
 
             let d = new Date(document.getElementById('izin_tanggal').value);
             let formatTgl = `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth()+1).padStart(2, '0')}/${d.getFullYear()}`;
 
             let urlParams = new URLSearchParams();
             urlParams.append("action", "insertIzinRow");
-            urlParams.append("idKaryawan", SESSION_USER.username || SESSION_USER.idUser || SESSION_USER.nama);
+            urlParams.append("idKaryawan", SESSION_USER.username);
             urlParams.append("nama", SESSION_USER.nama);
-            urlParams.append("tanggal", formatTgl);
             urlParams.append("jenis", document.getElementById('izin_jenis').value);
-            urlParams.append("keterangan", document.getElementById('izin_keterangan').value);
+            urlParams.append("keterangan", `[Izin Tgl ${formatTgl}] - ${document.getElementById('izin_keterangan').value}`);
 
             fetch(WEB_APP_URL, {
                 method: "POST",
@@ -676,63 +533,24 @@
             .then(text => {
                 document.getElementById('btn_submit_izin').disabled = false;
                 if(text === "SUCCESS_IZIN") {
-                    showStatus("Permohonan izin berhasil diajukan, tunggu keputusan Owner!", "success");
+                    showStatus("Permohonan izin tersimpan di data Pengaduan!", "success");
                     document.getElementById('formAjuIzin').reset();
-                    const today = new Date().toISOString().split('T')[0];
-                    document.getElementById('izin_tanggal').value = today;
-                    getFetchDataIzinSistem();
+                    document.getElementById('izin_tanggal').value = new Date().toISOString().split('T')[0];
                 } else {
-                    showStatus("Pengajuan gagal ditolak server.", "error");
+                    showStatus("Ditolak sistem cloud.", "error");
                 }
-            })
-            .catch(() => {
+            }).catch(() => {
                 document.getElementById('btn_submit_izin').disabled = false;
-                showStatus("Gagal terkoneksi jaringan.", "error");
+                showStatus("Kendala koneksi.", "error");
             });
         }
 
-        // EKSEKUSI OWNER UNTUK MEMUTUSKAN ACC/TOLAK IZIN BERIKUT PESANNYA
-        function prosesKeputusanIzinOwner(rowId, statusKeputusan) {
-            let alasanPesan = prompt("Masukkan pesan atau alasan keputusan (Wajib diisi):");
-            if(alasanPesan === null) return;
-            if(alasanPesan.trim() === "") return alert("Alasan pesan tidak boleh kosong!");
-
-            showStatus("Memproses keputusan izin...", "loading");
-
-            let urlParams = new URLSearchParams();
-            urlParams.append("action", "updateDecisionIzinOwner");
-            urlParams.append("rowId", rowId);
-            urlParams.append("status", statusKeputusan);
-            urlParams.append("catatanOwner", alasanPesan);
-
-            fetch(WEB_APP_URL, {
-                method: "POST",
-                headers: { "Content-Type": "application/x-www-form-urlencoded" },
-                body: urlParams.toString()
-            })
-            .then(res => res.text())
-            .then(text => {
-                if(text === "SUCCESS_DECISION") {
-                    showStatus("Keputusan Izin berhasil disimpan ke sistem!", "success");
-                    getFetchDataIzinSistem();
-                } else {
-                    showStatus("Gagal memproses ke database.", "error");
-                }
-            })
-            .catch(() => { showStatus("Masalah jaringan.", "error"); });
-        }
-
-        function triggerSOS() {
-            if(!confirm("🚨 KIRIM SIGNAL SOS EMERGENSI SEKARANG?")) return;
-            showStatus("Sinyal SOS darurat terkirim ke server owner.", "success");
-        }
-
         function bukaRekapOwner() {
-            showStatus("Sinkronisasi neraca keuangan berjalan...", "loading");
+            showStatus("Menyinkronkan data Sheet1...", "loading");
             fetch(WEB_APP_URL + "?action=getLaporanOwner")
             .then(res => res.json())
             .then(res => {
-                showStatus("Sinkronisasi database sukses.", "success");
+                showStatus("Data sinkron.", "success");
                 let targetBox = document.getElementById('areaGaji');
                 targetBox.style.display = "block";
 
@@ -749,60 +567,59 @@
                     </tr>`;
                 }
                 
-                if(listGajiHtml === "") listGajiHtml = "<tr><td colspan='2' style='text-align:center; padding:10px; color:#999;'>Belum ada data pendapatan</td></tr>";
+                if(listGajiHtml === "") listGajiHtml = "<tr><td colspan='2' style='text-align:center; padding:10px; color:#999;'>Belum ada data unit</td></tr>";
 
-                let kotorOwner = totalUnitAll * 4000;
+                let porsiRate = res.porsiOwnerRate || 4000;
+                let kotorOwner = totalUnitAll * porsiRate;
                 let bersihOwner = kotorOwner - (res.pengeluaran || 0);
 
                 targetBox.innerHTML = `
-                    <div class="card" style="background: #ffffff; border: 2px solid var(--steam-gold); margin-bottom: 25px; padding: 20px;">
-                        <h3 style="color:var(--steam-red); font-size:13px; border-left:4px solid var(--steam-gold); padding-left:10px; margin-bottom:15px; text-transform:uppercase;">📊 LAPORAN KAS UTAMA SAYA (Porsi Rp4.000)</h3>
+                    <div class="card" style="padding: 20px;">
+                        <h3 style="color:var(--steam-red); font-size:13px; border-left:4px solid var(--steam-gold); padding-left:10px; margin-bottom:15px; text-transform:uppercase;">📊 NERACA KAS OWNER KONSOLIDASI (Porsi Rp${porsiRate.toLocaleString('id-ID')})</h3>
                         <table style="width:100%; font-size:14px; text-align:left; border-collapse:collapse; margin-bottom:20px;">
                             <tr style="border-bottom:1px solid #eee;"><td style="padding:10px; color:#555;">Total Cucian Masuk</td><td style="padding:10px; font-weight:bold; text-align:right;">${totalUnitAll} Unit</td></tr>
-                            <tr style="border-bottom:1px solid #eee;"><td style="padding:10px; color:#555;">Omset Kotor Owner (Unit x Rp4.000)</td><td style="padding:10px; font-weight:bold; color:#2e7d32; text-align:right;">Rp ${kotorOwner.toLocaleString('id-ID')}</td></tr>
-                            <tr style="border-bottom:1px solid #eee;"><td style="padding:10px; color:#555;">Total Pengeluaran Toko</td><td style="padding:10px; font-weight:bold; color:var(--steam-red); text-align:right;">- Rp ${(res.pengeluaran || 0).toLocaleString('id-ID')}</td></tr>
-                            <tr style="background:#fff5f5; font-weight:bold;"><td style="padding:12px; color:var(--text-dark);">PROFIT BERSIH SAYA SEKARANG</td><td style="padding:12px; text-align:right; color:var(--success-color); font-size:16px;">Rp ${bersihOwner.toLocaleString('id-ID')}</td></tr>
+                            <tr style="border-bottom:1px solid #eee;"><td style="padding:10px; color:#555;">Omset Kas Owner</td><td style="padding:10px; font-weight:bold; color:#2e7d32; text-align:right;">Rp ${kotorOwner.toLocaleString('id-ID')}</td></tr>
+                            <tr style="border-bottom:1px solid #eee;"><td style="padding:10px; color:#555;">Total Biaya Toko</td><td style="padding:10px; font-weight:bold; color:var(--steam-red); text-align:right;">- Rp ${(res.pengeluaran || 0).toLocaleString('id-ID')}</td></tr>
+                            <tr style="background:#fff5f5; font-weight:bold;"><td style="padding:12px; color:var(--text-dark);">PROFIT NETTO OWNER</td><td style="padding:12px; text-align:right; color:var(--success-color); font-size:16px;">Rp ${bersihOwner.toLocaleString('id-ID')}</td></tr>
                         </table>
-                        
-                        <h3 style="color:var(--text-dark); font-size:13px; border-left:4px solid var(--steam-red); padding-left:10px; margin-bottom:10px; text-transform:uppercase;">👥 REKAP GAJI BERJALAN KARYAWAN</h3>
-                        <table class="table-laporan">
-                            ${listGajiHtml}
-                        </table>
+                        <h3 style="color:var(--text-dark); font-size:13px; border-left:4px solid var(--steam-red); padding-left:10px; margin-bottom:10px; text-transform:uppercase;">👥 ESTIMASI REKAP UPAH TIM LAPANGAN</h3>
+                        <table class="table-laporan">${listGajiHtml}</table>
                     </div>`;
-            }).catch(() => { showStatus("Gagal menarik kas owner.", "error"); });
+            }).catch(() => { showStatus("Gagal memuat rekap.", "error"); });
         }
 
         function cekPendapatanKTPribadi() {
-            showStatus("Memuat pendapatan harian...", "loading");
-            fetch(`${WEB_APP_URL}?action=loginUser&username=${encodeURIComponent(document.getElementById('login_user').value)}&sandi=${encodeURIComponent(document.getElementById('login_sandi').value)}`)
+            showStatus("Mengambil data riwayat harian...", "loading");
+            fetch(`${WEB_APP_URL}?action=loginUser&username=${encodeURIComponent(SESSION_USER.username)}&sandi=${encodeURIComponent(document.getElementById('login_sandi').value)}`)
             .then(res => res.json())
             .then(data => {
                 if(data.status === "success") {
-                    showStatus("Data pribadi berhasil diperbarui.", "success");
-                    let targetBox = document.getElementById('areaGaji');
-                    targetBox.style.display = 'block';
-                    tampilkanRincianGajiKaryawan(data.gaji, data.nama, data.jabatan);
+                    showStatus("Data harian sinkron.", "success");
+                    tampilkanRincianGajiKaryawan(data.gaji, data.nama);
                 }
             });
         }
 
-        function tampilkanRincianGajiKaryawan(dataGaji, nama, jabatan) {
+        function tampilkanRincianGajiKaryawan(dataGaji, nama) {
             let targetBox = document.getElementById('areaGaji');
+            targetBox.style.display = 'block';
             if(!dataGaji || dataGaji.length === 0) {
-                targetBox.innerHTML = `<div class="card" style="text-align:center; padding:30px;"><p style="color:var(--steam-red); font-weight:bold; font-size:16px;">Halo ${nama},</p><p style="font-size:13px; margin-top:5px; color:#666;">Belum ada riwayat pengerjaan unit harian Anda.</p></div>`;
+                targetBox.innerHTML = `<div class="card" style="text-align:center; padding:30px;"><p style="color:var(--steam-red); font-weight:bold; font-size:16px;">Halo ${nama},</p><p style="font-size:13px; margin-top:5px; color:#666;">Belum ada riwayat pengerjaan unit harian Anda di Sheet1.</p></div>`;
                 return;
             }
 
             let totalUnit = 0, totalTips = 0, totalBonus = 0, totalKasbon = 0;
             let totalHariKerja = dataGaji.length;
             let barisTabelHtml = "";
+            let upahRate = dataGaji[0].upahUnitRate || 3000;
+            let wifiRate = dataGaji[0].potonganWifi || 1000;
 
             dataGaji.forEach(item => {
                 let u = parseInt(item.unit) || 0; let t = parseInt(item.tips) || 0;
                 let b = parseInt(item.bonus) || 0; let k = parseInt(item.kasbon) || 0;
                 totalUnit += u; totalTips += t; totalBonus += b; totalKasbon += k;
-                let upahCuci = u * 3000;
-                let bersihHarian = (upahCuci + t + b) - k - 1000;
+                let upahCuci = u * upahRate;
+                let bersihHarian = (upahCuci + t + b) - k - wifiRate;
 
                 barisTabelHtml += `
                     <tr style="border-bottom: 1px solid #e0e0e0; font-size: 13px; text-align:center;">
@@ -815,8 +632,8 @@
                     </tr>`;
             });
 
-            let kotorUnit = totalUnit * 3000; 
-            let totalWifi = totalHariKerja * 1000;
+            let kotorUnit = totalUnit * upahRate; 
+            let totalWifi = totalHariKerja * wifiRate;
             let terimaBersih = (kotorUnit + totalTips + totalBonus) - totalKasbon - totalWifi;
 
             targetBox.innerHTML = `
@@ -825,29 +642,23 @@
                     <p style="font-size:13px; color:#555; margin-bottom:15px;">Nama Karyawan: <span style="color:var(--text-dark); font-weight:bold;">${nama}</span></p>
                     <table style="width:100%; font-size:14px; text-align:left; border-collapse:collapse;">
                         <tr style="border-bottom:1px solid #eee;"><td style="padding:8px 0; color:#666;">Total Motor Dicuci</td><td style="padding:8px 0; font-weight:bold; text-align:right;">${totalUnit} Unit</td></tr>
-                        <tr style="border-bottom:1px solid #eee;"><td style="padding:8px 0; color:#666;">Total Upah Cuci (x3.000)</td><td style="padding:8px 0; text-align:right; font-weight:600;">Rp ${kotorUnit.toLocaleString('id-ID')}</td></tr>
-                        <tr style="border-bottom:1px solid #eee;"><td style="padding:8px 0; color:#2e7d32;">Total Uang Tips Masuk</td><td style="padding:8px 0; color:#2e7d32; text-align:right;">+ Rp ${totalTips.toLocaleString('id-ID')}</td></tr>
-                        <tr style="border-bottom:1px solid #eee;"><td style="padding:8px 0; color:#aa7c11;">Total Bonus Target Hari Tembus</td><td style="padding:8px 0; color:#aa7c11; font-weight:bold; text-align:right;">+ Rp ${totalBonus.toLocaleString('id-ID')}</td></tr>
-                        <tr style="border-bottom:1px solid #eee;"><td style="padding:8px 0; color:var(--steam-red);">Total Potongan Kasbon</td><td style="padding:8px 0; color:var(--steam-red); text-align:right;">- Rp ${totalKasbon.toLocaleString('id-ID')}</td></tr>
-                        <tr style="border-bottom:1px solid #ddd;"><td style="padding:8px 0; color:#666;">Total Iuran Wifi Harian</td><td style="padding:8px 0; color:var(--steam-red); text-align:right;">- Rp ${totalWifi.toLocaleString('id-ID')}</td></tr>
-                        <tr style="background:#f1f8e9; font-weight:bold; font-size:16px;"><td style="padding:12px; color:var(--text-dark);">TOTAL TERIMA BERSIH SAYA</td><td style="padding:12px; text-align:right; color:var(--success-color);">Rp ${terimaBersih.toLocaleString('id-ID')}</td></tr>
+                        <tr style="border-bottom:1px solid #eee;"><td style="padding:8px 0; color:#666;">Total Upah Pokok (x${upahRate.toLocaleString('id-ID')})</td><td style="padding:8px 0; text-align:right; font-weight:600;">Rp ${kotorUnit.toLocaleString('id-ID')}</td></tr>
+                        <tr style="border-bottom:1px solid #eee;"><td style="padding:8px 0; color:#2e7d32;">Total Uang Tips</td><td style="padding:8px 0; color:#2e7d32; text-align:right;">+ Rp ${totalTips.toLocaleString('id-ID')}</td></tr>
+                        <tr style="border-bottom:1px solid #eee;"><td style="padding:8px 0; color:#aa7c11;">Total Bonus Target</td><td style="padding:8px 0; color:#aa7c11; font-weight:bold; text-align:right;">+ Rp ${totalBonus.toLocaleString('id-ID')}</td></tr>
+                        <tr style="border-bottom:1px solid #eee;"><td style="padding:8px 0; color:var(--steam-red);">Total Kasbon</td><td style="padding:8px 0; color:var(--steam-red); text-align:right;">- Rp ${totalKasbon.toLocaleString('id-ID')}</td></tr>
+                        <tr style="border-bottom:1px solid #ddd;"><td style="padding:8px 0; color:#666;">Total Potongan Wifi</td><td style="padding:8px 0; color:var(--steam-red); text-align:right;">- Rp ${totalWifi.toLocaleString('id-ID')}</td></tr>
+                        <tr style="background:#f1f8e9; font-weight:bold; font-size:16px;"><td style="padding:12px; color:var(--text-dark);">TOTAL TERIMA BERSIH</td><td style="padding:12px; text-align:right; color:var(--success-color);">Rp ${terimaBersih.toLocaleString('id-ID')}</td></tr>
                     </table>
                 </div>
-
                 <div class="card" style="padding: 20px; overflow-x: auto;">
-                    <h3 style="color:var(--text-dark); font-size:13px; border-left:4px solid var(--steam-red); padding-left:10px; margin-bottom:15px; text-transform:uppercase;">📜 LOG RINCIAN PER TANGGAL</h3>
+                    <h3 style="color:var(--text-dark); font-size:13px; border-left:4px solid var(--steam-red); padding-left:10px; margin-bottom:15px; text-transform:uppercase;">📜 LOG RINCIAN PER TANGGAL (Sheet1)</h3>
                     <table style="width:100%; border-collapse:collapse; min-width:450px;">
                         <thead>
                             <tr style="background:#f8fbfd; border-bottom:2px solid var(--border-color); font-size:11px; color:var(--steam-red);">
-                                <th style="padding:10px 4px; text-align:left;">TANGGAL</th>
-                                <th>UNIT</th>
-                                <th>TIPS</th>
-                                <th>BONUS</th>
-                                <th>KASBON</th>
-                                <th style="text-align:right;">BERSIH</th>
+                                <th style="padding:10px 4px; text-align:left;">TANGGAL</th><th>UNIT</th><th>TIPS</th><th>BONUS</th><th>KASBON</th><th style="text-align:right;">BERSIH</th>
                             </tr>
                         </thead>
-                        <tbody> ${barisTabelHtml} </tbody>
+                        <tbody>${barisTabelHtml}</tbody>
                     </table>
                 </div>`;
         }
@@ -869,6 +680,11 @@
             document.getElementById('notifTargetBawahUnit').style.display = (unit >= batasan) ? "block" : "none";
         }
 
+        function triggerSOS() {
+            if(!confirm("🚨 KIRIM SIGNAL SOS EMERGENSI SEKARANG?")) return;
+            showStatus("Sinyal SOS darurat terkirim ke log system.", "success");
+        }
+
         function showStatus(text, type) {
             const msgBox = document.getElementById('statusMessage');
             msgBox.innerText = text; msgBox.className = '';
@@ -883,7 +699,7 @@
             event.preventDefault();
             let btnSubmit = (tipeForm === 'Pemasukan') ? document.getElementById('btn_submit_pemasukan') : document.getElementById('btn_submit_pengeluaran');
             btnSubmit.disabled = true;
-            showStatus("Menyimpan data transaksi...", "loading");
+            showStatus("Menyimpan arsip data transaksi...", "loading");
 
             let urlParams = new URLSearchParams();
             urlParams.append("action", "insertRow");
@@ -900,19 +716,22 @@
 
                 urlParams.append("tanggal", formatTanggalSistem('tgl_pemasukan'));
                 urlParams.append("cabang", document.getElementById('cabang_pemasukan').value);
-                urlParams.append("unit", document.getElementById('unit_pemasukan').value);
-                urlParams.append("keterangan", document.getElementById('ket_pemasukan').value);
                 urlParams.append("karyawan_id", idK);
-                urlParams.append("karyawan_nama", objK ? objK.nama : "Tidak Diketahui");
+                urlParams.append("karyawan_nama", objK ? objK.nama : "Tanpa Nama");
                 urlParams.append("karyawan_jabatan", SESSION_USER.jabatan);
+                urlParams.append("unit", document.getElementById('unit_pemasukan').value);
                 urlParams.append("tips", document.getElementById('tips_pemasukan').value);
                 urlParams.append("kasbon", document.getElementById('kasbon_pemasukan').value);
+                urlParams.append("keterangan", document.getElementById('ket_pemasukan').value || "Pemasukan Unit");
             } else {
                 urlParams.append("tanggal", formatTanggalSistem('tgl_pengeluaran'));
                 urlParams.append("cabang", document.getElementById('cabang_pengeluaran').value);
-                urlParams.append("kategori", document.getElementById('kategori_pengeluaran').value);
-                urlParams.append("nominal", document.getElementById('nominal_pengeluaran').value);
-                urlParams.append("keterangan", document.getElementById('ket_pengeluaran').value);
+                urlParams.append("karyawan_id", "-");
+                urlParams.append("karyawan_nama", "-");
+                urlParams.append("unit", "0"); // 0 jika pengeluaran
+                urlParams.append("tips", "0");
+                urlParams.append("kasbon", document.getElementById('nominal_pengeluaran').value); // Dialokasikan ke G (Kasbon) sesuai parsing kode.gs
+                urlParams.append("keterangan", `[${document.getElementById('kategori_pengeluaran').value}] ${document.getElementById('ket_pengeluaran').value}`);
             }
 
             fetch(WEB_APP_URL, {
@@ -924,19 +743,17 @@
             .then(resText => {
                 btnSubmit.disabled = false;
                 if(resText === "SUCCESS" || resText === "SUCCESS_TARGET") {
-                    showStatus("Data Berhasil Tersimpan Aman!", "success");
+                    showStatus("Data Transaksi Tersimpan!", "success");
                     if(tipeForm === 'Pemasukan') {
                         document.getElementById('formPemasukan').reset();
                         document.getElementById('nominal_pemasukan_display').value = "Rp 0";
-                        filterKaryawanBerdasarkanCabang();
                     } else { document.getElementById('formPengeluaran').reset(); }
                     
-                    const today = new Date().toISOString().split('T')[0];
-                    document.getElementById('tgl_pemasukan').value = today;
-                    document.getElementById('tgl_pengeluaran').value = today;
+                    document.getElementById('tgl_pemasukan').value = new Date().toISOString().split('T')[0];
+                    document.getElementById('tgl_pengeluaran').value = new Date().toISOString().split('T')[0];
 
                     if(SESSION_USER.jabatan === "Owner" || SESSION_USER.jabatan === "Admin") bukaRekapOwner();
-                } else { showStatus("Database menolak data.", "error"); }
+                } else { showStatus("Gagal direspon server database.", "error"); }
             }).catch(() => {
                 btnSubmit.disabled = false;
                 showStatus("Gagal menghubungi server cloud.", "error");
