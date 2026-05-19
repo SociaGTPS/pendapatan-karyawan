@@ -33,7 +33,7 @@
 
         .container { width: 100%; max-width: 550px; }
 
-        /* HEADER BRAND - MERAH PUTIH ELEGAN */
+        /* HEADER BRAND */
         .app-header { 
             text-align: center; 
             margin-bottom: 30px; 
@@ -209,7 +209,7 @@
                         <label>KATA SANDI KEAMANAN</label>
                         <input type="password" id="login_sandi" placeholder="Masukkan Sandi" required>
                     </div>
-                    <button type="submit" id="btn_login" class="btn">MASUK</button>
+                    <button type="submit" id="btn_login" class="btn">MASUK PANDU KONTROL</button>
                 </form>
             </div>
         </div>
@@ -331,6 +331,7 @@
     </div>
 
     <script>
+        // URL Google Apps Script Tetap Menggunakan yang Lama Milik Abang
         const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxWBYtbeBe3-xH3R80axowIeVbI8n6fc-x3qwTbZammMY3dpsAOYR2y9DcD6R5AURaI/exec";
         let SESSION_USER = null;
         let ARRAY_KARYAWAN = [];
@@ -386,64 +387,57 @@
             let url = `${WEB_APP_URL}?action=loginUser&username=${encodeURIComponent(user)}&sandi=${encodeURIComponent(sandi)}`;
 
             fetch(url)
-            .then(res => res.text())
-            .then(text => {
-                try {
-                    let data = JSON.parse(text);
-                    document.getElementById('btn_login').disabled = false;
-                    
-                    if(data.status === "success") {
-                        SESSION_USER = data;
-                        showStatus("Akses dibuka. Selamat datang " + data.nama, "success");
-                        document.getElementById('gerbangAuth').style.display = 'none';
+            .then(res => res.json())
+            .then(data => {
+                document.getElementById('btn_login').disabled = false;
+                if(data.status === "success") {
+                    SESSION_USER = data;
+                    showStatus("Akses dibuka. Selamat datang " + data.nama, "success");
+                    document.getElementById('gerbangAuth').style.display = 'none';
 
-                        document.getElementById('cabang_pemasukan').disabled = false;
-                        document.getElementById('cabang_pengeluaran').disabled = false;
-                        document.getElementById('labelCabangKT').innerText = "";
+                    document.getElementById('cabang_pemasukan').disabled = false;
+                    document.getElementById('cabang_pengeluaran').disabled = false;
+                    document.getElementById('labelCabangKT').innerText = "";
 
-                        if(data.jabatan === "Karyawan") {
-                            document.getElementById('halamanUtama').style.display = 'none';
-                            document.getElementById('areaGaji').style.display = 'block';
-                            tampilkanRincianGajiKaryawan(data.gaji, data.nama, data.jabatan);
-                        } 
-                        else if(data.jabatan === "Kepala Toko") {
-                            document.getElementById('halamanUtama').style.display = 'block';
-                            document.getElementById('boxFiturKT').style.display = 'block'; 
-                            document.getElementById('boxFiturOwner').style.display = 'none';
-                            document.getElementById('nav_pengeluaran').style.display = 'none'; 
-                            
-                            if(data.cabang) {
-                                document.getElementById('cabang_pemasukan').value = data.cabang;
-                                document.getElementById('cabang_pemasukan').disabled = true; 
-                                document.getElementById('labelCabangKT').innerText = "📌 TERKUNCI KHUSUS: " + data.cabang.toUpperCase();
-                            }
-
-                            loadKaryawanDropdown();
-                            switchTab('input-pemasukan');
-                        } 
-                        else if(data.jabatan === "Admin" || data.jabatan === "Owner") {
-                            document.getElementById('halamanUtama').style.display = 'block';
-                            document.getElementById('menuNavigasi').style.display = 'flex';
-                            document.getElementById('boxFiturOwner').style.display = 'block';
-                            document.getElementById('boxFiturKT').style.display = 'none';
-                            loadKaryawanDropdown();
-                            switchTab('input-pemasukan');
-                            bukaRekapOwner();
+                    if(data.jabatan === "Karyawan") {
+                        document.getElementById('halamanUtama').style.display = 'none';
+                        document.getElementById('areaGaji').style.display = 'block';
+                        tampilkanRincianGajiKaryawan(data.gaji, data.nama, data.jabatan);
+                    } 
+                    else if(data.jabatan === "Kepala Toko") {
+                        document.getElementById('halamanUtama').style.display = 'block';
+                        document.getElementById('boxFiturKT').style.display = 'block'; 
+                        document.getElementById('boxFiturOwner').style.display = 'none';
+                        document.getElementById('nav_pengeluaran').style.display = 'none'; 
+                        
+                        if(data.cabang) {
+                            document.getElementById('cabang_pemasukan').value = data.cabang;
+                            document.getElementById('cabang_pemasukan').disabled = true; 
+                            document.getElementById('labelCabangKT').innerText = "📌 TERKUNCI KHUSUS: " + data.cabang.toUpperCase();
                         }
-                    } else {
-                        showStatus(data.message || "ID atau Kata Sandi Salah!", "error");
+
+                        loadKaryawanDropdown();
+                        switchTab('input-pemasukan');
+                    } 
+                    else if(data.jabatan === "Admin" || data.jabatan === "Owner") {
+                        document.getElementById('halamanUtama').style.display = 'block';
+                        document.getElementById('menuNavigasi').style.display = 'flex';
+                        document.getElementById('boxFiturOwner').style.display = 'block';
+                        document.getElementById('boxFiturKT').style.display = 'none';
+                        loadKaryawanDropdown();
+                        switchTab('input-pemasukan');
+                        bukaRekapOwner();
                     }
-                } catch(e) {
-                    document.getElementById('btn_login').disabled = false;
-                    showStatus("Format data cloud bermasalah. Respons: " + text.substring(0, 30), "error");
+                } else {
+                    showStatus(data.message, "error");
                 }
-            }).catch((error) => {
+            }).catch(() => {
                 document.getElementById('btn_login').disabled = false;
                 showStatus("Gagal menghubungi server cloud. Periksa link Apps Script Anda.", "error");
-                console.error(error);
             });
         }
 
+        // DISESUAIKAN: Menghitung total kas berdasarkan struktur kolom spreadsheet asli
         function bukaRekapOwner() {
             showStatus("Menghitung seluruh kas utama owner dari Sheet1...", "loading");
             
@@ -471,6 +465,7 @@
                 
                 if(listGajiHtml === "") listGajiHtml = "<tr><td colspan='2' style='text-align:center; padding:10px; color:#999;'>Belum ada data pendapatan berjalan</td></tr>";
 
+                // Porsi Owner adalah sisa dari harga cuci setelah dikurangi komisi
                 let kotorOwnerTerbaru = hitungTotalSeluruhUnit * 4000;
                 let bersihOwnerTerbaru = kotorOwnerTerbaru - (res.pengeluaran || 0);
 
@@ -497,27 +492,23 @@
         function cekPendapatanKTPribadi() {
             showStatus("Menarik data pendapatan pribadi Anda...", "loading");
             fetch(`${WEB_APP_URL}?action=loginUser&username=${encodeURIComponent(document.getElementById('login_user').value)}&sandi=${encodeURIComponent(document.getElementById('login_sandi').value)}`)
-            .then(res => res.text())
-            .then(text => {
-                try {
-                    let data = JSON.parse(text);
-                    if(data.status === "success") {
-                        showStatus("Seluruh riwayat data pribadi dimuat.", "success");
-                        let targetBox = document.getElementById('areaGaji');
-                        targetBox.style.display = 'block';
-                        tampilkanRincianGajiKaryawan(data.gaji, data.nama, data.jabatan);
-                        targetBox.scrollIntoView({ behavior: 'smooth' });
-                    } else {
-                        showStatus("Gagal memperbarui data.", "error");
-                    }
-                } catch(e) {
-                    showStatus("Gagal membaca struktur rincian data.", "error");
+            .then(res => res.json())
+            .then(data => {
+                if(data.status === "success") {
+                    showStatus("Seluruh riwayat data pribadi dimuat.", "success");
+                    let targetBox = document.getElementById('areaGaji');
+                    targetBox.style.display = 'block';
+                    tampilkanRincianGajiKaryawan(data.gaji, data.nama, data.jabatan);
+                    targetBox.scrollIntoView({ behavior: 'smooth' });
+                } else {
+                    showStatus("Gagal memperbarui data.", "error");
                 }
             }).catch(() => {
                 showStatus("Masalah jaringan.", "error");
             });
         }
 
+        // DISESUAIKAN: Rincian perhitungan mengikuti alokasi kolom spreadsheet asli
         function tampilkanRincianGajiKaryawan(dataGaji, nama, jabatan) {
             let targetBox = document.getElementById('areaGaji');
             if(!dataGaji || dataGaji.length === 0) {
@@ -614,8 +605,6 @@
             let cabangTerpilih = document.getElementById('cabang_pemasukan').value;
             let batasanTarget = 50; 
             if (cabangTerpilih === "Cabang Grobogan") batasanTarget = 100;
-            if (cabangTerpilih === "Cabang Palis") batasanTarget = 50;
-            if (cabangTerpilih === "Cabang Cayur") batasanTarget = 50;
 
             let boxNotifTarget = document.getElementById('notifTargetBawahUnit');
             if (unit >= batasanTarget) {
@@ -635,11 +624,12 @@
             if(type !== 'loading') { setTimeout(() => { msgBox.style.display = 'none'; }, 4000); }
         }
 
+        // DISESUAIKAN: Mengirim parameter data yang diatur pas dengan struktur kolom Sheet1 asli
         function submitData(event, tipeForm) {
             event.preventDefault();
             let btnSubmit = (tipeForm === 'Pemasukan') ? document.getElementById('btn_submit_pemasukan') : document.getElementById('btn_submit_pengeluaran');
             btnSubmit.disabled = true;
-            showStatus("Menyimpan data aman ke Sheet1 cloud...", "loading");
+            showStatus("Menyimpan data aman ke spreadsheet cloud...", "loading");
 
             document.getElementById('cabang_pemasukan').disabled = false;
 
@@ -661,6 +651,8 @@
                 urlParams.append("kategori", "Pemasukan Unit");
                 urlParams.append("unit", document.getElementById('unit_pemasukan').value);
                 urlParams.append("keterangan", document.getElementById('ket_pemasukan').value);
+                
+                // Tambahan data metadata anggota untuk diolah di backend .gs
                 urlParams.append("karyawan_id", idK);
                 urlParams.append("karyawan_nama", objK.nama);
                 urlParams.append("karyawan_jabatan", objK.jabatan);
@@ -689,8 +681,7 @@
                 }
 
                 if(resText === "SUCCESS" || resText === "SUCCESS_TARGET") {
-                    showStatus("Data Berhasil Disimpan ke Sheet1!", "success");
-                    
+                    showStatus("Data Berhasil Disimpan ke Spreadsheet!", "success");
                     document.getElementById('notifTargetBawahUnit').style.display = "none";
 
                     if(tipeForm === 'Pemasukan') {
@@ -720,7 +711,7 @@
                 if(SESSION_USER && SESSION_USER.jabatan === "Kepala Toko") {
                     document.getElementById('cabang_pemasukan').disabled = true;
                 }
-                showStatus("Gagal menghubungi server.", "error");
+                showStatus("Gagal menghubungi server cloud.", "error");
             });
         }
     </script>
