@@ -809,7 +809,34 @@
             else document.getElementById('notifTargetBawahUnit').style.display = 'none';
         }
 
-        function triggerSOS() { alert("Fitur SOS diaktifkan!"); }
+        function triggerSOS() {
+            if(!SESSION_USER) return alert("Silahkan login terlebih dahulu!");
+            if(!confirm("⚠️ Yakin ingin mengirim SOS DARURAT?\nOwner akan langsung diberitahu!")) return;
+
+            showStatus("🚨 Mengirim sinyal SOS...", "loading");
+
+            let urlParams = new URLSearchParams();
+            urlParams.append("action", "kirimSOS");
+            urlParams.append("nama", SESSION_USER.nama);
+            urlParams.append("jabatan", SESSION_USER.jabatan);
+            urlParams.append("cabang", SESSION_USER.cabang || "Tidak diketahui");
+
+            fetch(WEB_APP_URL, {
+                method: "POST",
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body: urlParams.toString()
+            })
+            .then(res => res.text())
+            .then(text => {
+                if(text === "SUCCESS_SOS") {
+                    showStatus("🚨 SOS Terkirim! Owner sudah diberitahu.", "success");
+                } else {
+                    showStatus("Gagal mengirim SOS, coba lagi.", "error");
+                }
+            }).catch(() => {
+                showStatus("Kendala koneksi saat kirim SOS.", "error");
+            });
+        }
 
         function bukaHalamanKeluhan() {
             if(!SESSION_USER) return alert("Silahkan login terlebih dahulu!");
@@ -863,7 +890,81 @@
         
         function submitData(event, tipe) {
             event.preventDefault();
-            // Implementasi fungsi submitData sesuai backend Anda
+
+            if(tipe === "Pemasukan") {
+                let btnSubmit = document.getElementById('btn_submit_pemasukan');
+                btnSubmit.disabled = true;
+                showStatus("Mengirim data unit cucian...", "loading");
+
+                let urlParams = new URLSearchParams();
+                urlParams.append("action", "insertPemasukan");
+                urlParams.append("tanggal", document.getElementById('tgl_pemasukan').value);
+                urlParams.append("cabang", document.getElementById('cabang_pemasukan').value);
+                urlParams.append("idKaryawan", document.getElementById('karyawan_pemasukan').value);
+                urlParams.append("namaKaryawan", document.getElementById('karyawan_pemasukan').options[document.getElementById('karyawan_pemasukan').selectedIndex].text);
+                urlParams.append("unit", document.getElementById('unit_pemasukan').value);
+                urlParams.append("tips", document.getElementById('tips_pemasukan').value);
+                urlParams.append("kasbon", document.getElementById('kasbon_pemasukan').value);
+                urlParams.append("catatan", document.getElementById('ket_pemasukan').value);
+
+                fetch(WEB_APP_URL, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                    body: urlParams.toString()
+                })
+                .then(res => res.text())
+                .then(text => {
+                    btnSubmit.disabled = false;
+                    if(text === "SUCCESS_PEMASUKAN") {
+                        showStatus("✅ Data unit cucian berhasil dikirim!", "success");
+                        document.getElementById('formPemasukan').reset();
+                        document.getElementById('tgl_pemasukan').value = new Date().toISOString().split('T')[0];
+                        document.getElementById('nominal_pemasukan_display').value = "Rp 0";
+                        document.getElementById('notifTargetBawahUnit').style.display = 'none';
+                        if(SESSION_USER.cabang) {
+                            document.getElementById('cabang_pemasukan').value = SESSION_USER.cabang;
+                        }
+                    } else {
+                        showStatus("Gagal mengirim data.", "error");
+                    }
+                }).catch(() => {
+                    btnSubmit.disabled = false;
+                    showStatus("Kendala koneksi.", "error");
+                });
+
+            } else if(tipe === "Pengeluaran") {
+                let btnSubmit = document.getElementById('btn_submit_pengeluaran');
+                btnSubmit.disabled = true;
+                showStatus("Mengirim data pengeluaran...", "loading");
+
+                let urlParams = new URLSearchParams();
+                urlParams.append("action", "insertPengeluaran");
+                urlParams.append("tanggal", document.getElementById('tgl_pengeluaran').value);
+                urlParams.append("cabang", document.getElementById('cabang_pengeluaran').value);
+                urlParams.append("kategori", document.getElementById('kategori_pengeluaran').value);
+                urlParams.append("nominal", document.getElementById('nominal_pengeluaran').value);
+                urlParams.append("deskripsi", document.getElementById('ket_pengeluaran').value);
+
+                fetch(WEB_APP_URL, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                    body: urlParams.toString()
+                })
+                .then(res => res.text())
+                .then(text => {
+                    btnSubmit.disabled = false;
+                    if(text === "SUCCESS_PENGELUARAN") {
+                        showStatus("✅ Data pengeluaran berhasil dikirim!", "success");
+                        document.getElementById('formPengeluaran').reset();
+                        document.getElementById('tgl_pengeluaran').value = new Date().toISOString().split('T')[0];
+                    } else {
+                        showStatus("Gagal mengirim data.", "error");
+                    }
+                }).catch(() => {
+                    btnSubmit.disabled = false;
+                    showStatus("Kendala koneksi.", "error");
+                });
+            }
         }
     </script>
 </body>
