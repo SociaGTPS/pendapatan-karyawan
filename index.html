@@ -190,23 +190,53 @@
         .table-laporan td { padding:10px; border-bottom:1px solid #eee; color:var(--text-dark);
             vertical-align: middle; }
 
-        /* FAB DESIGN */
+        /* FAB SPEED DIAL */
         .fab-wrapper {
             position: fixed;
             bottom: 20px;
             right: 20px;
-            display: none; 
+            display: none;
             flex-direction: column;
+            align-items: flex-end;
             gap: 12px;
             z-index: 9999;
         }
+        .fab-child-group {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 10px;
+            opacity: 0;
+            pointer-events: none;
+            transform: translateY(10px);
+            transition: all 0.3s ease;
+        }
+        .fab-child-group.open {
+            opacity: 1;
+            pointer-events: all;
+            transform: translateY(0);
+        }
+        .fab-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .fab-label {
+            background: rgba(0,0,0,0.7);
+            color: #fff;
+            font-size: 12px;
+            font-weight: 700;
+            padding: 5px 10px;
+            border-radius: 6px;
+            white-space: nowrap;
+        }
         .fab-btn {
-            width: 56px;
-            height: 56px;
+            width: 52px;
+            height: 52px;
             border-radius: 50%;
             border: 2px solid #ffffff;
             color: white;
-            font-size: 22px;
+            font-size: 20px;
             font-weight: bold;
             cursor: pointer;
             box-shadow: 0 4px 15px rgba(0,0,0,0.3);
@@ -214,11 +244,21 @@
             justify-content: center;
             align-items: center;
             transition: all 0.2s ease;
+            flex-shrink: 0;
         }
         .fab-btn:hover { transform: scale(1.1); }
-        .fab-sos { background: linear-gradient(135deg, #d32f2f 0%, #b71c1c 100%); }
-        .fab-izin { background: linear-gradient(135deg, #ff8f00 0%, #ff6f00 100%); }
+        .fab-main {
+            width: 60px;
+            height: 60px;
+            font-size: 26px;
+            background: linear-gradient(135deg, var(--steam-red) 0%, #a01f1f 100%);
+            border: 2px solid var(--steam-gold);
+            transition: transform 0.3s ease;
+        }
+        .fab-main.open { transform: rotate(45deg); }
+        .fab-sos     { background: linear-gradient(135deg, #d32f2f 0%, #b71c1c 100%); }
         .fab-keluhan { background: linear-gradient(135deg, #0288d1 0%, #01579b 100%); }
+        .fab-izin    { background: linear-gradient(135deg, #ff8f00 0%, #ff6f00 100%); }
 
         .weekend-warning {
             background-color: #ffebee;
@@ -245,9 +285,23 @@
         <div id="statusMessage"></div>
 
         <div class="fab-wrapper" id="boxFiturBersamaMengambang">
-            <button type="button" class="fab-btn fab-sos" onclick="triggerSOS()" title="🚨 SOS EMERGENSI">🚨</button>
-            <button type="button" class="fab-btn fab-keluhan" onclick="bukaHalamanKeluhan()" title="💬 KELUHAN & MASUKAN">💬</button>
-            <button type="button" class="fab-btn fab-izin" onclick="bukaHalamanIzin()" title="📅 AJUKAN IZIN / LIBUR">📅</button>
+            <!-- Tombol-tombol child (muncul saat FAB utama diklik) -->
+            <div class="fab-child-group" id="fabChildGroup">
+                <div class="fab-item">
+                    <span class="fab-label">SOS Darurat</span>
+                    <button type="button" class="fab-btn fab-sos" onclick="triggerSOS()">🚨</button>
+                </div>
+                <div class="fab-item">
+                    <span class="fab-label">Keluhan & Masukan</span>
+                    <button type="button" class="fab-btn fab-keluhan" onclick="bukaHalamanKeluhan(); toggleFAB()">💬</button>
+                </div>
+                <div class="fab-item">
+                    <span class="fab-label">Ajukan Izin / Libur</span>
+                    <button type="button" class="fab-btn fab-izin" onclick="bukaHalamanIzin(); toggleFAB()">📅</button>
+                </div>
+            </div>
+            <!-- Tombol utama -->
+            <button type="button" class="fab-btn fab-main" id="fabMainBtn" onclick="toggleFAB()">＋</button>
         </div>
 
         <div id="areaGaji"></div>
@@ -826,6 +880,21 @@
                 notif.innerText = "🌟 TARGET " + cabang.toUpperCase() + " TEMBUS (" + target + "+ UNIT)! JOSS! 🚀";
             } else {
                 notif.style.display = 'none';
+            }
+        }
+
+        function toggleFAB() {
+            let group  = document.getElementById('fabChildGroup');
+            let btn    = document.getElementById('fabMainBtn');
+            let isOpen = group.classList.contains('open');
+            if(isOpen) {
+                group.classList.remove('open');
+                btn.classList.remove('open');
+                btn.innerText = '＋';
+            } else {
+                group.classList.add('open');
+                btn.classList.add('open');
+                btn.innerText = '✕';
             }
         }
 
