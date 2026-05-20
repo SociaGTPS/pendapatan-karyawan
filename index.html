@@ -216,9 +216,9 @@
             transition: all 0.2s ease;
         }
         .fab-btn:hover { transform: scale(1.1); }
-        .fab-sos { background: linear-gradient(135deg, #d32f2f 0%, #b71c1c 100%);
-        }
+        .fab-sos { background: linear-gradient(135deg, #d32f2f 0%, #b71c1c 100%); }
         .fab-izin { background: linear-gradient(135deg, #ff8f00 0%, #ff6f00 100%); }
+        .fab-keluhan { background: linear-gradient(135deg, #0288d1 0%, #01579b 100%); }
 
         .weekend-warning {
             background-color: #ffebee;
@@ -246,7 +246,8 @@
 
         <div class="fab-wrapper" id="boxFiturBersamaMengambang">
             <button type="button" class="fab-btn fab-sos" onclick="triggerSOS()" title="🚨 SOS EMERGENSI">🚨</button>
-            <button type="button" class="fab-btn fab-izin" onclick="bukaHalamanIzin()" title="📝 AJUKAN IZIN / LIBUR">📅</button>
+            <button type="button" class="fab-btn fab-keluhan" onclick="bukaHalamanKeluhan()" title="💬 KELUHAN & MASUKAN">💬</button>
+            <button type="button" class="fab-btn fab-izin" onclick="bukaHalamanIzin()" title="📅 AJUKAN IZIN / LIBUR">📅</button>
         </div>
 
         <div id="areaGaji"></div>
@@ -276,6 +277,32 @@
                 <button type="submit" id="btn_submit_izin" class="btn" style="background: linear-gradient(135deg, #ff8f00 0%, #e65100 100%);">KIRIM PERMOHONAN IZIN</button>
             </form>
             <button type="button" class="btn" style="margin-top:20px; background:#263238; border-color:var(--steam-gold);" onclick="kembaliKeHalamanUtamaDariIzin()">« KEMBALI KE HALAMAN UTAMA</button>
+        </div>
+
+        <div id="panelFormKeluhan" class="card" style="display:none; border-color:#0288d1;">
+            <h2>💬 KELUHAN & MASUKAN</h2>
+            <form id="formKeluhan" onsubmit="submitFormKeluhan(event)">
+                <div class="form-group">
+                    <label>Kategori</label>
+                    <select id="keluhan_kategori" required>
+                        <option value="Keluhan Fasilitas">Keluhan Fasilitas / Peralatan</option>
+                        <option value="Keluhan Manajemen">Keluhan Manajemen / Sistem Kerja</option>
+                        <option value="Masukan Positif">Masukan & Saran Positif</option>
+                        <option value="Laporan Kendala">Laporan Kendala Operasional</option>
+                        <option value="Lainnya">Lainnya</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Judul / Topik Singkat</label>
+                    <input type="text" id="keluhan_judul" placeholder="Contoh: Mesin steam bocor di cabang Palis" required>
+                </div>
+                <div class="form-group">
+                    <label>Detail Keluhan / Masukan</label>
+                    <textarea id="keluhan_isi" rows="4" placeholder="Ceritakan secara lengkap dan jelas..." required></textarea>
+                </div>
+                <button type="submit" id="btn_submit_keluhan" class="btn" style="background: linear-gradient(135deg, #0288d1 0%, #01579b 100%); border-color:#b3e5fc;">📨 KIRIM KELUHAN / MASUKAN</button>
+            </form>
+            <button type="button" class="btn" style="margin-top:10px; background:#263238; border-color:var(--steam-gold);" onclick="kembaliDariKeluhan()">« KEMBALI KE HALAMAN UTAMA</button>
         </div>
 
         <div id="panelManajemenGajiOwner" class="card" style="display:none; border-color:var(--steam-red);">
@@ -783,6 +810,56 @@
         }
 
         function triggerSOS() { alert("Fitur SOS diaktifkan!"); }
+
+        function bukaHalamanKeluhan() {
+            if(!SESSION_USER) return alert("Silahkan login terlebih dahulu!");
+            document.getElementById('areaGaji').style.display = 'none';
+            document.getElementById('halamanUtama').style.display = 'none';
+            document.getElementById('panelFormKeluhan').style.display = 'block';
+        }
+
+        function kembaliDariKeluhan() {
+            document.getElementById('panelFormKeluhan').style.display = 'none';
+            if(SESSION_USER.jabatan === "Karyawan") {
+                document.getElementById('areaGaji').style.display = 'block';
+            } else {
+                document.getElementById('areaGaji').style.display = 'block';
+                document.getElementById('halamanUtama').style.display = 'block';
+            }
+        }
+
+        function submitFormKeluhan(event) {
+            event.preventDefault();
+            document.getElementById('btn_submit_keluhan').disabled = true;
+            showStatus("Mengirim keluhan / masukan...", "loading");
+
+            let urlParams = new URLSearchParams();
+            urlParams.append("action", "insertKeluhanRow");
+            urlParams.append("idKaryawan", SESSION_USER.username);
+            urlParams.append("nama", SESSION_USER.nama);
+            urlParams.append("kategori", document.getElementById('keluhan_kategori').value);
+            urlParams.append("judul", document.getElementById('keluhan_judul').value);
+            urlParams.append("isi", document.getElementById('keluhan_isi').value);
+
+            fetch(WEB_APP_URL, {
+                method: "POST",
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body: urlParams.toString()
+            })
+            .then(res => res.text())
+            .then(text => {
+                document.getElementById('btn_submit_keluhan').disabled = false;
+                if(text === "SUCCESS_KELUHAN") {
+                    showStatus("Keluhan / masukan berhasil terkirim!", "success");
+                    document.getElementById('formKeluhan').reset();
+                } else {
+                    showStatus("Gagal mengirim, coba lagi.", "error");
+                }
+            }).catch(() => {
+                document.getElementById('btn_submit_keluhan').disabled = false;
+                showStatus("Kendala koneksi.", "error");
+            });
+        }
         
         function submitData(event, tipe) {
             event.preventDefault();
