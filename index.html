@@ -388,6 +388,10 @@
                             <input type="text" id="nominal_pemasukan_display" value="Rp 0" disabled style="font-weight:bold; color: var(--success-color); background: #f1f8e9; border-color:#c5e1a5;">
                         </div>
                         <div class="form-group">
+                            <label>Potongan Wifi Harian</label>
+                            <input type="text" value="Rp 1.000 (Otomatis)" disabled style="font-weight:bold; color: var(--steam-red); background: #ffebee; border-color:#ef9a9a;">
+                        </div>
+                        <div class="form-group">
                             <label>Uang Tips Pelanggan (Manual)</label>
                             <input type="number" id="tips_pemasukan" value="0" required>
                         </div>
@@ -918,14 +922,22 @@
                 .then(res => res.text())
                 .then(text => {
                     btnSubmit.disabled = false;
-                    if(text === "SUCCESS_PEMASUKAN") {
-                        showStatus("✅ Data unit cucian berhasil dikirim!", "success");
+                    if(text === "SUCCESS_PEMASUKAN" || text === "SUCCESS_PEMASUKAN_TARGET_TEMBUS") {
+                        if(text === "SUCCESS_PEMASUKAN_TARGET_TEMBUS") {
+                            showStatus("🌟 TARGET TEMBUS! Bonus otomatis masuk!", "success");
+                            setTimeout(() => {
+                                alert("🎉 HORE! TARGET CABANG HARI INI TEMBUS!\n\nBonus otomatis sudah masuk ke semua anggota.\nOwner sudah diberitahu via Telegram! 🚀");
+                            }, 300);
+                        } else {
+                            showStatus("✅ Data unit cucian berhasil dikirim!", "success");
+                        }
                         document.getElementById('formPemasukan').reset();
                         document.getElementById('tgl_pemasukan').value = new Date().toISOString().split('T')[0];
                         document.getElementById('nominal_pemasukan_display').value = "Rp 0";
                         document.getElementById('notifTargetBawahUnit').style.display = 'none';
                         if(SESSION_USER.cabang) {
                             document.getElementById('cabang_pemasukan').value = SESSION_USER.cabang;
+                            document.getElementById('cabang_pemasukan').disabled = true;
                         }
                     } else {
                         showStatus("Gagal mengirim data.", "error");
