@@ -519,7 +519,10 @@
                     } 
                     else if(data.jabatan === "Kepala Toko") {
                         document.getElementById('halamanUtama').style.display = 'block';
-                        document.getElementById('boxFiturKT').style.display = 'block'; 
+                        document.getElementById('boxFiturKT').style.display = 'block';
+                        // Sembunyikan tab pengeluaran untuk Kepala Toko
+                        document.getElementById('nav_pengeluaran').style.display = 'none';
+                        document.getElementById('input-pengeluaran').style.display = 'none';
                         if(data.cabang) {
                             document.getElementById('cabang_pemasukan').value = data.cabang;
                             document.getElementById('cabang_pemasukan').disabled = true; 
