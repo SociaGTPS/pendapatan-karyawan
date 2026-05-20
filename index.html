@@ -809,11 +809,24 @@
         }
 
         function hitungKotorEstimasi() {
-            let u = document.getElementById('unit_pemasukan').value;
+            let u = parseInt(document.getElementById('unit_pemasukan').value) || 0;
+            let cabang = document.getElementById('cabang_pemasukan').value;
             let rate = 3000;
             document.getElementById('nominal_pemasukan_display').value = "Rp " + (u * rate).toLocaleString('id-ID');
-            if(u >= 10) document.getElementById('notifTargetBawahUnit').style.display = 'block';
-            else document.getElementById('notifTargetBawahUnit').style.display = 'none';
+
+            // Target per cabang sesuai pengaturan
+            let target = 50;
+            if(cabang === "Cabang Grobogan") target = 100;
+            else if(cabang === "Cabang Palis") target = 50;
+            else if(cabang === "Cabang Cayur") target = 50;
+
+            let notif = document.getElementById('notifTargetBawahUnit');
+            if(u >= target) {
+                notif.style.display = 'block';
+                notif.innerText = "🌟 TARGET " + cabang.toUpperCase() + " TEMBUS (" + target + "+ UNIT)! JOSS! 🚀";
+            } else {
+                notif.style.display = 'none';
+            }
         }
 
         function triggerSOS() {
