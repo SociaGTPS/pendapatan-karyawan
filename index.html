@@ -18,6 +18,10 @@
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+            to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+        }
         
         body {
             background-color: var(--bg-color);
@@ -483,7 +487,7 @@
             <div id="boxFiturOwner" style="display:none; margin-bottom:20px;">
                 <button type="button" class="btn" style="background: linear-gradient(135deg, var(--steam-gold) 0%, #b89020 100%); color:#fff; border-color: #fff;" onclick="bukaRekapOwner()">🔄 SEGAR KAN REKAP DATA UTAMA OWNER</button>
                 <button type="button" class="btn" style="background: linear-gradient(135deg, #0288d1 0%, #01579b 100%); color:#fff; border-color: #fff;" onclick="bukaPanelManajemenGajiOwner()">📋 ⚙️ MANAJEMEN & RESET GAJI TIM</button>
-                <button type="button" class="btn" style="background: linear-gradient(135deg, #2e7d32 0%, #1b5e20 100%); color:#fff; border-color: #fff;" onclick="bukaPanelKelolaIzin()">✅ KELOLA IZIN KARYAWAN</button>
+                <button type="button" class="btn" style="background: linear-gradient(135deg, #2e7d32 0%, #1b5e20 100%); color:#fff; border-color: #fff; position:relative;" onclick="bukaPanelKelolaIzin()">✅ KELOLA IZIN KARYAWAN<span id="badgeIzinOwner" style="display:none; position:absolute; top:-7px; right:-7px; background:#c62828; color:#fff; font-size:11px; font-weight:700; border-radius:50%; min-width:20px; height:20px; line-height:20px; text-align:center; padding:0 4px;"></span></button>
             </div>
 
             <div class="nav-tabs" id="menuNavigasi">
@@ -591,7 +595,7 @@
     </div>
 
     <script>
-        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyl4y2uw4_XqIHxHFq0-Y5nhgiZ4Zyv6P9Y3czKLwB9OJH93dQkn3CDGlsg509SyTeR/exec";
+        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzML_LSMmIpxb12Db7eZ1Q83XjwqtZDyjP5lz6TCgp35tmutmkvi54H2ApG99iUCtcC/exec";
         let SESSION_USER = null;
         let ARRAY_KARYAWAN = [];
         let NILAI_BERSIH_TERAKHIR_FILTERED = 0;
@@ -666,6 +670,7 @@
                         document.getElementById('areaGaji').style.display = 'block';
                         tampilkanRincianGajiKaryawan(data.gaji, data.nama);
                         tampilkanStatusIzin(data.statusIzin);
+                        mulaiPollingStatusIzin();
                     } 
                     else if(data.jabatan === "Kepala Toko") {
                         document.getElementById('halamanUtama').style.display = 'block';
@@ -680,6 +685,7 @@
                         // Filter dropdown hanya karyawan cabang KT
                         loadKaryawanDropdown(data.cabang);
                         tampilkanStatusIzin(data.statusIzin);
+                        mulaiPollingStatusIzin();
                         switchTab('input-pemasukan');
                     } 
                     else if(data.jabatan === "Admin" || data.jabatan === "Owner") {
@@ -688,6 +694,7 @@
                         loadKaryawanDropdown();
                         switchTab('input-pemasukan');
                         bukaRekapOwner();
+                        mulaiPollingBadgeOwner();
                     }
                 } else { showStatus(data.message, "error"); }
             }).catch(() => {
@@ -1553,6 +1560,97 @@
                     showStatus("Gagal menyimpan: " + txt, "error");
                 }
             }).catch(() => showStatus("Kendala koneksi saat menyimpan.", "error"));
+        }
+
+        // ============================================================
+        //   POLLING OTOMATIS STATUS IZIN (Karyawan & Kepala Toko)
+        //   Cek setiap 30 detik. Saat izin diproses, tampilkan notif
+        //   mengambang di atas layar dan hentikan polling.
+        // ============================================================
+        let _pollingIzinTimer = null;
+
+        function mulaiPollingStatusIzin() {
+            if(_pollingIzinTimer) clearInterval(_pollingIzinTimer);
+            _pollingIzinTimer = setInterval(function() {
+                if(!SESSION_USER) { stopPollingStatusIzin(); return; }
+                let jabatan = SESSION_USER.jabatan;
+                if(jabatan !== "Karyawan" && jabatan !== "Kepala Toko") return;
+
+                fetch(WEB_APP_URL + "?action=getStatusIzin&idKaryawan=" + encodeURIComponent(SESSION_USER.username))
+                .then(res => res.json())
+                .then(res => {
+                    if(res.status === "success" && res.data) {
+                        tampilkanStatusIzin(res.data);
+                        // Kalau sudah diputuskan, tampilkan notif mengambang & stop polling
+                        if(res.data.status === "Disetujui" || res.data.status === "Ditolak") {
+                            tampilkanNotifMengambangIzin(res.data);
+                            stopPollingStatusIzin();
+                        }
+                    }
+                }).catch(() => {}); // silent fail
+            }, 30000); // cek setiap 30 detik
+        }
+
+        function stopPollingStatusIzin() {
+            if(_pollingIzinTimer) { clearInterval(_pollingIzinTimer); _pollingIzinTimer = null; }
+        }
+
+        // Notif mengambang di atas layar saat izin selesai diproses
+        function tampilkanNotifMengambangIzin(statusIzin) {
+            let existing = document.getElementById('notifMengambangIzin');
+            if(existing) existing.remove();
+
+            let warna = statusIzin.status === "Disetujui" ? "#2e7d32" : "#c62828";
+            let icon  = statusIzin.status === "Disetujui" ? "\u2705" : "\u274C";
+            let pesan = statusIzin.status === "Disetujui"
+                ? "Izin <b>" + statusIzin.jenis + "</b> kamu telah <b>DISETUJUI</b>!"
+                : "Izin <b>" + statusIzin.jenis + "</b> kamu <b>DITOLAK</b>" +
+                  (statusIzin.alasan ? ". Alasan: " + statusIzin.alasan : ".");
+
+            let div = document.createElement('div');
+            div.id = 'notifMengambangIzin';
+            div.style.cssText = "position:fixed;top:16px;left:50%;transform:translateX(-50%);" +
+                "background:" + warna + ";color:#fff;padding:14px 20px;" +
+                "border-radius:12px;font-size:13px;font-weight:600;" +
+                "box-shadow:0 4px 20px rgba(0,0,0,0.35);z-index:9999;" +
+                "max-width:320px;width:90%;text-align:center;animation:slideDown 0.4s ease;";
+            div.innerHTML = icon + " STATUS IZIN DIPERBARUI<br>" +
+                "<span style='font-weight:400;font-size:12px;'>" + pesan + "</span><br>" +
+                "<button onclick=\"this.parentElement.remove()\" style='margin-top:10px;padding:6px 16px;" +
+                "background:rgba(255,255,255,0.25);color:#fff;border:1.5px solid rgba(255,255,255,0.5);" +
+                "border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;'>TUTUP</button>";
+            document.body.appendChild(div);
+        }
+
+        // ============================================================
+        //   POLLING BADGE NOTIF OWNER (izin menunggu persetujuan)
+        //   Cek setiap 60 detik, tampilkan badge merah di tombol Kelola Izin
+        // ============================================================
+        let _pollingOwnerTimer = null;
+
+        function mulaiPollingBadgeOwner() {
+            if(_pollingOwnerTimer) clearInterval(_pollingOwnerTimer);
+            cekBadgeIzinOwner(); // langsung cek pertama kali
+            _pollingOwnerTimer = setInterval(cekBadgeIzinOwner, 60000);
+        }
+
+        function cekBadgeIzinOwner() {
+            fetch(WEB_APP_URL + "?action=getIzinList")
+            .then(res => res.json())
+            .then(res => {
+                let jumlahMenunggu = 0;
+                if(res.status === "success" && res.data) {
+                    jumlahMenunggu = res.data.filter(function(i) { return i.status === "Menunggu"; }).length;
+                }
+                let badge = document.getElementById('badgeIzinOwner');
+                if(!badge) return;
+                if(jumlahMenunggu > 0) {
+                    badge.style.display = 'inline-block';
+                    badge.innerText = jumlahMenunggu;
+                } else {
+                    badge.style.display = 'none';
+                }
+            }).catch(function() {});
         }
     </script>
 </body>
