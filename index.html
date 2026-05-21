@@ -591,7 +591,7 @@
     </div>
 
     <script>
-        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzcAeebd5-r3T9uyiwGv4YYWhjMYqJ7A6xpVrGrDqU2EV1XWbUtqWxkkMvv4MYK5Rdi/exec";
+        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyl4y2uw4_XqIHxHFq0-Y5nhgiZ4Zyv6P9Y3czKLwB9OJH93dQkn3CDGlsg509SyTeR/exec";
         let SESSION_USER = null;
         let ARRAY_KARYAWAN = [];
         let NILAI_BERSIH_TERAKHIR_FILTERED = 0;
@@ -1513,6 +1513,13 @@
         }
 
         function simpanEditBaris(idx, rowSheet) {
+            // Validasi rowSheet — kalau undefined berarti Kode.gs belum di-deploy ulang
+            if(!rowSheet || isNaN(parseInt(rowSheet))) {
+                alert("❌ rowIndex tidak ditemukan!\n\nKemungkinan penyebab:\nKode.gs belum di-deploy ulang setelah update.\n\nSilahkan deploy ulang Kode.gs di Google Apps Script terlebih dahulu.");
+                return;
+            }
+            rowSheet = parseInt(rowSheet);
+
             let unit   = parseInt(document.getElementById('edit_unit_'  + idx).value) || 0;
             let tips   = parseInt(document.getElementById('edit_tips_'  + idx).value) || 0;
             let kasbon = parseInt(document.getElementById('edit_kasbon_'+ idx).value) || 0;
@@ -1522,37 +1529,28 @@
 
             showStatus("Menyimpan perubahan ke Sheet1...", "loading");
 
-            // Kolom di Sheet1: 5=unit, 6=tips, 7=kasbon, 10=bonus (1-based)
-            // Kirim 4 update secara paralel
-            let updates = [
-                { kolom: 5, nilai: unit },
-                { kolom: 6, nilai: tips },
-                { kolom: 7, nilai: kasbon },
-                { kolom: 10, nilai: bonus }
-            ];
+            // Kirim semua sekaligus dalam 1 request — lebih andal dari 4 request paralel
+            let p = new URLSearchParams();
+            p.append("action",    "editGajiKaryawan");
+            p.append("tipe",      "editTransaksiLengkap");
+            p.append("rowSheet",  rowSheet);
+            p.append("unit",      unit);
+            p.append("tips",      tips);
+            p.append("kasbon",    kasbon);
+            p.append("bonus",     bonus);
 
-            let promises = updates.map(upd => {
-                let p = new URLSearchParams();
-                p.append("action",    "editGajiKaryawan");
-                p.append("tipe",      "editTransaksi");
-                p.append("rowSheet",  rowSheet);
-                p.append("kolom",     upd.kolom);
-                p.append("nilai",     upd.nilai);
-                return fetch(WEB_APP_URL, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/x-www-form-urlencoded" },
-                    body: p.toString()
-                }).then(r => r.text());
-            });
-
-            Promise.all(promises).then(results => {
-                let semua = results.every(r => r === "SUCCESS_EDIT_TRANSAKSI");
-                if(semua) {
+            fetch(WEB_APP_URL, {
+                method: "POST",
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body: p.toString()
+            })
+            .then(r => r.text())
+            .then(txt => {
+                if(txt === "SUCCESS_EDIT_TRANSAKSI") {
                     showStatus("✅ Data berhasil dikoreksi!", "success");
-                    // Refresh slip gaji supaya total langsung terupdate
                     tarikSlipGajiSpesifikOwner();
                 } else {
-                    showStatus("⚠️ Sebagian data gagal disimpan: " + results.join(', '), "error");
+                    showStatus("Gagal menyimpan: " + txt, "error");
                 }
             }).catch(() => showStatus("Kendala koneksi saat menyimpan.", "error"));
         }
