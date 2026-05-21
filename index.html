@@ -368,7 +368,7 @@
         </div>
 
         <div id="panelManajemenGajiOwner" class="card" style="display:none; border-color:var(--steam-red);">
-            <h2>⚙️ MANAGEMENT & RESET GAJI TIM</h2>
+            <h2>⚙️ MANAGEMENT & EDIT GAJI TIM</h2>
             <div class="form-group">
                 <label>PILIH ANGGOTA / ID KARYAWAN</label>
                 <select id="pilih_karyawan_gaji_owner" onchange="tarikSlipGajiSpesifikOwner()">
@@ -377,6 +377,80 @@
             </div>
             
             <div id="boxHasilCariGajiKaryawan" style="margin-top:15px;"></div>
+
+            <!-- Panel Edit / Modifikasi Gaji -->
+            <div id="panelEditGaji" style="display:none; margin-top:20px; background:#fff8e1; border:1.5px dashed var(--steam-gold); border-radius:12px; padding:16px;">
+                <p style="font-size:12px; font-weight:700; color:var(--steam-red); text-transform:uppercase; margin-bottom:12px;">✏️ MODIFIKASI KOMPONEN GAJI</p>
+                
+                <!-- Tab edit -->
+                <div style="display:flex; gap:8px; margin-bottom:14px; flex-wrap:wrap;">
+                    <button type="button" onclick="switchTabEdit('kasbon')" id="tabEditKasbon" 
+                        style="flex:1; padding:9px; font-size:11px; font-weight:700; border-radius:8px; border:1.5px solid var(--steam-red); background:var(--steam-red); color:#fff; cursor:pointer;">
+                        ➕ KASBON
+                    </button>
+                    <button type="button" onclick="switchTabEdit('bonus')" id="tabEditBonus"
+                        style="flex:1; padding:9px; font-size:11px; font-weight:700; border-radius:8px; border:1.5px solid #2e7d32; background:#fff; color:#2e7d32; cursor:pointer;">
+                        🎁 BONUS/TIPS
+                    </button>
+                    <button type="button" onclick="switchTabEdit('parameter')" id="tabEditParam"
+                        style="flex:1; padding:9px; font-size:11px; font-weight:700; border-radius:8px; border:1.5px solid #0288d1; background:#fff; color:#0288d1; cursor:pointer;">
+                        ⚙️ TARIF
+                    </button>
+                </div>
+
+                <!-- Sub: Tambah Kasbon -->
+                <div id="editTabKasbon">
+                    <div class="form-group" style="margin-bottom:12px;">
+                        <label style="font-size:11px;">Nominal Kasbon (Rp)</label>
+                        <input type="number" id="edit_nominal_kasbon" placeholder="Contoh: 50000" style="font-size:14px; padding:12px;">
+                    </div>
+                    <div class="form-group" style="margin-bottom:12px;">
+                        <label style="font-size:11px;">Catatan</label>
+                        <input type="text" id="edit_catatan_kasbon" placeholder="Contoh: Kasbon kebutuhan mendesak" style="font-size:13px; padding:12px;">
+                    </div>
+                    <button type="button" class="btn" style="font-size:13px; padding:13px; background:linear-gradient(135deg,#c62828,#a01f1f);" onclick="eksekusiTambahKasbon()">
+                        SIMPAN KASBON MANUAL
+                    </button>
+                </div>
+
+                <!-- Sub: Tambah Bonus/Tips -->
+                <div id="editTabBonus" style="display:none;">
+                    <div class="form-group" style="margin-bottom:12px;">
+                        <label style="font-size:11px;">Nominal Tips (Rp)</label>
+                        <input type="number" id="edit_nominal_tips" placeholder="Contoh: 20000" value="0" style="font-size:14px; padding:12px;">
+                    </div>
+                    <div class="form-group" style="margin-bottom:12px;">
+                        <label style="font-size:11px;">Nominal Bonus (Rp)</label>
+                        <input type="number" id="edit_nominal_bonus" placeholder="Contoh: 10000" value="0" style="font-size:14px; padding:12px;">
+                    </div>
+                    <div class="form-group" style="margin-bottom:12px;">
+                        <label style="font-size:11px;">Catatan</label>
+                        <input type="text" id="edit_catatan_bonus" placeholder="Contoh: Bonus akhir bulan" style="font-size:13px; padding:12px;">
+                    </div>
+                    <button type="button" class="btn" style="font-size:13px; padding:13px; background:linear-gradient(135deg,#2e7d32,#1b5e20);" onclick="eksekusiTambahBonus()">
+                        SIMPAN BONUS/TIPS MANUAL
+                    </button>
+                </div>
+
+                <!-- Sub: Edit Tarif Global -->
+                <div id="editTabParameter" style="display:none;">
+                    <p style="font-size:11px; color:#666; margin-bottom:10px;">Perubahan tarif berlaku global untuk semua karyawan.</p>
+                    <div class="form-group" style="margin-bottom:12px;">
+                        <label style="font-size:11px;">Upah Per Unit (Rp)</label>
+                        <input type="number" id="edit_upah_unit" placeholder="Contoh: 3000" style="font-size:14px; padding:12px;">
+                    </div>
+                    <button type="button" class="btn" style="font-size:13px; padding:13px; margin-bottom:10px; background:linear-gradient(135deg,#0288d1,#01579b);" onclick="eksekusiEditParameter('Upah Per Unit','edit_upah_unit')">
+                        SIMPAN UPAH PER UNIT
+                    </button>
+                    <div class="form-group" style="margin-bottom:12px;">
+                        <label style="font-size:11px;">Potongan Wifi Harian (Rp)</label>
+                        <input type="number" id="edit_potongan_wifi" placeholder="Contoh: 1000" style="font-size:14px; padding:12px;">
+                    </div>
+                    <button type="button" class="btn" style="font-size:13px; padding:13px; background:linear-gradient(135deg,#0288d1,#01579b);" onclick="eksekusiEditParameter('Potongan Wifi','edit_potongan_wifi')">
+                        SIMPAN POTONGAN WIFI
+                    </button>
+                </div>
+            </div>
 
             <button type="button" class="btn" style="background:#263238; border-color:var(--steam-gold); margin-top:20px;" onclick="tutupPanelGajiOwner()">« KEMBALI KE KONTROL UTAMA</button>
         </div>
@@ -672,6 +746,9 @@
                 let terimaBersih = (kotorUnit + totalTips + totalBonus) - totalKasbon - totalWifi;
                 NILAI_BERSIH_TERAKHIR_FILTERED = terimaBersih;
 
+                // Simpan info karyawan aktif untuk panel edit
+                window._activeKaryawanEdit = { id: idKaryawanSelected, nama: namaKaryawanSelected, cabang: (ARRAY_KARYAWAN.find(x=>String(x.id)===String(idKaryawanSelected))||{}).cabang||'-' };
+
                 displayBox.innerHTML = `
                     <div style="background:#f9f9f9; padding:15px; border-radius:10px; border:1px solid #ccc; margin-top:10px;">
                         <table style="width:100%; font-size:13px; color:#333; line-height:20px;">
@@ -687,7 +764,14 @@
                                 <td style="text-align:right; color:var(--success-color); padding:5px 0;">Rp ${terimaBersih.toLocaleString('id-ID')}</td>
                             </tr>
                         </table>
-                        <button type="button" class="btn" style="background:linear-gradient(135deg, #2e7d32 0%, #1b5e20 100%); margin-top:15px; font-size:13px;" onclick="eksekusiTombolResetGajiKaryawanCloud('${idKaryawanSelected}', '${namaKaryawanSelected}')">🔒 RESET & CAIRKAN GAJI SEKARANG</button>
+                        <div style="display:flex; gap:8px; margin-top:14px; flex-wrap:wrap;">
+                            <button type="button" class="btn" style="flex:1; background:linear-gradient(135deg, #2e7d32 0%, #1b5e20 100%); font-size:12px; padding:13px;" onclick="eksekusiTombolResetGajiKaryawanCloud('${idKaryawanSelected}', '${namaKaryawanSelected}')">
+                                🔒 RESET & CAIRKAN
+                            </button>
+                            <button type="button" class="btn" style="flex:1; background:linear-gradient(135deg,#e65100,#bf360c); font-size:12px; padding:13px;" onclick="togglePanelEditGaji()">
+                                ✏️ EDIT GAJI
+                            </button>
+                        </div>
                     </div>`;
             }).catch(() => {
                 displayBox.innerHTML = "<p style='color:red; text-align:center; font-size:12px;'>Gagal memvalidasi kredensial keamanan enkripsi ID.</p>";
@@ -1219,6 +1303,128 @@
                     showStatus("Kendala koneksi.", "error");
                 });
             }
+        }
+
+        // ============================================================
+        //   FUNGSI EDIT / MODIFIKASI GAJI (Owner)
+        // ============================================================
+        function togglePanelEditGaji() {
+            let panel = document.getElementById('panelEditGaji');
+            let isHidden = panel.style.display === 'none' || panel.style.display === '';
+            panel.style.display = isHidden ? 'block' : 'none';
+            if(isHidden) panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        function switchTabEdit(tab) {
+            document.getElementById('editTabKasbon').style.display    = 'none';
+            document.getElementById('editTabBonus').style.display     = 'none';
+            document.getElementById('editTabParameter').style.display = 'none';
+
+            let btnK = document.getElementById('tabEditKasbon');
+            let btnB = document.getElementById('tabEditBonus');
+            let btnP = document.getElementById('tabEditParam');
+            // reset semua tombol
+            btnK.style.background = '#fff'; btnK.style.color = 'var(--steam-red)';
+            btnB.style.background = '#fff'; btnB.style.color = '#2e7d32';
+            btnP.style.background = '#fff'; btnP.style.color = '#0288d1';
+
+            if(tab === 'kasbon') {
+                document.getElementById('editTabKasbon').style.display = 'block';
+                btnK.style.background = 'var(--steam-red)'; btnK.style.color = '#fff';
+            } else if(tab === 'bonus') {
+                document.getElementById('editTabBonus').style.display = 'block';
+                btnB.style.background = '#2e7d32'; btnB.style.color = '#fff';
+            } else if(tab === 'parameter') {
+                document.getElementById('editTabParameter').style.display = 'block';
+                btnP.style.background = '#0288d1'; btnP.style.color = '#fff';
+            }
+        }
+
+        function eksekusiTambahKasbon() {
+            let kary = window._activeKaryawanEdit;
+            if(!kary || !kary.id) return showStatus("Pilih karyawan terlebih dahulu!", "error");
+            let nominal = parseInt(document.getElementById('edit_nominal_kasbon').value) || 0;
+            if(nominal <= 0) return showStatus("Masukkan nominal kasbon yang valid.", "error");
+            let catatan = document.getElementById('edit_catatan_kasbon').value.trim() || "Kasbon manual oleh Owner";
+
+            showStatus("Menyimpan kasbon manual...", "loading");
+            let p = new URLSearchParams();
+            p.append("action", "editGajiKaryawan");
+            p.append("tipe", "tambahKasbon");
+            p.append("idKaryawan", kary.id);
+            p.append("namaKaryawan", kary.nama);
+            p.append("cabang", kary.cabang || "-");
+            p.append("nominal", nominal);
+            p.append("catatan", catatan);
+
+            fetch(WEB_APP_URL, { method:"POST", headers:{"Content-Type":"application/x-www-form-urlencoded"}, body:p.toString() })
+            .then(r => r.text()).then(txt => {
+                if(txt === "SUCCESS_TAMBAH_KASBON") {
+                    showStatus("✅ Kasbon manual berhasil disimpan!", "success");
+                    document.getElementById('edit_nominal_kasbon').value = '';
+                    document.getElementById('edit_catatan_kasbon').value = '';
+                    // Refresh slip gaji
+                    setTimeout(() => tarikSlipGajiSpesifikOwner(), 600);
+                } else {
+                    showStatus("Gagal menyimpan kasbon: " + txt, "error");
+                }
+            }).catch(() => showStatus("Kendala koneksi.", "error"));
+        }
+
+        function eksekusiTambahBonus() {
+            let kary = window._activeKaryawanEdit;
+            if(!kary || !kary.id) return showStatus("Pilih karyawan terlebih dahulu!", "error");
+            let tips  = parseInt(document.getElementById('edit_nominal_tips').value)  || 0;
+            let bonus = parseInt(document.getElementById('edit_nominal_bonus').value) || 0;
+            if(tips <= 0 && bonus <= 0) return showStatus("Masukkan nominal tips atau bonus.", "error");
+            let catatan = document.getElementById('edit_catatan_bonus').value.trim() || "Bonus/tips manual oleh Owner";
+
+            showStatus("Menyimpan bonus/tips...", "loading");
+            let p = new URLSearchParams();
+            p.append("action", "editGajiKaryawan");
+            p.append("tipe", "tambahBonus");
+            p.append("idKaryawan", kary.id);
+            p.append("namaKaryawan", kary.nama);
+            p.append("cabang", kary.cabang || "-");
+            p.append("tips", tips);
+            p.append("bonus", bonus);
+            p.append("catatan", catatan);
+
+            fetch(WEB_APP_URL, { method:"POST", headers:{"Content-Type":"application/x-www-form-urlencoded"}, body:p.toString() })
+            .then(r => r.text()).then(txt => {
+                if(txt === "SUCCESS_TAMBAH_BONUS") {
+                    showStatus("✅ Bonus/tips manual berhasil disimpan!", "success");
+                    document.getElementById('edit_nominal_tips').value  = '0';
+                    document.getElementById('edit_nominal_bonus').value = '0';
+                    document.getElementById('edit_catatan_bonus').value = '';
+                    setTimeout(() => tarikSlipGajiSpesifikOwner(), 600);
+                } else {
+                    showStatus("Gagal menyimpan bonus: " + txt, "error");
+                }
+            }).catch(() => showStatus("Kendala koneksi.", "error"));
+        }
+
+        function eksekusiEditParameter(namaParam, elId) {
+            let nilai = parseInt(document.getElementById(elId).value);
+            if(!nilai || nilai <= 0) return showStatus("Masukkan nilai tarif yang valid.", "error");
+            if(!confirm("Yakin ubah tarif global '" + namaParam + "' menjadi Rp " + nilai.toLocaleString('id-ID') + "?\nPerubahan ini berlaku untuk SEMUA karyawan.")) return;
+
+            showStatus("Menyimpan perubahan tarif...", "loading");
+            let p = new URLSearchParams();
+            p.append("action", "editGajiKaryawan");
+            p.append("tipe", "editParameter");
+            p.append("namaParam", namaParam);
+            p.append("nilai", nilai);
+
+            fetch(WEB_APP_URL, { method:"POST", headers:{"Content-Type":"application/x-www-form-urlencoded"}, body:p.toString() })
+            .then(r => r.text()).then(txt => {
+                if(txt === "SUCCESS_EDIT_PARAMETER") {
+                    showStatus("✅ Tarif '" + namaParam + "' berhasil diperbarui!", "success");
+                    document.getElementById(elId).value = '';
+                } else {
+                    showStatus("Gagal memperbarui tarif: " + txt, "error");
+                }
+            }).catch(() => showStatus("Kendala koneksi.", "error"));
         }
     </script>
 </body>
