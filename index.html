@@ -733,6 +733,10 @@
                     return;
                 }
 
+                // Simpan data aktif global supaya bisa dipakai fungsi edit
+                window._activeKaryawanEdit = { id: idKaryawanSelected, nama: namaKaryawanSelected, cabang: (ARRAY_KARYAWAN.find(x=>String(x.id)===String(idKaryawanSelected))||{}).cabang||'-' };
+                window._activeDataGaji = dataGaji;
+
                 let totalUnit = 0, totalTips = 0, totalBonus = 0, totalKasbon = 0;
                 let upahRate = dataGaji[0].upahUnitRate || 3000;
                 let wifiRate = dataGaji[0].potonganWifi || 1000;
@@ -746,32 +750,98 @@
                 let terimaBersih = (kotorUnit + totalTips + totalBonus) - totalKasbon - totalWifi;
                 NILAI_BERSIH_TERAKHIR_FILTERED = terimaBersih;
 
-                // Simpan info karyawan aktif untuk panel edit
-                window._activeKaryawanEdit = { id: idKaryawanSelected, nama: namaKaryawanSelected, cabang: (ARRAY_KARYAWAN.find(x=>String(x.id)===String(idKaryawanSelected))||{}).cabang||'-' };
+                // Render tabel per baris dengan tombol edit
+                let rowsHtml = '';
+                dataGaji.forEach((item, idx) => {
+                    let u = parseInt(item.unit)||0, t = parseInt(item.tips)||0;
+                    let b = parseInt(item.bonus)||0, k = parseInt(item.kasbon)||0;
+                    let bersihHari = (u * upahRate + t + b) - k - wifiRate;
+                    rowsHtml += `
+                        <tr style="border-bottom:1px solid #eee; font-size:13px;">
+                            <td style="padding:8px 4px; font-weight:600; white-space:nowrap;">${item.tglTampilan}</td>
+                            <td style="text-align:center; padding:8px 4px;">${u}</td>
+                            <td style="text-align:center; padding:8px 4px; color:#2e7d32;">${t.toLocaleString('id-ID')}</td>
+                            <td style="text-align:center; padding:8px 4px; color:#aa7c11;">${b.toLocaleString('id-ID')}</td>
+                            <td style="text-align:center; padding:8px 4px; color:#c62828;">${k.toLocaleString('id-ID')}</td>
+                            <td style="text-align:right; padding:8px 4px; font-weight:bold; color:#1b5e20; white-space:nowrap;">Rp ${bersihHari.toLocaleString('id-ID')}</td>
+                            <td style="padding:4px;">
+                                <button type="button" onclick="bukaFormEditBaris(${idx})"
+                                    style="padding:5px 10px; font-size:11px; font-weight:700; border:1.5px solid #e65100; border-radius:6px; background:#fff3e0; color:#e65100; cursor:pointer; white-space:nowrap;">
+                                    ✏️ Edit
+                                </button>
+                            </td>
+                        </tr>
+                        <tr id="formEditBaris_${idx}" style="display:none; background:#fff8e1;">
+                            <td colspan="7" style="padding:12px;">
+                                <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:8px;">
+                                    <div>
+                                        <label style="font-size:10px; font-weight:700; color:var(--steam-red); display:block; margin-bottom:3px;">UNIT</label>
+                                        <input type="number" id="edit_unit_${idx}" value="${u}" min="0"
+                                            style="width:100%; padding:8px; border:1.5px solid #ccc; border-radius:6px; font-size:13px;">
+                                    </div>
+                                    <div>
+                                        <label style="font-size:10px; font-weight:700; color:#2e7d32; display:block; margin-bottom:3px;">TIPS (Rp)</label>
+                                        <input type="number" id="edit_tips_${idx}" value="${t}" min="0"
+                                            style="width:100%; padding:8px; border:1.5px solid #ccc; border-radius:6px; font-size:13px;">
+                                    </div>
+                                    <div>
+                                        <label style="font-size:10px; font-weight:700; color:#c62828; display:block; margin-bottom:3px;">KASBON (Rp)</label>
+                                        <input type="number" id="edit_kasbon_${idx}" value="${k}" min="0"
+                                            style="width:100%; padding:8px; border:1.5px solid #ccc; border-radius:6px; font-size:13px;">
+                                    </div>
+                                    <div>
+                                        <label style="font-size:10px; font-weight:700; color:#aa7c11; display:block; margin-bottom:3px;">BONUS (Rp)</label>
+                                        <input type="number" id="edit_bonus_${idx}" value="${b}" min="0"
+                                            style="width:100%; padding:8px; border:1.5px solid #ccc; border-radius:6px; font-size:13px;">
+                                    </div>
+                                </div>
+                                <div style="display:flex; gap:8px;">
+                                    <button type="button" onclick="simpanEditBaris(${idx}, ${item.rowIndex})"
+                                        style="flex:1; padding:10px; background:#2e7d32; color:#fff; border:none; border-radius:8px; font-weight:700; font-size:12px; cursor:pointer;">
+                                        💾 SIMPAN
+                                    </button>
+                                    <button type="button" onclick="bukaFormEditBaris(${idx})"
+                                        style="padding:10px 16px; background:#ccc; color:#333; border:none; border-radius:8px; font-weight:700; font-size:12px; cursor:pointer;">
+                                        BATAL
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>`;
+                });
 
                 displayBox.innerHTML = `
                     <div style="background:#f9f9f9; padding:15px; border-radius:10px; border:1px solid #ccc; margin-top:10px;">
-                        <table style="width:100%; font-size:13px; color:#333; line-height:20px;">
-                            <tr><td><b>Nama Anggota:</b></td><td style="text-align:right;">${namaKaryawanSelected}</td></tr>
-                            <tr><td>Total Cucian Masuk:</td><td style="text-align:right;">${totalUnit} Motor</td></tr>
-                            <tr><td>Upah Pokok (x${upahRate}):</td><td style="text-align:right;">Rp ${kotorUnit.toLocaleString('id-ID')}</td></tr>
-                            <tr><td>Total Tips Lapangan:</td><td style="text-align:right; color:green;">+ Rp ${totalTips.toLocaleString('id-ID')}</td></tr>
-                            <tr><td>Bonus Target Tembus:</td><td style="text-align:right; color:orange;">+ Rp ${totalBonus.toLocaleString('id-ID')}</td></tr>
+                        <p style="font-size:11px; font-weight:700; color:#555; margin-bottom:8px; text-transform:uppercase;">📋 Riwayat Input — ${namaKaryawanSelected} (klik ✏️ Edit untuk koreksi)</p>
+                        <div style="overflow-x:auto;">
+                        <table style="width:100%; font-size:12px; border-collapse:collapse; min-width:420px;">
+                            <thead>
+                                <tr style="background:#fafafa; border-bottom:2px solid #ddd; font-size:10px; text-transform:uppercase; color:var(--steam-red);">
+                                    <th style="padding:8px 4px; text-align:left;">Tgl</th>
+                                    <th style="padding:8px 4px;">Unit</th>
+                                    <th style="padding:8px 4px;">Tips</th>
+                                    <th style="padding:8px 4px;">Bonus</th>
+                                    <th style="padding:8px 4px;">Kasbon</th>
+                                    <th style="padding:8px 4px; text-align:right;">Bersih</th>
+                                    <th style="padding:8px 4px;"></th>
+                                </tr>
+                            </thead>
+                            <tbody>${rowsHtml}</tbody>
+                        </table>
+                        </div>
+                        <table style="width:100%; font-size:13px; color:#333; line-height:20px; margin-top:14px; border-top:2px solid var(--steam-gold); padding-top:10px;">
+                            <tr><td>Upah Pokok (${totalUnit} unit × Rp${upahRate.toLocaleString('id-ID')}):</td><td style="text-align:right;">Rp ${kotorUnit.toLocaleString('id-ID')}</td></tr>
+                            <tr><td>Total Tips:</td><td style="text-align:right; color:green;">+ Rp ${totalTips.toLocaleString('id-ID')}</td></tr>
+                            <tr><td>Bonus Target:</td><td style="text-align:right; color:orange;">+ Rp ${totalBonus.toLocaleString('id-ID')}</td></tr>
                             <tr><td>Potongan Kasbon:</td><td style="text-align:right; color:red;">- Rp ${totalKasbon.toLocaleString('id-ID')}</td></tr>
-                            <tr><td>Iuran Wifi Harian:</td><td style="text-align:right; color:red;">- Rp ${totalWifi.toLocaleString('id-ID')}</td></tr>
-                            <tr style="font-weight:bold; font-size:14px; background:#fff; border-top:1px solid #333;">
-                                <td style="padding:5px 0;">SIAP CAIRKAN:</td>
-                                <td style="text-align:right; color:var(--success-color); padding:5px 0;">Rp ${terimaBersih.toLocaleString('id-ID')}</td>
+                            <tr><td>Iuran Wifi (${totalHariKerja} hari × Rp${wifiRate.toLocaleString('id-ID')}):</td><td style="text-align:right; color:red;">- Rp ${totalWifi.toLocaleString('id-ID')}</td></tr>
+                            <tr style="font-weight:bold; font-size:15px; border-top:1px solid #333; background:#fff;">
+                                <td style="padding-top:8px;">SIAP CAIRKAN:</td>
+                                <td style="text-align:right; color:var(--success-color); padding-top:8px;">Rp ${terimaBersih.toLocaleString('id-ID')}</td>
                             </tr>
                         </table>
-                        <div style="display:flex; gap:8px; margin-top:14px; flex-wrap:wrap;">
-                            <button type="button" class="btn" style="flex:1; background:linear-gradient(135deg, #2e7d32 0%, #1b5e20 100%); font-size:12px; padding:13px;" onclick="eksekusiTombolResetGajiKaryawanCloud('${idKaryawanSelected}', '${namaKaryawanSelected}')">
-                                🔒 RESET & CAIRKAN
-                            </button>
-                            <button type="button" class="btn" style="flex:1; background:linear-gradient(135deg,#e65100,#bf360c); font-size:12px; padding:13px;" onclick="togglePanelEditGaji()">
-                                ✏️ EDIT GAJI
-                            </button>
-                        </div>
+                        <button type="button" class="btn" style="background:linear-gradient(135deg, #2e7d32 0%, #1b5e20 100%); margin-top:14px; font-size:13px;" onclick="eksekusiTombolResetGajiKaryawanCloud('${idKaryawanSelected}', '${namaKaryawanSelected}')">
+                            🔒 RESET & CAIRKAN GAJI SEKARANG
+                        </button>
                     </div>`;
             }).catch(() => {
                 displayBox.innerHTML = "<p style='color:red; text-align:center; font-size:12px;'>Gagal memvalidasi kredensial keamanan enkripsi ID.</p>";
@@ -1425,6 +1495,66 @@
                     showStatus("Gagal memperbarui tarif: " + txt, "error");
                 }
             }).catch(() => showStatus("Kendala koneksi.", "error"));
+        }
+
+        // ============================================================
+        //   EDIT BARIS TRANSAKSI YANG SUDAH MASUK (Owner)
+        // ============================================================
+        function bukaFormEditBaris(idx) {
+            let form = document.getElementById('formEditBaris_' + idx);
+            if(!form) return;
+            let isOpen = form.style.display !== 'none';
+            // Tutup semua form edit lain dulu
+            document.querySelectorAll('[id^="formEditBaris_"]').forEach(el => el.style.display = 'none');
+            if(!isOpen) {
+                form.style.display = 'table-row';
+                form.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }
+
+        function simpanEditBaris(idx, rowSheet) {
+            let unit   = parseInt(document.getElementById('edit_unit_'  + idx).value) || 0;
+            let tips   = parseInt(document.getElementById('edit_tips_'  + idx).value) || 0;
+            let kasbon = parseInt(document.getElementById('edit_kasbon_'+ idx).value) || 0;
+            let bonus  = parseInt(document.getElementById('edit_bonus_' + idx).value) || 0;
+
+            if(!confirm(`Simpan perubahan data baris ini?\nUnit: ${unit} | Tips: Rp${tips.toLocaleString('id-ID')} | Kasbon: Rp${kasbon.toLocaleString('id-ID')} | Bonus: Rp${bonus.toLocaleString('id-ID')}`)) return;
+
+            showStatus("Menyimpan perubahan ke Sheet1...", "loading");
+
+            // Kolom di Sheet1: 5=unit, 6=tips, 7=kasbon, 10=bonus (1-based)
+            // Kirim 4 update secara paralel
+            let updates = [
+                { kolom: 5, nilai: unit },
+                { kolom: 6, nilai: tips },
+                { kolom: 7, nilai: kasbon },
+                { kolom: 10, nilai: bonus }
+            ];
+
+            let promises = updates.map(upd => {
+                let p = new URLSearchParams();
+                p.append("action",    "editGajiKaryawan");
+                p.append("tipe",      "editTransaksi");
+                p.append("rowSheet",  rowSheet);
+                p.append("kolom",     upd.kolom);
+                p.append("nilai",     upd.nilai);
+                return fetch(WEB_APP_URL, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                    body: p.toString()
+                }).then(r => r.text());
+            });
+
+            Promise.all(promises).then(results => {
+                let semua = results.every(r => r === "SUCCESS_EDIT_TRANSAKSI");
+                if(semua) {
+                    showStatus("✅ Data berhasil dikoreksi!", "success");
+                    // Refresh slip gaji supaya total langsung terupdate
+                    tarikSlipGajiSpesifikOwner();
+                } else {
+                    showStatus("⚠️ Sebagian data gagal disimpan: " + results.join(', '), "error");
+                }
+            }).catch(() => showStatus("Kendala koneksi saat menyimpan.", "error"));
         }
     </script>
 </body>
