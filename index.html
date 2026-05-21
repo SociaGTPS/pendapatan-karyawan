@@ -248,9 +248,9 @@
         }
         .fab-btn:hover { transform: scale(1.1); }
         .fab-main {
-            width: 60px;
-            height: 60px;
-            font-size: 26px;
+            width: 46px;
+            height: 46px;
+            font-size: 20px;
             background: linear-gradient(135deg, var(--steam-red) 0%, #a01f1f 100%);
             border: 2px solid var(--steam-gold);
             transition: transform 0.3s ease;
@@ -359,6 +359,14 @@
             <button type="button" class="btn" style="margin-top:10px; background:#263238; border-color:var(--steam-gold);" onclick="kembaliDariKeluhan()">« KEMBALI KE HALAMAN UTAMA</button>
         </div>
 
+        <div id="panelKelolaIzin" class="card" style="display:none; border-color:#2e7d32;">
+            <h2>✅ KELOLA IZIN KARYAWAN</h2>
+            <div id="boxDaftarIzin">
+                <p style="text-align:center; color:#999; font-size:13px; padding:20px;">Memuat daftar izin...</p>
+            </div>
+            <button type="button" class="btn" style="margin-top:15px; background:#263238; border-color:var(--steam-gold);" onclick="tutupPanelKelolaIzin()">« KEMBALI KE KONTROL UTAMA</button>
+        </div>
+
         <div id="panelManajemenGajiOwner" class="card" style="display:none; border-color:var(--steam-red);">
             <h2>⚙️ MANAGEMENT & RESET GAJI TIM</h2>
             <div class="form-group">
@@ -372,6 +380,8 @@
 
             <button type="button" class="btn" style="background:#263238; border-color:var(--steam-gold); margin-top:20px;" onclick="tutupPanelGajiOwner()">« KEMBALI KE KONTROL UTAMA</button>
         </div>
+
+        <div id="boxStatusIzin" style="display:none; margin-bottom:15px;"></div>
 
         <div id="gerbangAuth">
             <div id="boxLogin" class="card">
@@ -399,6 +409,7 @@
             <div id="boxFiturOwner" style="display:none; margin-bottom:20px;">
                 <button type="button" class="btn" style="background: linear-gradient(135deg, var(--steam-gold) 0%, #b89020 100%); color:#fff; border-color: #fff;" onclick="bukaRekapOwner()">🔄 SEGAR KAN REKAP DATA UTAMA OWNER</button>
                 <button type="button" class="btn" style="background: linear-gradient(135deg, #0288d1 0%, #01579b 100%); color:#fff; border-color: #fff;" onclick="bukaPanelManajemenGajiOwner()">📋 ⚙️ MANAJEMEN & RESET GAJI TIM</button>
+                <button type="button" class="btn" style="background: linear-gradient(135deg, #2e7d32 0%, #1b5e20 100%); color:#fff; border-color: #fff;" onclick="bukaPanelKelolaIzin()">✅ KELOLA IZIN KARYAWAN</button>
             </div>
 
             <div class="nav-tabs" id="menuNavigasi">
@@ -534,21 +545,27 @@
             }
         }
 
-        function loadKaryawanDropdown() {
-            fetch(WEB_APP_URL + "?action=getKaryawanList")
+        function loadKaryawanDropdown(filterCabang) {
+            let url = WEB_APP_URL + "?action=getKaryawanList";
+            if(filterCabang) url += "&cabang=" + encodeURIComponent(filterCabang);
+            fetch(url)
             .then(res => res.json())
             .then(res => {
                 if(res.status === "success") {
                     ARRAY_KARYAWAN = res.data;
                     let dropdown = document.getElementById('karyawan_pemasukan');
                     dropdown.innerHTML = '<option value="">-- Pilih Anggota --</option>';
-                    let dropdownOwner = document.getElementById('pilih_karyawan_gaji_owner');
-                    dropdownOwner.innerHTML = '<option value="">-- Silahkan Pilih Anggota --</option>';
                     ARRAY_KARYAWAN.forEach(k => {
-                        let opsiHtml = `<option value="${k.id}">${k.nama} (ID: ${k.id})</option>`;
-                        dropdown.innerHTML += opsiHtml;
-                        dropdownOwner.innerHTML += opsiHtml;
+                        dropdown.innerHTML += `<option value="${k.id}">${k.nama}</option>`;
                     });
+                    // Dropdown owner tidak difilter cabang
+                    if(!filterCabang) {
+                        let dropdownOwner = document.getElementById('pilih_karyawan_gaji_owner');
+                        dropdownOwner.innerHTML = '<option value="">-- Silahkan Pilih Anggota --</option>';
+                        ARRAY_KARYAWAN.forEach(k => {
+                            dropdownOwner.innerHTML += `<option value="${k.id}">${k.nama} (ID: ${k.id})</option>`;
+                        });
+                    }
                 }
             });
         }
@@ -574,19 +591,21 @@
                         document.getElementById('halamanUtama').style.display = 'none';
                         document.getElementById('areaGaji').style.display = 'block';
                         tampilkanRincianGajiKaryawan(data.gaji, data.nama);
+                        tampilkanStatusIzin(data.statusIzin);
                     } 
                     else if(data.jabatan === "Kepala Toko") {
                         document.getElementById('halamanUtama').style.display = 'block';
                         document.getElementById('boxFiturKT').style.display = 'block';
-                        // Sembunyikan tab pengeluaran untuk Kepala Toko
                         document.getElementById('nav_pengeluaran').style.display = 'none';
                         document.getElementById('input-pengeluaran').style.display = 'none';
                         if(data.cabang) {
                             document.getElementById('cabang_pemasukan').value = data.cabang;
-                            document.getElementById('cabang_pemasukan').disabled = true; 
+                            document.getElementById('cabang_pemasukan').disabled = true;
                             document.getElementById('labelCabangKT').innerText = "📌 POS STORE LOCK: " + data.cabang.toUpperCase();
                         }
-                        loadKaryawanDropdown();
+                        // Filter dropdown hanya karyawan cabang KT
+                        loadKaryawanDropdown(data.cabang);
+                        tampilkanStatusIzin(data.statusIzin);
                         switchTab('input-pemasukan');
                     } 
                     else if(data.jabatan === "Admin" || data.jabatan === "Owner") {
@@ -977,6 +996,144 @@
             });
         }
         
+        // ============================================================
+        //   FUNGSI STATUS IZIN KARYAWAN
+        // ============================================================
+        function tampilkanStatusIzin(statusIzin) {
+            let box = document.getElementById('boxStatusIzin');
+            if(!statusIzin) { box.style.display = 'none'; return; }
+
+            let warna, icon, pesanStatus;
+            if(statusIzin.status === "Disetujui") {
+                warna = "#e8f5e9"; icon = "✅";
+                pesanStatus = "<b>Disetujui</b>";
+            } else if(statusIzin.status === "Ditolak") {
+                warna = "#ffebee"; icon = "❌";
+                pesanStatus = "<b>Ditolak</b>" + (statusIzin.alasan ? " — Alasan: " + statusIzin.alasan : "");
+            } else {
+                warna = "#fff8e1"; icon = "⏳";
+                pesanStatus = "<b>Menunggu Persetujuan</b>";
+            }
+
+            box.style.display = 'block';
+            box.innerHTML = `
+                <div style="background:${warna}; border-radius:12px; padding:14px 16px; border:1.5px dashed #aaa;">
+                    <p style="font-size:12px; color:#555; text-transform:uppercase; font-weight:700; margin-bottom:6px;">📋 STATUS PENGAJUAN IZIN TERAKHIR</p>
+                    <p style="font-size:13px; color:#263238;">${icon} ${statusIzin.jenis}</p>
+                    <p style="font-size:12px; color:#555; margin-top:4px;">${statusIzin.isi}</p>
+                    <p style="font-size:13px; margin-top:8px; color:#333;">Status: ${pesanStatus}</p>
+                </div>`;
+        }
+
+        // ============================================================
+        //   FUNGSI KELOLA IZIN OWNER
+        // ============================================================
+        function bukaPanelKelolaIzin() {
+            document.getElementById('halamanUtama').style.display = 'none';
+            document.getElementById('areaGaji').style.display = 'none';
+            document.getElementById('panelKelolaIzin').style.display = 'block';
+            muatDaftarIzin();
+        }
+
+        function tutupPanelKelolaIzin() {
+            document.getElementById('panelKelolaIzin').style.display = 'none';
+            document.getElementById('halamanUtama').style.display = 'block';
+            document.getElementById('areaGaji').style.display = 'block';
+        }
+
+        function muatDaftarIzin() {
+            let box = document.getElementById('boxDaftarIzin');
+            box.innerHTML = "<p style='text-align:center; color:orange; font-weight:bold; font-size:13px; padding:15px;'>Memuat daftar izin...</p>";
+            fetch(WEB_APP_URL + "?action=getIzinList")
+            .then(res => res.json())
+            .then(res => {
+                if(!res.data || res.data.length === 0) {
+                    box.innerHTML = "<p style='text-align:center; color:#999; font-size:13px; padding:20px;'>Tidak ada pengajuan izin.</p>";
+                    return;
+                }
+                let html = "";
+                res.data.forEach(izin => {
+                    let badgeWarna = izin.status === "Disetujui" ? "#2e7d32" : izin.status === "Ditolak" ? "#c62828" : "#ff8f00";
+                    html += `
+                        <div style="border:1.5px solid #eee; border-radius:10px; padding:12px; margin-bottom:12px; background:#fafafa;">
+                            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                                <span style="font-weight:700; font-size:14px; color:#263238;">${izin.nama}</span>
+                                <span style="font-size:11px; font-weight:700; color:#fff; background:${badgeWarna}; padding:3px 8px; border-radius:20px;">${izin.status}</span>
+                            </div>
+                            <p style="font-size:12px; color:#555; margin-bottom:3px;">📅 ${izin.tanggal}</p>
+                            <p style="font-size:12px; color:#555; margin-bottom:3px;">🏷️ ${izin.jenis}</p>
+                            <p style="font-size:12px; color:#444; margin-bottom:8px;">📝 ${izin.isi}</p>
+                            ${izin.status === "Menunggu" ? `
+                            <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                                <button type="button" onclick="prosesIzin(${izin.rowIndex}, 'Disetujui', '', '${izin.nama.replace(/'/g,"\'")}', '${izin.jenis.replace(/'/g,"\'")}', this)" 
+                                    style="flex:1; padding:10px; background:#2e7d32; color:#fff; border:none; border-radius:8px; font-weight:700; font-size:12px; cursor:pointer;">
+                                    ✅ SETUJUI
+                                </button>
+                                <button type="button" onclick="tampilFormTolak(${izin.rowIndex}, '${izin.nama.replace(/'/g,"\'")}', '${izin.jenis.replace(/'/g,"\'")}', this)"
+                                    style="flex:1; padding:10px; background:#c62828; color:#fff; border:none; border-radius:8px; font-weight:700; font-size:12px; cursor:pointer;">
+                                    ❌ TOLAK
+                                </button>
+                            </div>
+                            <div id="formTolak_${izin.rowIndex}" style="display:none; margin-top:10px;">
+                                <input type="text" id="alasanTolak_${izin.rowIndex}" placeholder="Tulis alasan penolakan..." 
+                                    style="width:100%; padding:10px; border:1.5px solid #ef9a9a; border-radius:8px; font-size:13px; margin-bottom:8px;">
+                                <button type="button" onclick="prosesIzin(${izin.rowIndex}, 'Ditolak', document.getElementById('alasanTolak_${izin.rowIndex}').value, '${izin.nama.replace(/'/g,"\'")}', '${izin.jenis.replace(/'/g,"\'")}', this)"
+                                    style="width:100%; padding:10px; background:#c62828; color:#fff; border:none; border-radius:8px; font-weight:700; font-size:13px; cursor:pointer;">
+                                    KONFIRMASI TOLAK
+                                </button>
+                            </div>` : izin.alasan ? `<p style="font-size:12px; color:#888; font-style:italic;">Alasan: ${izin.alasan}</p>` : ""}
+                        </div>`;
+                });
+                box.innerHTML = html;
+            }).catch(() => {
+                box.innerHTML = "<p style='color:red; text-align:center; font-size:12px; padding:15px;'>Gagal memuat daftar izin.</p>";
+            });
+        }
+
+        function tampilFormTolak(rowIndex, nama, jenis, btn) {
+            let form = document.getElementById('formTolak_' + rowIndex);
+            form.style.display = form.style.display === 'none' ? 'block' : 'none';
+        }
+
+        function prosesIzin(rowIndex, status, alasan, namaKaryawan, jenisIzin, btn) {
+            if(status === "Ditolak" && !alasan.trim()) {
+                alert("Mohon isi alasan penolakan terlebih dahulu!");
+                return;
+            }
+            btn.disabled = true;
+            showStatus("Memproses izin...", "loading");
+
+            let urlParams = new URLSearchParams();
+            urlParams.append("action", "updateStatusIzin");
+            urlParams.append("rowIndex", rowIndex);
+            urlParams.append("status", status);
+            urlParams.append("alasan", alasan);
+            urlParams.append("namaKaryawan", namaKaryawan);
+            urlParams.append("jenisIzin", jenisIzin);
+
+            fetch(WEB_APP_URL, {
+                method: "POST",
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body: urlParams.toString()
+            })
+            .then(res => res.text())
+            .then(text => {
+                if(text === "SUCCESS_UPDATE_IZIN") {
+                    let pesan = status === "Disetujui"
+                        ? "✅ Izin " + namaKaryawan + " berhasil disetujui!"
+                        : "❌ Izin " + namaKaryawan + " ditolak.";
+                    showStatus(pesan, "success");
+                    muatDaftarIzin(); // reload daftar
+                } else {
+                    btn.disabled = false;
+                    showStatus("Gagal memproses izin.", "error");
+                }
+            }).catch(() => {
+                btn.disabled = false;
+                showStatus("Kendala koneksi.", "error");
+            });
+        }
+
         function submitData(event, tipe) {
             event.preventDefault();
 
